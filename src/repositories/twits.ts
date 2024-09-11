@@ -18,7 +18,12 @@ const createTwitSnap = (newTwitSnap: NewTwitSnap): TwitSnap => {
   return twitSnap;
 };
 
+const deleteTwitSnaps = (): void => {
+  twitSnaps = [];
+};
+
 export default {
   getTwitSnaps,
   createTwitSnap,
+  deleteTwitSnaps,
 };
