@@ -8,12 +8,21 @@ const router = Router();
 const newTwitSnapSchema = z.object({
   message: z.string().max(280),
   createdBy: z.string().uuid(),
+  isPrivate: z.boolean().default(false),
 });
 
-router.get("/", async (_req, res) => {
-  const twitSnaps = await twitSnapsService.getTwitSnaps();
+router.get("/", async (_req, res, next) => {
+  try {
+    const twitSnaps = await twitSnapsService.getTwitSnaps();
+    res.status(200).json(twitSnaps);
+  } catch (err: unknown) {
+    let errDescription = "";
 
-  res.status(200).json(twitSnaps);
+    if (err instanceof Error) {
+      errDescription += err.message;
+    }
+    next({ message: errDescription, name: "DatabaseError" });
+  }
 });
 
 router.post("/", async (req, res, next) => {
@@ -24,12 +33,20 @@ router.post("/", async (req, res, next) => {
       await twitSnapsService.createTwitSnap(result);
 
     if (!newTwitSnap) {
-      next(new Error("Error while trying to create twitsnap"));
+      next({
+        name: "NotFound",
+        message: "Error while trying to create twitsnap",
+      });
     }
 
     res.status(201).json(newTwitSnap);
   } catch (err: unknown) {
-    next(err);
+    let errDescription = "";
+
+    if (err instanceof Error) {
+      errDescription += err.message;
+    }
+    next({ message: errDescription, name: "DatabaseError" });
   }
 });
 

@@ -20,8 +20,7 @@ const createTwitSnap = async (
   return db
     .insert(twitSnapsTable)
     .values({
-      message: newTwitSnap.message,
-      createdBy: newTwitSnap.createdBy,
+      ...newTwitSnap,
       id: uuid4(),
     })
     .returning()
