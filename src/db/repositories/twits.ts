@@ -28,10 +28,6 @@ const createTwitSnap = async (
     .then((result) => result[0]);
 };
 
-// const deleteTwitSnaps = (): void => {
-//   twitSnaps = [];
-// };
-
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
   createTwitSnap,
