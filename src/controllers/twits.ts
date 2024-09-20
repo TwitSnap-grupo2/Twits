@@ -16,13 +16,21 @@ router.get("/", async (_req, res) => {
   res.status(200).json(twitSnaps);
 });
 
-router.post("/", async (req, res) => {
-  const result: InsertTwitsnap = newTwitSnapSchema.parse(req.body);
+router.post("/", async (req, res, next) => {
+  try {
+    const result: InsertTwitsnap = newTwitSnapSchema.parse(req.body);
 
-  const newTwitSnap: SelectTwitsnap =
-    await twitSnapsService.createTwitSnap(result);
+    const newTwitSnap: SelectTwitsnap | null =
+      await twitSnapsService.createTwitSnap(result);
 
-  res.status(201).json(newTwitSnap);
+    if (!newTwitSnap) {
+      next(new Error("Error while trying to create twitsnap"));
+    }
+
+    res.status(201).json(newTwitSnap);
+  } catch (err: unknown) {
+    next(err);
+  }
 });
 
 export default router;

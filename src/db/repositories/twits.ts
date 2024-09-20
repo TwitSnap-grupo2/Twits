@@ -16,7 +16,7 @@ const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
 
 const createTwitSnap = async (
   newTwitSnap: InsertTwitsnap
-): Promise<SelectTwitsnap> => {
+): Promise<SelectTwitsnap | null> => {
   return db
     .insert(twitSnapsTable)
     .values({
@@ -25,7 +25,7 @@ const createTwitSnap = async (
       id: uuid4(),
     })
     .returning()
-    .then((result) => result[0]);
+    .then((result) => (result.length > 0 ? result[0] : null));
 };
 
 export default {

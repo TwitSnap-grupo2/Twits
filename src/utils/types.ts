@@ -6,3 +6,11 @@ export interface TwitSnap {
 }
 
 export type NewTwitSnap = Omit<TwitSnap, "id" | "createdAt">;
+
+export interface ErrorResponse {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+  instance: string;
+}

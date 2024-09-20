@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import twitsRouter from "./controllers/twits";
-import errorMiddleware from "./utils/middleware";
+import { errorMiddleware, unknownEndpoint } from "./utils/middleware";
 
 dotenv.config();
 
@@ -16,5 +16,6 @@ app.use(express.json());
 app.use("/api/twits", twitsRouter);
 
 app.use(errorMiddleware);
+app.use(unknownEndpoint);
 
 export default app;

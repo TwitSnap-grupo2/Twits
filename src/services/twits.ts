@@ -7,7 +7,7 @@ const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
 
 const createTwitSnap = async (
   newTwitSnap: InsertTwitsnap
-): Promise<SelectTwitsnap> => {
+): Promise<SelectTwitsnap | null> => {
   return await db.createTwitSnap(newTwitSnap);
 };
 
