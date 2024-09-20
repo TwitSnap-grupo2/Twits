@@ -1,0 +1,1 @@
+ALTER TABLE "twitsnaps" ALTER COLUMN "is_private" SET DEFAULT false;

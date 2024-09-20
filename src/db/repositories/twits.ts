@@ -1,32 +1,38 @@
-import { NewTwitSnap, TwitSnap } from "../../utils/types";
-import { v4 as uuidv4 } from "uuid";
-import { SelectTwitsnap, twitSnap } from "../schemas/twisnapSchema";
+import { v4 as uuid4 } from "uuid";
+import {
+  InsertTwitsnap,
+  SelectTwitsnap,
+  twitSnap as twitSnapsTable,
+} from "../schemas/twisnapSchema";
 import { db } from "../setup";
 import { desc } from "drizzle-orm";
 
-let twitSnaps: Array<TwitSnap> = [];
-
 const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
-  return await db.select().from(twitSnap).orderBy(desc(twitSnap.createdAt));
+  return await db
+    .select()
+    .from(twitSnapsTable)
+    .orderBy(desc(twitSnapsTable.createdAt));
 };
 
-const createTwitSnap = (newTwitSnap: NewTwitSnap): TwitSnap => {
-  const twitSnap: TwitSnap = {
-    ...newTwitSnap,
-    id: uuidv4(),
-    createdAt: new Date(),
-  };
-
-  twitSnaps.push(twitSnap);
-  return twitSnap;
+const createTwitSnap = async (
+  newTwitSnap: InsertTwitsnap
+): Promise<SelectTwitsnap> => {
+  return db
+    .insert(twitSnapsTable)
+    .values({
+      message: newTwitSnap.message,
+      createdBy: newTwitSnap.createdBy,
+      id: uuid4(),
+    })
+    .returning()
+    .then((result) => result[0]);
 };
 
-const deleteTwitSnaps = (): void => {
-  twitSnaps = [];
-};
+// const deleteTwitSnaps = (): void => {
+//   twitSnaps = [];
+// };
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
   createTwitSnap,
-  deleteTwitSnaps,
 };

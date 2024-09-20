@@ -1,8 +1,7 @@
 import { Router } from "express";
 import twitSnapsService from "../services/twits";
 import { z } from "zod";
-import logger from "../utils/logger";
-import { TwitSnap } from "../utils/types";
+import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 
 const router = Router();
 
@@ -14,15 +13,16 @@ const newTwitSnapSchema = z.object({
 router.get("/", async (_req, res) => {
   const twitSnaps = await twitSnapsService.getTwitSnaps();
 
-  res.status(200).json({ data: twitSnaps });
+  res.status(200).json(twitSnaps);
 });
 
-// router.post("/", (req, res) => {
-//   const result = newTwitSnapSchema.parse(req.body);
-//   logger.info("RESULT: ", result);
-//   const newTwitSnap: TwitSnap = twitSnapsService.createTwitSnap(result);
+router.post("/", async (req, res) => {
+  const result: InsertTwitsnap = newTwitSnapSchema.parse(req.body);
 
-//   res.status(201).json({ data: newTwitSnap });
-// });
+  const newTwitSnap: SelectTwitsnap =
+    await twitSnapsService.createTwitSnap(result);
+
+  res.status(201).json(newTwitSnap);
+});
 
 export default router;

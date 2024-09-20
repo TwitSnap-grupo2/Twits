@@ -1,0 +1,124 @@
+{
+  "id": "7009d8a2-0c85-4f9a-8102-f1fc45be92e7",
+  "prevId": "8109d839-faf5-4a13-9757-b9f590bcf6ea",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.hashtags": {
+      "name": "hashtags",
+      "schema": "",
+      "columns": {
+        "twitsnap_id": {
+          "name": "twitsnap_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "hashtag_twitsnap_idx": {
+          "name": "hashtag_twitsnap_idx",
+          "columns": [
+            {
+              "expression": "twitsnap_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "hashtags_twitsnap_id_twitsnaps_id_fk": {
+          "name": "hashtags_twitsnap_id_twitsnaps_id_fk",
+          "tableFrom": "hashtags",
+          "tableTo": "twitsnaps",
+          "columnsFrom": [
+            "twitsnap_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "hashtags_twitsnap_id_name_pk": {
+          "name": "hashtags_twitsnap_id_name_pk",
+          "columns": [
+            "twitsnap_id",
+            "name"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.twitsnaps": {
+      "name": "twitsnaps",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "content": {
+          "name": "content",
+          "type": "varchar(280)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_private": {
+          "name": "is_private",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
