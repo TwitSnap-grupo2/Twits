@@ -1,10 +1,13 @@
-import { NewTwitSnap, TwitSnap } from "../utils/types";
+import { NewTwitSnap, TwitSnap } from "../../utils/types";
 import { v4 as uuidv4 } from "uuid";
+import { SelectTwitsnap, twitSnap } from "../schemas/twisnapSchema";
+import { db } from "../setup";
+import { desc } from "drizzle-orm";
 
 let twitSnaps: Array<TwitSnap> = [];
 
-const getTwitSnaps = (): Array<TwitSnap> => {
-  return twitSnaps;
+const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
+  return await db.select().from(twitSnap).orderBy(desc(twitSnap.createdAt));
 };
 
 const createTwitSnap = (newTwitSnap: NewTwitSnap): TwitSnap => {
@@ -23,7 +26,7 @@ const deleteTwitSnaps = (): void => {
 };
 
 export default {
-  getTwitSnaps,
+  getTwitSnaps: getTwitSnapsOrderedByDate,
   createTwitSnap,
   deleteTwitSnaps,
 };

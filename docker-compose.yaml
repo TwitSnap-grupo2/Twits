@@ -1,0 +1,18 @@
+services:
+  app:
+    build:
+      context: .
+      target: build
+    volumes:
+      - ./src:/app/src
+    ports:
+      - ${PORT}:${PORT}
+    # command: npm run dev
+    command: tail -f /dev/null
+
+  production:
+    build:
+      context: .
+      target: production
+    command: tail -f /dev/null
+    # command: npm run start
