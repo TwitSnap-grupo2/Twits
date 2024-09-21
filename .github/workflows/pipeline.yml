@@ -22,15 +22,37 @@ jobs:
     steps:
       # - name: Checkout repository
       - uses: actions/checkout@v3
-
-      - uses: adambirds/docker-compose-action@v1.4.0
+      - uses: hoverkraft-tech/compose-action@v0.0.0
         with:
+          # Description: Path to compose file(s). It can be a list of files. It can be
+          # absolute or relative to the current working directory (cwd).
+          #
+          # Default: ./docker-compose.yml
           compose-file: "./docker-compose.yml"
-          down-flags: "--volumes"
-          services: |
-            test
-          test-container: testcontainer
-          test-command: "npm run test"
+
+          # Description: Services to perform docker-compose up.
+          #
+          services: "test"
+
+          # Description: Additional options to pass to `docker-compose up` command.
+          #
+          # Default:
+          up-flags: "-d --build"
+
+          # Description: Additional options to pass to `docker-compose down` command.
+          #
+          # Default:
+          down-flags: ""
+
+          # Description: Additional options to pass to `docker-compose` command.
+          #
+          # Default:
+          compose-flags: ""
+
+          # Description: Current working directory
+          #
+          # Default: ${{ github.workspace }}
+          cwd: ""
 
         # - name: Set up Docker Compose
         #   uses: docker/setup-buildx-action@v3
