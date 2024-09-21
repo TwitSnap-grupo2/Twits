@@ -1,0 +1,15 @@
+services:
+  - type: web
+    runtime: docker
+    name: Twits
+    plan: free
+    envVars:
+      - key: POSTGRES_URL
+        sync: false
+      - key: PORT
+        sync: false
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: docker build -t twits --target production . && docker run -d -e POSTGRES_URL=${POSTGRES_URL} -e PORT=${PORT} twits
+    autoDeploy: true # Automatically deploy new changes
+
