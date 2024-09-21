@@ -5,14 +5,18 @@ services:
       target: build
     volumes:
       - ./src:/app/src
-    ports:
-      - ${PORT}:${PORT}
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL}
+      PORT: ${PORT}
     command: npm run dev
 
   production:
     build:
       context: .
       target: production
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL}
+      PORT: ${PORT}
     command: npm run start
 
   test:
@@ -21,4 +25,5 @@ services:
       target: build
     environment:
       TEST_POSTGRES_URL: ${TEST_POSTGRES_URL}
+      PORT: ${PORT}
     command: npm run test
