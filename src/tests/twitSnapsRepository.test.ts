@@ -13,10 +13,6 @@ jest.mock("../db/setup", () => ({
     insert: jest.fn().mockReturnThis(),
     values: jest.fn().mockReturnThis(),
     returning: jest.fn().mockReturnThis(),
-    // insert: jest.fn(() => ({
-    //   values: jest.fn().mockReturnThis(),
-    //   returning: jest.fn(),
-    // })),
   },
 }));
 jest.mock("uuid", () => ({ v4: jest.fn() }));
@@ -28,7 +24,6 @@ describe("twitSnapService", () => {
 
   describe("getTwitSnapsOrderedByDate", () => {
     it("should return twitsnaps ordered by date", async () => {
-      // Arrange: Mock the result of db.select().from().orderBy()
       const mockTwitSnaps = [
         {
           id: "1",
@@ -48,10 +43,9 @@ describe("twitSnapService", () => {
       (db.select().from(twitSnapsTable).orderBy as jest.Mock).mockResolvedValue(
         mockTwitSnaps
       );
-      // Act: Call the function
+
       const result = await twitSnapRepository.getTwitSnaps();
 
-      // Assert: Check if the db was called correctly and the result is as expected
       expect(db.select).toHaveBeenCalled();
       expect(db.select().from).toHaveBeenCalledWith(twitSnapsTable);
       expect(db.select().from(twitSnapsTable).orderBy).toHaveBeenCalledWith(
@@ -63,7 +57,6 @@ describe("twitSnapService", () => {
 
   describe("createTwitSnap", () => {
     it("should create a twitsnap and return the result", async () => {
-      // Arrange: Mock the UUID generation and the result of db.insert().returning()
       const mockTwitSnap = {
         id: "new-id",
         message: "Test message",
@@ -81,12 +74,9 @@ describe("twitSnapService", () => {
         message: "Test message",
         isPrivate: false,
         createdBy: "user-1",
-      }; // InsertTwitsnap type
-
-      // Act: Call the function
+      };
       const result = await twitSnapRepository.createTwitSnap(newTwitSnap);
 
-      // Assert: Check if the db was called correctly and the result is as expected
       expect(db.insert).toHaveBeenCalledWith(twitSnapsTable);
       expect(db.insert(twitSnapsTable).values).toHaveBeenCalledWith({
         ...newTwitSnap,
@@ -98,23 +88,5 @@ describe("twitSnapService", () => {
       ).toHaveBeenCalled();
       expect(result).toEqual(mockTwitSnap);
     });
-
-    // it("should return null if no result is returned from db", async () => {
-    //   // Arrange: Mock the UUID generation and an empty result from db.insert().returning()
-    //   (uuid4 as jest.Mock).mockReturnValue("new-id");
-    //   (db.insert().returning as jest.Mock).mockResolvedValue([]);
-
-    //   const newTwitSnap = {
-    //     message: "Test message",
-    //     isPrivate: false,
-    //     createdBy: "user-1",
-    //   };
-
-    //   // Act: Call the function
-    //   const result = await twitSnapService.createTwitSnap(newTwitSnap);
-
-    //   // Assert: Check if the function returns null when no result is found
-    //   expect(result).toBeNull();
-    // });
   });
 });
