@@ -14,3 +14,9 @@ services:
       context: .
       target: production
     command: npm run start
+
+  test:
+    build:
+      context: .
+      target: build
+    command: npm run test
