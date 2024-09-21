@@ -1,12 +1,10 @@
-// import db from "../db/repositories/twits";
-// import { NewTwitSnap, TwitSnap } from "../utils/types";
-// import { v4 as uuid4 } from "uuid";
-// import twitSnapsService from "../services/twits";
+import { NewTwitSnap } from "../utils/types";
+import { v4 as uuid4 } from "uuid";
 
-// export const testTwitSnap: NewTwitSnap = {
-//   message: "Test twitsnap",
-//   createdBy: uuid4(),
-// };
+export const testTwitSnap: NewTwitSnap = {
+  message: "Test twitsnap",
+  createdBy: uuid4(),
+};
 
 // const resetTwitsSnapsDB = (): void => {
 //   db.deleteTwitSnaps();

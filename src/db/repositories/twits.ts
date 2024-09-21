@@ -27,7 +27,12 @@ const createTwitSnap = async (
     .then((result) => (result.length > 0 ? result[0] : null));
 };
 
+const deleteTwitsnaps = async () => {
+  await db.delete(twitSnapsTable);
+};
+
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
   createTwitSnap,
+  deleteTwitsnaps,
 };
