@@ -37,7 +37,7 @@ jobs:
           # Description: Additional options to pass to `docker-compose up` command.
           #
           # Default:
-          up-flags: "-d --build"
+          up-flags: "--build --exit-code-from test"
 
           # Description: Additional options to pass to `docker-compose down` command.
           #
