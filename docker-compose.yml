@@ -19,4 +19,6 @@ services:
     build:
       context: .
       target: build
+    environment:
+      TEST_POSTGRES_URL: ${TEST_POSTGRES_URL}
     command: npm run test
