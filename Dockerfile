@@ -18,8 +18,6 @@ WORKDIR /app
 
 COPY package*.json .  
 
-COPY .env .
-
 RUN npm install 
 
 COPY --from=build /app/dist ./dist  
