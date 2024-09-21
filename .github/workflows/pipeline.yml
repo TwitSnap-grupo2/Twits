@@ -18,7 +18,7 @@ jobs:
     #   options: --privileged
     env:
       PORT: 3000
-
+      TEST_POSTGRES_URL: ${{ secrets.TEST_POSTGRES_URL }}
     steps:
       # - name: Checkout repository
       - uses: actions/checkout@v3
