@@ -22,4 +22,4 @@ RUN npm install
 
 COPY --from=build /app/dist ./dist  
 
-CMD ["node", "dist/index.js"]  
+CMD ["npm", "run", "start"]  
