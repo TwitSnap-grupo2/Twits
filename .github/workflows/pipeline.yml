@@ -25,6 +25,8 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and run tests
+        env:
+          PORT: 3000
         run: docker compose up test -d --build
 
       - name: Tear down
