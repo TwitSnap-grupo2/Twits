@@ -22,6 +22,13 @@
       "when": 1726797868432,
       "tag": "0002_oval_radioactive_man",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1727144134900,
+      "tag": "0003_empty_grey_gargoyle",
+      "breakpoints": true
     }
   ]
 }
