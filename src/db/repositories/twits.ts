@@ -6,7 +6,7 @@ import {
 } from "../schemas/twisnapSchema";
 import { db } from "../setup";
 import { desc, eq} from "drizzle-orm";
-import { InsertLike, likeTwitSnapSchema, SelectLike } from "../schemas/likeSchema";
+import { InsertLike, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
 
 const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
   return await db
@@ -42,11 +42,15 @@ const deleteTwitsnaps = async () => {
 
 const likeTwitSnap = async (newLike: InsertLike): Promise<SelectLike | null> => {
   return db
-    .insert(likeTwitSnapSchema)
+    .insert(likeTwitSnapTable)
     .values(newLike)
     .returning()
     .then((result) => (result.length > 0 ? result[0] : null));
 }
+
+const deleteTwitSnapLikes = async () => {
+  await db.delete(likeTwitSnapTable)
+};
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
@@ -54,4 +58,5 @@ export default {
   createTwitSnap,
   deleteTwitsnaps,
   likeTwitSnap,
+  deleteTwitSnapLikes
 };

@@ -51,4 +51,81 @@ describe("twitsnaps", () => {
     expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
     expect(data[0].createdAt).toBe(newTwitSnap.createdAt.toISOString());
   });
+
+  test("can be obtained by id", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+      await twitSnapService.createTwitSnap(testTwitSnap);
+
+    const otherTwitSnap: InsertTwitsnap = {
+      message: "This is another twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    };
+
+    await twitSnapService.createTwitSnap(otherTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const response = await api
+      .get("/api/twits/" + newTwitSnap.createdBy)
+      .expect(200);
+
+    const data: Array<SelectTwitsnap> = response.body;
+
+    expect(data).toHaveLength(1);
+
+    expect(data[0].id).toBe(newTwitSnap.id);
+    expect(data[0].message).toBe(newTwitSnap.message);
+    expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
+    expect(data[0].createdAt).toBe(newTwitSnap.createdAt.toISOString());
+  }
+  );
+});
+
+describe("twitsnap likes", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteTwitSnapLikes();
+  });
+
+  test("twitsnap can be liked", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+    await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const response = await api
+      .post("/api/twits/" + newTwitSnap.id + "/like")
+      .send({ likedBy: testTwitSnap.createdBy })
+      .expect(201);
+
+    const data = response.body;
+
+    expect(data.likedBy).toBe(testTwitSnap.createdBy);
+    expect(data.twitsnapId).toBe(newTwitSnap.id);
+  });
+
+  test("twitsnap can be liked only once", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+    await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/like")
+      .send({ likedBy: testTwitSnap.createdBy })
+      .expect(201);
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/like")
+      .send({ likedBy: testTwitSnap.createdBy })
+      .expect(500);
+  });
+
+
+
 });

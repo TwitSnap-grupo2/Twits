@@ -1,7 +1,7 @@
 import {pgTable, primaryKey, uuid} from "drizzle-orm/pg-core";
 import { twitSnap } from "./twisnapSchema";
 
-export const likeTwitSnapSchema = pgTable(
+export const likeTwitSnapTable = pgTable(
     "likes",
     {
       twitsnapId: uuid("twitsnap_id")
@@ -16,5 +16,5 @@ export const likeTwitSnapSchema = pgTable(
     }
   );
 
-export type SelectLike = typeof likeTwitSnapSchema.$inferSelect;
-export type InsertLike = typeof likeTwitSnapSchema.$inferInsert;
+export type SelectLike = typeof likeTwitSnapTable.$inferSelect;
+export type InsertLike = typeof likeTwitSnapTable.$inferInsert;
