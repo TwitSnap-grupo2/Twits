@@ -10,11 +10,27 @@ CREATE TABLE IF NOT EXISTS "twitsnaps" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"is_private" boolean NOT NULL
 );
+
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "likes"(
+	"twitsnap_id" uuid NOT NULL,
+	"liked_by" uuid NOT NULL,
+	CONSTRAINT "likes_twitsnap_id_user_id_pk" PRIMARY KEY("twitsnap_id","user_id")
+);
+
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "hashtags" ADD CONSTRAINT "hashtags_twitsnap_id_twitsnaps_id_fk" FOREIGN KEY ("twitsnap_id") REFERENCES "public"."twitsnaps"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "hashtag_twitsnap_idx" ON "hashtags" USING btree ("twitsnap_id","name");
+
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "likes" ADD CONSTRAINT "likes_twitsnap_id_liked_by_fk" FOREIGN KEY ("twitsnap_id") REFERENCES "public"."twitsnaps"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
