@@ -2,7 +2,7 @@ import { Router } from "express";
 import twitSnapsService from "../services/twits";
 import { z } from "zod";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
-import { InsertLike, SelectLike } from "../db/schemas/likeSchema";
+import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 
 const router = Router();
 
@@ -79,22 +79,37 @@ router.post("/", async (req, res, next) => {
 });
 
 router.post("/:id/like", async (req, res, next) => {
-  
   try {
     const result = likeTwitSnapSchema.parse(req.body);
     const twitsnapId = req.params.id;
-    const schema: InsertLike = { ...result, twitsnapId};
+    const schema: LikeSchema = { ...result, twitsnapId};
 
     const like: SelectLike | null = await twitSnapsService.likeTwitSnap(schema);
+    
 
     if (!like) {
       next({
-        name: "NotFound",
+        name: "LikeError",
         message: "Error while trying to like twitsnap",
       });
     }
 
     res.status(201).json(like);
+  } catch (err: unknown) {
+    
+    next(err);
+  }
+});
+
+router.get("/:id/like", async (req, res, next) => {
+  try {
+    const result = likeTwitSnapSchema.parse(req.body);
+    const twitsnapId = req.params.id;
+    const schema: LikeSchema = { ...result, twitsnapId};
+    const twitSnapLikes = await twitSnapsService.getTwitSnapLike(schema);
+    
+
+    res.status(200).json(twitSnapLikes);
   } catch (err: unknown) {
     let errDescription = "";
 
@@ -103,7 +118,8 @@ router.post("/:id/like", async (req, res, next) => {
     }
     next({ message: errDescription, name: "DatabaseError" });
   }
-});
+}
+);
 
 
 export default router;

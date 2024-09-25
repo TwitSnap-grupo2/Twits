@@ -17,4 +17,4 @@ export const likeTwitSnapTable = pgTable(
   );
 
 export type SelectLike = typeof likeTwitSnapTable.$inferSelect;
-export type InsertLike = typeof likeTwitSnapTable.$inferInsert;
+export type LikeSchema = typeof likeTwitSnapTable.$inferInsert;

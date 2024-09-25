@@ -5,8 +5,8 @@ import {
   twitSnap as twitSnapsTable,
 } from "../schemas/twisnapSchema";
 import { db } from "../setup";
-import { desc, eq} from "drizzle-orm";
-import { InsertLike, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
+import { and, desc, eq} from "drizzle-orm";
+import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
 
 const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
   return await db
@@ -40,12 +40,30 @@ const deleteTwitsnaps = async () => {
   await db.delete(twitSnapsTable);
 };
 
-const likeTwitSnap = async (newLike: InsertLike): Promise<SelectLike | null> => {
+const likeTwitSnap = async (newLike: LikeSchema): Promise<SelectLike | null> => {
+
+
+  const result = await getTwitSnapLike(newLike)
+  console.log(result)
+  if (result.length > 0) {
+    throw new Error("Already liked")
+  }
+
   return db
     .insert(likeTwitSnapTable)
     .values(newLike)
     .returning()
     .then((result) => (result.length > 0 ? result[0] : null));
+}
+
+const getTwitSnapLike = async (getLike: LikeSchema): Promise<Array<SelectLike>> => {
+  if (!getLike.twitsnapId || !getLike.likedBy) {
+    throw new Error("invalid parameters")
+  }
+  return db
+    .select()
+    .from(likeTwitSnapTable)
+    .where(and(eq(likeTwitSnapTable.twitsnapId, getLike.twitsnapId), eq(likeTwitSnapTable.likedBy, getLike.likedBy)))
 }
 
 const deleteTwitSnapLikes = async () => {
@@ -58,5 +76,6 @@ export default {
   createTwitSnap,
   deleteTwitsnaps,
   likeTwitSnap,
-  deleteTwitSnapLikes
+  deleteTwitSnapLikes, 
+  getTwitSnapLike,
 };

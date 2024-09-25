@@ -115,7 +115,7 @@ describe("twitsnap likes", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    await api
+    const res = await api
       .post("/api/twits/" + newTwitSnap.id + "/like")
       .send({ likedBy: testTwitSnap.createdBy })
       .expect(201);
@@ -123,7 +123,7 @@ describe("twitsnap likes", () => {
     await api
       .post("/api/twits/" + newTwitSnap.id + "/like")
       .send({ likedBy: testTwitSnap.createdBy })
-      .expect(500);
+      .expect(400);
   });
 
 
