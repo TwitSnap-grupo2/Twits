@@ -126,6 +126,26 @@ describe("twitsnap likes", () => {
       .expect(400);
   });
 
+  test("twitsnap like can be removed", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+    await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/like")
+      .send({ likedBy: testTwitSnap.createdBy })
+      .expect(201);
+
+    await api
+      .delete("/api/twits/" + newTwitSnap.id + "/like")
+      .send({ likedBy: testTwitSnap.createdBy })
+      .expect(204);
+  }
+  );
+
 
 
 });

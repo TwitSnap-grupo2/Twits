@@ -25,10 +25,15 @@ const getTwitSnapLike = async (getLike: LikeSchema): Promise<Array<SelectLike>> 
   return await db.getTwitSnapLike(getLike);
 }
 
+const deleteTwitSnapLike = async(like: LikeSchema): Promise<void> => {
+  return await db.deleteTwitSnapLike(like);
+}
+
 export default {
   getTwitSnaps,
   createTwitSnap,
   likeTwitSnap,
   getTwitSnap,
-  getTwitSnapLike
+  getTwitSnapLike,
+  deleteTwitSnapLike
 };

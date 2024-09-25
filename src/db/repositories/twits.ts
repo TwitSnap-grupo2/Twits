@@ -44,7 +44,6 @@ const likeTwitSnap = async (newLike: LikeSchema): Promise<SelectLike | null> => 
 
 
   const result = await getTwitSnapLike(newLike)
-  console.log(result)
   if (result.length > 0) {
     throw new Error("Already liked")
   }
@@ -70,6 +69,14 @@ const deleteTwitSnapLikes = async () => {
   await db.delete(likeTwitSnapTable)
 };
 
+const deleteTwitSnapLike = async (like: LikeSchema): Promise<void> => {
+  if (!like.twitsnapId || !like.likedBy) {
+    throw new Error("invalid parameters")
+  }
+  await db.delete(likeTwitSnapTable).where(and(eq(likeTwitSnapTable.twitsnapId, like.twitsnapId), eq(likeTwitSnapTable.likedBy, like.likedBy)))
+}
+
+
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
   getTwitSnap,
@@ -78,4 +85,5 @@ export default {
   likeTwitSnap,
   deleteTwitSnapLikes, 
   getTwitSnapLike,
+  deleteTwitSnapLike
 };

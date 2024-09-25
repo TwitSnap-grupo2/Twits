@@ -122,4 +122,18 @@ router.get("/:id/like", async (req, res, next) => {
 );
 
 
+router.delete("/:id/like", async (req, res, next) => {
+  try {
+    const result = likeTwitSnapSchema.parse(req.body);
+    const twitsnapId = req.params.id;
+    const schema: LikeSchema = { ...result, twitsnapId};
+    const twitSnapLikes = await twitSnapsService.deleteTwitSnapLike(schema);
+    res.status(204).send();
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+);
+
+
 export default router;
