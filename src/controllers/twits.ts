@@ -83,7 +83,6 @@ router.post("/:id/like", async (req, res, next) => {
     const result = likeTwitSnapSchema.parse(req.body);
     const twitsnapId = req.params.id;
     const schema: LikeSchema = { ...result, twitsnapId};
-
     const like: SelectLike | null = await twitSnapsService.likeTwitSnap(schema);
     
 
@@ -96,17 +95,15 @@ router.post("/:id/like", async (req, res, next) => {
 
     res.status(201).json(like);
   } catch (err: unknown) {
-    
+
     next(err);
   }
 });
 
 router.get("/:id/like", async (req, res, next) => {
   try {
-    const result = likeTwitSnapSchema.parse(req.body);
     const twitsnapId = req.params.id;
-    const schema: LikeSchema = { ...result, twitsnapId};
-    const twitSnapLikes = await twitSnapsService.getTwitSnapLike(schema);
+    const twitSnapLikes = await twitSnapsService.getTwitSnapLikes(twitsnapId);
     
 
     res.status(200).json(twitSnapLikes);

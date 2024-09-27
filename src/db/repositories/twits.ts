@@ -42,12 +42,6 @@ const deleteTwitsnaps = async () => {
 
 const likeTwitSnap = async (newLike: LikeSchema): Promise<SelectLike | null> => {
 
-
-  const result = await getTwitSnapLike(newLike)
-  if (result.length > 0) {
-    throw new Error("Already liked")
-  }
-
   return db
     .insert(likeTwitSnapTable)
     .values(newLike)
@@ -55,14 +49,12 @@ const likeTwitSnap = async (newLike: LikeSchema): Promise<SelectLike | null> => 
     .then((result) => (result.length > 0 ? result[0] : null));
 }
 
-const getTwitSnapLike = async (getLike: LikeSchema): Promise<Array<SelectLike>> => {
-  if (!getLike.twitsnapId || !getLike.likedBy) {
-    throw new Error("invalid parameters")
-  }
+const getTwitSnapLikes = async (twitsnapId: string): Promise<Array<SelectLike>> => {
+
   return db
     .select()
     .from(likeTwitSnapTable)
-    .where(and(eq(likeTwitSnapTable.twitsnapId, getLike.twitsnapId), eq(likeTwitSnapTable.likedBy, getLike.likedBy)))
+    .where(eq(likeTwitSnapTable.twitsnapId, twitsnapId))
 }
 
 const deleteTwitSnapLikes = async () => {
@@ -73,7 +65,12 @@ const deleteTwitSnapLike = async (like: LikeSchema): Promise<void> => {
   if (!like.twitsnapId || !like.likedBy) {
     throw new Error("invalid parameters")
   }
-  await db.delete(likeTwitSnapTable).where(and(eq(likeTwitSnapTable.twitsnapId, like.twitsnapId), eq(likeTwitSnapTable.likedBy, like.likedBy)))
+  const res = await db.delete(likeTwitSnapTable).where(and(eq(likeTwitSnapTable.twitsnapId, like.twitsnapId), eq(likeTwitSnapTable.likedBy, like.likedBy)))
+  .returning()
+  if (res.length === 0) {
+    throw new Error("TwitSnap like not found")
+  }
+
 }
 
 
@@ -84,6 +81,6 @@ export default {
   deleteTwitsnaps,
   likeTwitSnap,
   deleteTwitSnapLikes, 
-  getTwitSnapLike,
+  getTwitSnapLikes,
   deleteTwitSnapLike
 };
