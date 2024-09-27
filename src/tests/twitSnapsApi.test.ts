@@ -146,6 +146,60 @@ describe("twitsnap likes", () => {
   }
   );
 
+  test("twitsnap like can be removed only once", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+    await twitSnapService.createTwitSnap(testTwitSnap);
 
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/like")
+      .send({ likedBy: testTwitSnap.createdBy })
+      .expect(201);
+
+    await api
+      .delete("/api/twits/" + newTwitSnap.id + "/like")
+      .send({ likedBy: testTwitSnap.createdBy })
+      .expect(204);
+
+    await api
+      .delete("/api/twits/" + newTwitSnap.id + "/like")
+      .send({ likedBy: testTwitSnap.createdBy })
+      .expect(400);
+
+  }
+  );
+
+  test("all twitsnap likes can be obtained", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+    await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/like")
+      .send({ likedBy: testTwitSnap.createdBy })
+      .expect(201);
+
+    await api
+    .post("/api/twits/" + newTwitSnap.id + "/like")
+    .send({ likedBy: "12345678-1234-1234-1234-123456789012" })
+    .expect(201);
+
+    const response = await api
+      .get("/api/twits/" + newTwitSnap.id + "/like")
+      .expect(200);
+
+    const data = response.body;
+
+    expect(data).toHaveLength(2);
+  }
+);
+
+  
 
 });
