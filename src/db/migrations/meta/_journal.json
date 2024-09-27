@@ -29,6 +29,13 @@
       "when": 1727144134900,
       "tag": "0003_empty_grey_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1727461538233,
+      "tag": "0004_yummy_scourge",
+      "breakpoints": true
     }
   ]
 }

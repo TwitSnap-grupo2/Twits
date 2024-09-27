@@ -3,6 +3,7 @@ import twitSnapsService from "../services/twits";
 import { z } from "zod";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
+import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
 
 const router = Router();
 
@@ -14,6 +15,10 @@ const newTwitSnapSchema = z.object({
 
 const likeTwitSnapSchema = z.object({
   likedBy: z.string().uuid(),
+});
+
+const snapshareTwitSnapSchema = z.object({
+  sharedBy: z.string().uuid(),
 });
 
 router.get("/", async (_req, res, next) => {
@@ -126,6 +131,20 @@ router.delete("/:id/like", async (req, res, next) => {
     const schema: LikeSchema = { ...result, twitsnapId};
     const twitSnapLikes = await twitSnapsService.deleteTwitSnapLike(schema);
     res.status(204).send();
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+);
+
+
+router.post("/:id/share", async (req, res, next) => {
+  try {
+    const result = snapshareTwitSnapSchema.parse(req.body);
+    const twitsnapId = req.params.id;
+    const snapShare: InsertSnapshare = { ...result, twitsnapId};
+    const newSnapShare: SelectSnapshare | null = await twitSnapsService.createSnapshare(snapShare);
+    res.status(201).json(newSnapShare);
   } catch (err: unknown) {
     next(err)
   }

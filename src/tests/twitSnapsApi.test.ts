@@ -85,7 +85,7 @@ describe("twitsnaps", () => {
 
 describe("twitsnap likes", () => {
   beforeEach(async () => {
-    await twitSnapRepository.deleteTwitSnapLikes();
+    await twitSnapRepository.deleteAllTwitSnapLikes();
   });
 
   test("twitsnap can be liked", async () => {
@@ -169,8 +169,8 @@ describe("twitsnap likes", () => {
       .send({ likedBy: testTwitSnap.createdBy })
       .expect(400);
 
-  }
-  );
+  })
+});
 
   test("all twitsnap likes can be obtained", async () => {
     const newTwitSnap: SelectTwitsnap | null =
@@ -200,6 +200,37 @@ describe("twitsnap likes", () => {
   }
 );
 
-  
+describe("snapshares", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteSnapshares();
+  });
+
+  test("can be created", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+    await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const response = await api
+      .post("/api/twits/" + newTwitSnap.id + "/share")
+      .send({ sharedBy: testTwitSnap.createdBy })
+      .expect(201);
+
+    const data = response.body;
+
+    expect(data.twitsnapId).toBe(newTwitSnap.id);
+    expect(data.sharedBy).toBe(testTwitSnap.createdBy);
+    expect(data.createdAt).toBeDefined();
+  });
+
+  test("cannot be created if twitsnap does not exist", async () => {
+    await api
+      .post("/api/twits/12345678-1234-1234-1234-123456789012/share")
+      .send({ sharedBy: testTwitSnap.createdBy })
+      .expect(400);
+  }
+  );
 
 });

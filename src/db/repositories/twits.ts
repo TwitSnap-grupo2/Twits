@@ -7,6 +7,7 @@ import {
 import { db } from "../setup";
 import { and, desc, eq} from "drizzle-orm";
 import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
+import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/snapshareSchema";
 
 const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
   return await db
@@ -41,7 +42,6 @@ const deleteTwitsnaps = async () => {
 };
 
 const likeTwitSnap = async (newLike: LikeSchema): Promise<SelectLike | null> => {
-
   return db
     .insert(likeTwitSnapTable)
     .values(newLike)
@@ -57,7 +57,7 @@ const getTwitSnapLikes = async (twitsnapId: string): Promise<Array<SelectLike>> 
     .where(eq(likeTwitSnapTable.twitsnapId, twitsnapId))
 }
 
-const deleteTwitSnapLikes = async () => {
+const deleteAllTwitSnapLikes = async () => {
   await db.delete(likeTwitSnapTable)
 };
 
@@ -70,8 +70,20 @@ const deleteTwitSnapLike = async (like: LikeSchema): Promise<void> => {
   if (res.length === 0) {
     throw new Error("TwitSnap like not found")
   }
-
 }
+
+const createSnapshare = async (newSnapshare: InsertSnapshare): Promise<SelectSnapshare | null> => {
+  return db
+    .insert(snapshareTable)
+    .values(newSnapshare)
+    .returning()
+    .then((result) => (result.length > 0 ? result[0] : null));
+}
+
+const deleteSnapshares = async () => {
+  await db.delete(snapshareTable);
+}
+
 
 
 export default {
@@ -80,7 +92,9 @@ export default {
   createTwitSnap,
   deleteTwitsnaps,
   likeTwitSnap,
-  deleteTwitSnapLikes, 
+  deleteAllTwitSnapLikes, 
   getTwitSnapLikes,
-  deleteTwitSnapLike
+  deleteTwitSnapLike,
+  createSnapshare,
+  deleteSnapshares
 };
