@@ -151,5 +151,18 @@ router.post("/:id/share", async (req, res, next) => {
 }
 );
 
+router.delete("/:id/share", async (req, res, next) => {
+  try {
+    const result = snapshareTwitSnapSchema.parse(req.body);
+    const twitsnapId = req.params.id;
+    const schema: InsertSnapshare = { ...result, twitsnapId};
+    await twitSnapsService.deleteSnapshare(schema);
+    res.status(204).send();
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+);
+
 
 export default router;

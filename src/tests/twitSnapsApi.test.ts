@@ -233,4 +233,23 @@ describe("snapshares", () => {
   }
   );
 
+  test("can be removed", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+    await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/share")
+      .send({ sharedBy: testTwitSnap.createdBy })
+      .expect(201);
+
+    await api
+      .delete("/api/twits/" + newTwitSnap.id + "/share")
+      .send({ sharedBy: testTwitSnap.createdBy })
+      .expect(204);
+  }
+  );
 });

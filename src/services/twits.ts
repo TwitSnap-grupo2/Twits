@@ -4,7 +4,7 @@ import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
 
-const getTwitSnaps = async (): Promise<Array<TwitsAndShares>> => {
+const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return await db.getTwitSnaps();
 };
 
@@ -42,6 +42,10 @@ const createSnapshare = async (newSnapshare: InsertSnapshare): Promise<SelectSna
   return result;
 }
 
+const deleteSnapshare = async (snapshare: InsertSnapshare): Promise<void> => {
+  return await db.deleteSnapshare(snapshare);
+}
+
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -50,4 +54,5 @@ export default {
   getTwitSnapLikes,
   deleteTwitSnapLike,
   createSnapshare,
+  deleteSnapshare
 };

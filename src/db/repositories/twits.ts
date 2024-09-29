@@ -13,30 +13,31 @@ import { unionAll } from "drizzle-orm/mysql-core";
 
 
 
-const getTwitSnapsOrderedByDate = async (): Promise<Array<TwitsAndShares>> => {
-  const originalTwits = await db.select({
-  id: twitSnapsTable.id,
-  message: twitSnapsTable.message,
-  createdAt: twitSnapsTable.createdAt,
-  createdBy: twitSnapsTable.createdBy,
-  sharedBy: sql<string | null>`NULL`
-}).from(twitSnapsTable);
+const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
+//   const originalTwits = await db.select({
+//   id: twitSnapsTable.id,
+//   message: twitSnapsTable.message,
+//   createdAt: twitSnapsTable.createdAt,
+//   createdBy: twitSnapsTable.createdBy,
+//   sharedBy: sql<string | null>`NULL`
+// }).from(twitSnapsTable);
 
-  const retweetedTwits = await db.select({
-    id: twitSnapsTable.id,
-    message: twitSnapsTable.message,
-    createdBy: twitSnapsTable.createdBy,
-    sharedBy: snapshareTable.sharedBy,
-    createdAt: snapshareTable.sharedAt,
-  }).from(snapshareTable)
-    .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
-    .orderBy(desc(snapshareTable.sharedAt))
+//   const retweetedTwits = await db.select({
+//     id: twitSnapsTable.id,
+//     message: twitSnapsTable.message,
+//     createdBy: twitSnapsTable.createdBy,
+//     sharedBy: snapshareTable.sharedBy,
+//     createdAt: snapshareTable.sharedAt,
+//   }).from(snapshareTable)
+//     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
+//     .orderBy(desc(snapshareTable.sharedAt))
 
-    const combinedTwits = [...originalTwits, ...retweetedTwits];
-    combinedTwits.sort((a, b) => {
-      return b.createdAt.getTime() - a.createdAt.getTime();
-    });
-    return combinedTwits;
+//     const combinedTwits = [...originalTwits, ...retweetedTwits];
+//     combinedTwits.sort((a, b) => {
+//       return b.createdAt.getTime() - a.createdAt.getTime();
+//     });
+//     return combinedTwits;
+        return  db.select().from(twitSnapsTable).orderBy(desc(twitSnapsTable.createdAt)) 
   }
 
     
@@ -110,6 +111,16 @@ const deleteSnapshares = async () => {
   await db.delete(snapshareTable);
 }
 
+const deleteSnapshare = async (snapshare: InsertSnapshare): Promise<void> => {
+  if (!snapshare.twitsnapId || !snapshare.sharedBy) {
+    throw new Error("invalid parameters")
+  }
+  const res = await db.delete(snapshareTable).where(and(eq(snapshareTable.twitsnapId, snapshare.twitsnapId), eq(snapshareTable.sharedBy, snapshare.sharedBy)))
+  .returning()
+  if (res.length === 0) {
+    throw new Error("Snapshare not found")
+  }
+}
 
 
 export default {
@@ -122,5 +133,6 @@ export default {
   getTwitSnapLikes,
   deleteTwitSnapLike,
   createSnapshare,
-  deleteSnapshares
+  deleteSnapshares,
+  deleteSnapshare
 };
