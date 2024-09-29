@@ -5,16 +5,42 @@ import {
   twitSnap as twitSnapsTable,
 } from "../schemas/twisnapSchema";
 import { db } from "../setup";
-import { and, desc, eq} from "drizzle-orm";
+import { and, desc, eq, sql} from "drizzle-orm";
 import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/snapshareSchema";
+import { unionAll } from "drizzle-orm/mysql-core";
 
-const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
-  return await db
-    .select()
-    .from(twitSnapsTable)
-    .orderBy(desc(twitSnapsTable.createdAt));
-};
+
+
+
+const getTwitSnapsOrderedByDate = async (): Promise<Array<TwitsAndShares>> => {
+  const originalTwits = await db.select({
+  id: twitSnapsTable.id,
+  message: twitSnapsTable.message,
+  createdAt: twitSnapsTable.createdAt,
+  createdBy: twitSnapsTable.createdBy,
+  sharedBy: sql<string | null>`NULL`
+}).from(twitSnapsTable);
+
+  const retweetedTwits = await db.select({
+    id: twitSnapsTable.id,
+    message: twitSnapsTable.message,
+    createdBy: twitSnapsTable.createdBy,
+    sharedBy: snapshareTable.sharedBy,
+    createdAt: snapshareTable.sharedAt,
+  }).from(snapshareTable)
+    .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
+    .orderBy(desc(snapshareTable.sharedAt))
+
+    const combinedTwits = [...originalTwits, ...retweetedTwits];
+    combinedTwits.sort((a, b) => {
+      return b.createdAt.getTime() - a.createdAt.getTime();
+    });
+    return combinedTwits;
+  }
+
+    
+
 
 const getTwitSnap = async (id: string): Promise<Array<SelectTwitsnap>> => {
   return db

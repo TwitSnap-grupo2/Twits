@@ -9,7 +9,7 @@ export const snapshareTable = pgTable(
             .references(() => twitSnap.id, { onDelete: "cascade" })
             .notNull(),
         sharedBy: uuid("shared_by"),
-        createdAt: timestamp("created_at").defaultNow().notNull(),
+        sharedAt: timestamp("created_at").defaultNow().notNull(),
     }
 )
 

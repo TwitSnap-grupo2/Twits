@@ -4,7 +4,7 @@ import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
 
-const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
+const getTwitSnaps = async (): Promise<Array<TwitsAndShares>> => {
   return await db.getTwitSnaps();
 };
 

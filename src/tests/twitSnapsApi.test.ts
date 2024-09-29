@@ -222,7 +222,7 @@ describe("snapshares", () => {
 
     expect(data.twitsnapId).toBe(newTwitSnap.id);
     expect(data.sharedBy).toBe(testTwitSnap.createdBy);
-    expect(data.createdAt).toBeDefined();
+    expect(data.sharedAt).toBeDefined();
   });
 
   test("cannot be created if twitsnap does not exist", async () => {
