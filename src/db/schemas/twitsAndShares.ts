@@ -24,4 +24,5 @@ type TwitsAndShares = {
     createdAt: Date;
     createdBy: string;
     sharedBy: string | null;
+    isPrivate: boolean;
   }

@@ -46,6 +46,12 @@ const deleteSnapshare = async (snapshare: InsertSnapshare): Promise<void> => {
   return await db.deleteSnapshare(snapshare);
 }
 
+const getFeed = async (userId: string, timestamp_start: Date, limit: number): Promise<Array<TwitsAndShares>> => {
+  return await db.getFeed(userId, timestamp_start, limit);
+}
+
+
+
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -54,5 +60,6 @@ export default {
   getTwitSnapLikes,
   deleteTwitSnapLike,
   createSnapshare,
-  deleteSnapshare
+  deleteSnapshare,
+  getFeed
 };

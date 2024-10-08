@@ -21,6 +21,12 @@ const snapshareTwitSnapSchema = z.object({
   sharedBy: z.string().uuid(),
 });
 
+const feedSchema = z.object({
+  userId: z.string().uuid(),
+  timestamp_start: z.date(),
+  limit: z.number(),
+})
+
 router.get("/", async (_req, res, next) => {
   try {
     const twitSnaps = await twitSnapsService.getTwitSnaps();
@@ -164,5 +170,24 @@ router.delete("/:id/share", async (req, res, next) => {
 }
 );
 
+router.get("/feed", async (req, res, next) => {
+  try {
+    console.log(req.body)
+    // const result:  = feedSchema.safeParse(req.body);
+    // if (!result.success) {
+    //   next({
+    //     name: "FeedError",
+    //     message: "Error while trying to get feed",
+    //   });
+  
+    // }
+    const feed = await twitSnapsService.getFeed(req.body.userId, req.body.timestamp_start, req.body.limit);
+    res.status(200).json(feed);
+  }
+  catch (err: unknown) {
+    next(err)
+  }
+}
+);
 
 export default router;
