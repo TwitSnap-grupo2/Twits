@@ -22,9 +22,8 @@ const snapshareTwitSnapSchema = z.object({
 });
 
 const feedSchema = z.object({
-  userId: z.string().uuid(),
-  timestamp_start: z.date(),
-  limit: z.number(),
+  timestamp_start: z.string().datetime(),
+  limit: z.coerce.number().int(),
 })
 
 router.get("/", async (_req, res, next) => {
@@ -41,8 +40,23 @@ router.get("/", async (_req, res, next) => {
   }
 });
 
+router.get("/feed", async (req, res, next) => {
+  try {
+    console.log("req.query", req.query);
+    const result = feedSchema.parse(req.query);
+    const date = new Date(result.timestamp_start);
+    const feed = await twitSnapsService.getFeed(date, result.limit);
+    res.status(200).json(feed);
+  } catch (err: unknown) {
+    next(err);
+  }
+}
+);
+
+
 router.get("/:id", async (req, res, next) => {
   try {
+    console.log("req.params.id", req.params.id);
     const twitSnap = await twitSnapsService.getTwitSnap(req.params.id);
 
     if (!twitSnap) {
@@ -157,6 +171,8 @@ router.post("/:id/share", async (req, res, next) => {
 }
 );
 
+
+
 router.delete("/:id/share", async (req, res, next) => {
   try {
     const result = snapshareTwitSnapSchema.parse(req.body);
@@ -170,24 +186,6 @@ router.delete("/:id/share", async (req, res, next) => {
 }
 );
 
-router.get("/feed", async (req, res, next) => {
-  try {
-    console.log(req.body)
-    // const result:  = feedSchema.safeParse(req.body);
-    // if (!result.success) {
-    //   next({
-    //     name: "FeedError",
-    //     message: "Error while trying to get feed",
-    //   });
-  
-    // }
-    const feed = await twitSnapsService.getFeed(req.body.userId, req.body.timestamp_start, req.body.limit);
-    res.status(200).json(feed);
-  }
-  catch (err: unknown) {
-    next(err)
-  }
-}
-);
+
 
 export default router;

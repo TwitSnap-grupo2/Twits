@@ -1,4 +1,4 @@
-import { pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
 import { twitSnap } from "./twisnapSchema";
 
 
@@ -8,8 +8,13 @@ export const snapshareTable = pgTable(
         twitsnapId: uuid("twitsnap_id")
             .references(() => twitSnap.id, { onDelete: "cascade" })
             .notNull(),
-        sharedBy: uuid("shared_by"),
+        sharedBy: uuid("shared_by").notNull(),
         sharedAt: timestamp("created_at").defaultNow().notNull(),
+    },
+    (table) => {
+        return {
+          pk: primaryKey({ columns: [table.twitsnapId, table.sharedBy] }),
+        };
     }
 )
 

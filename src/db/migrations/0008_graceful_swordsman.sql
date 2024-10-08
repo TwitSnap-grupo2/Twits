@@ -1,0 +1,1 @@
+ALTER TABLE "snapshares" ALTER COLUMN "shared_by" SET NOT NULL;

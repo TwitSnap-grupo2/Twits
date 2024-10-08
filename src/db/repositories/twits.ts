@@ -9,6 +9,7 @@ import { and, desc, eq, gt, gte, lt, sql} from "drizzle-orm";
 import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/snapshareSchema";
 import { unionAll } from "drizzle-orm/mysql-core";
+import TwitsAndShares from "../schemas/twitsAndShares";
 
 
 
@@ -48,7 +49,6 @@ const getTwitSnap = async (id: string): Promise<Array<SelectTwitsnap>> => {
     .select()
     .from(twitSnapsTable)
     .where(eq(twitSnapsTable.createdBy, id))
-    .orderBy(desc(twitSnapsTable.createdAt))
 };
 
 const createTwitSnap = async (
@@ -122,7 +122,7 @@ const deleteSnapshare = async (snapshare: InsertSnapshare): Promise<void> => {
   }
 }
 
-const getFeed = async (userId: string, timestamp_start: Date, limit: number): Promise<Array<TwitsAndShares>> => {
+const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<TwitsAndShares>> => {
   const originalTwits = await db.select({
     id: twitSnapsTable.id,
     message: twitSnapsTable.message,
@@ -131,8 +131,9 @@ const getFeed = async (userId: string, timestamp_start: Date, limit: number): Pr
     sharedBy: sql<string | null>`NULL`,
     isPrivate: twitSnapsTable.isPrivate
   }).from(twitSnapsTable)
-    .where(and(eq(twitSnapsTable.createdBy, userId), lt(twitSnapsTable.createdAt, timestamp_start)))
+    .where(lt(twitSnapsTable.createdAt, timestamp_start))
     .limit(limit);
+  
 
   const retweetedTwits = await db.select({
     id: twitSnapsTable.id,
@@ -143,7 +144,7 @@ const getFeed = async (userId: string, timestamp_start: Date, limit: number): Pr
     isPrivate: twitSnapsTable.isPrivate
   }).from(snapshareTable)
     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
-    .where(and(eq(snapshareTable.sharedBy, userId),lt(snapshareTable.sharedAt, timestamp_start)))
+    .where(lt(snapshareTable.sharedAt, timestamp_start))
     .limit(limit);
 
   const combinedTwits = [...originalTwits, ...retweetedTwits];

@@ -253,3 +253,17 @@ describe("snapshares", () => {
   }
   );
 });
+
+describe("feed", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteTwitsnaps();
+  });
+
+  test("can be obtained when there are no twitsnaps", async () => {
+    const response = await api
+      .get("/api/twits/feed?timestamp_start=" + new Date().toISOString() + "&limit=10")
+      .expect(200);
+    expect(response.body).toHaveLength(0);
+  }
+  );
+});

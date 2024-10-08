@@ -26,3 +26,5 @@ type TwitsAndShares = {
     sharedBy: string | null;
     isPrivate: boolean;
   }
+
+export default TwitsAndShares;
