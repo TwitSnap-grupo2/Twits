@@ -1,0 +1,212 @@
+{
+  "id": "51356439-4183-4a00-89fa-3b60863bfb29",
+  "prevId": "2f826cc8-efb8-4950-a078-0eef40ef18a2",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.hashtags": {
+      "name": "hashtags",
+      "schema": "",
+      "columns": {
+        "twitsnap_id": {
+          "name": "twitsnap_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "hashtag_twitsnap_idx": {
+          "name": "hashtag_twitsnap_idx",
+          "columns": [
+            {
+              "expression": "twitsnap_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "hashtags_twitsnap_id_twitsnaps_id_fk": {
+          "name": "hashtags_twitsnap_id_twitsnaps_id_fk",
+          "tableFrom": "hashtags",
+          "tableTo": "twitsnaps",
+          "columnsFrom": [
+            "twitsnap_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "hashtags_twitsnap_id_name_pk": {
+          "name": "hashtags_twitsnap_id_name_pk",
+          "columns": [
+            "twitsnap_id",
+            "name"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.likes": {
+      "name": "likes",
+      "schema": "",
+      "columns": {
+        "twitsnap_id": {
+          "name": "twitsnap_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "liked_by": {
+          "name": "liked_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "likes_twitsnap_id_twitsnaps_id_fk": {
+          "name": "likes_twitsnap_id_twitsnaps_id_fk",
+          "tableFrom": "likes",
+          "tableTo": "twitsnaps",
+          "columnsFrom": [
+            "twitsnap_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "likes_twitsnap_id_liked_by_pk": {
+          "name": "likes_twitsnap_id_liked_by_pk",
+          "columns": [
+            "twitsnap_id",
+            "liked_by"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.snapshares": {
+      "name": "snapshares",
+      "schema": "",
+      "columns": {
+        "twitsnap_id": {
+          "name": "twitsnap_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shared_by": {
+          "name": "shared_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "snapshares_twitsnap_id_twitsnaps_id_fk": {
+          "name": "snapshares_twitsnap_id_twitsnaps_id_fk",
+          "tableFrom": "snapshares",
+          "tableTo": "twitsnaps",
+          "columnsFrom": [
+            "twitsnap_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.twitsnaps": {
+      "name": "twitsnaps",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "content": {
+          "name": "content",
+          "type": "varchar(280)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_private": {
+          "name": "is_private",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

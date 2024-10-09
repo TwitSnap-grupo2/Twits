@@ -29,6 +29,41 @@
       "when": 1727144134900,
       "tag": "0003_empty_grey_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1727461538233,
+      "tag": "0004_yummy_scourge",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1727590260826,
+      "tag": "0005_clammy_ben_urich",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1727590422939,
+      "tag": "0006_elite_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1728357007287,
+      "tag": "0007_messy_black_cat",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1728357162367,
+      "tag": "0008_graceful_swordsman",
+      "breakpoints": true
     }
   ]
 }
