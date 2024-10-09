@@ -371,8 +371,44 @@ describe("feed", () => {
     expect(data[0].message).toBe(second_twitsnap.message);
     expect(data[0].createdBy).toBe(second_twitsnap.createdBy);
     expect(data[0].createdAt).toBe(second_twitsnap.createdAt.toISOString());
-
-
   }
   );
+
+  test("can be obtained with likes and shares count", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await twitSnapService.createTwitSnap({
+      message: "This is another twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapService.createSnapshare({
+      twitsnapId: newTwitSnap.id,
+      sharedBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapService.likeTwitSnap({
+      likedBy: "12345678-1234-1234-1234-123456789012",
+      twitsnapId: newTwitSnap.id,
+    });
+
+    const response = await api
+      .get("/api/twits/feed?timestamp_start=" + new Date().toISOString() + "&limit=10")
+      .expect(200);
+
+    const data = response.body;
+
+    expect(data).toHaveLength(3);
+
+    expect(data[0].id).toBe(newTwitSnap.id);
+    expect(data[0].message).toBe(newTwitSnap.message);
+    expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
+    expect(data[0].sharedBy).toBe("12345678-1234-1234-1234-123456789012");
+    expect(data[0].likes_count).toBe("1");
+    expect(data[0].shares_count).toBe("1");
+  });
 });

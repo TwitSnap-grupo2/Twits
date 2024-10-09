@@ -14,30 +14,7 @@ import TwitsAndShares from "../schemas/twitsAndShares";
 
 
 const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
-//   const originalTwits = await db.select({
-//   id: twitSnapsTable.id,
-//   message: twitSnapsTable.message,
-//   createdAt: twitSnapsTable.createdAt,
-//   createdBy: twitSnapsTable.createdBy,
-//   sharedBy: sql<string | null>`NULL`
-// }).from(twitSnapsTable);
-
-//   const retweetedTwits = await db.select({
-//     id: twitSnapsTable.id,
-//     message: twitSnapsTable.message,
-//     createdBy: twitSnapsTable.createdBy,
-//     sharedBy: snapshareTable.sharedBy,
-//     createdAt: snapshareTable.sharedAt,
-//   }).from(snapshareTable)
-//     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
-//     .orderBy(desc(snapshareTable.sharedAt))
-
-//     const combinedTwits = [...originalTwits, ...retweetedTwits];
-//     combinedTwits.sort((a, b) => {
-//       return b.createdAt.getTime() - a.createdAt.getTime();
-//     });
-//     return combinedTwits;
-        return  db.select().from(twitSnapsTable).orderBy(desc(twitSnapsTable.createdAt)) 
+      return  db.select().from(twitSnapsTable).orderBy(desc(twitSnapsTable.createdAt)) 
   }
 
     
@@ -128,7 +105,9 @@ const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<Twit
     createdAt: twitSnapsTable.createdAt,
     createdBy: twitSnapsTable.createdBy,
     sharedBy: sql<string | null>`NULL`,
-    isPrivate: twitSnapsTable.isPrivate
+    isPrivate: twitSnapsTable.isPrivate,
+    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`
   }).from(twitSnapsTable)
     .where(lt(twitSnapsTable.createdAt, timestamp_start))
     .orderBy(desc(twitSnapsTable.createdAt))
@@ -141,14 +120,15 @@ const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<Twit
     createdBy: twitSnapsTable.createdBy,
     sharedBy: snapshareTable.sharedBy,
     createdAt: snapshareTable.sharedAt,
-    isPrivate: twitSnapsTable.isPrivate
+    isPrivate: twitSnapsTable.isPrivate,
+    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`
   }).from(snapshareTable)
     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
     .where(lt(snapshareTable.sharedAt, timestamp_start))
     .orderBy(desc(snapshareTable.sharedAt))
     .limit(limit);
 
-  console.log(retweetedTwits);
   const combinedTwits = [...originalTwits, ...retweetedTwits];
   combinedTwits.sort((a, b) => {
     return b.createdAt.getTime() - a.createdAt.getTime();

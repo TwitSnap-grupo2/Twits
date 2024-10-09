@@ -25,6 +25,8 @@ type TwitsAndShares = {
     createdBy: string;
     sharedBy: string | null;
     isPrivate: boolean;
+    likes_count: number;
+    shares_count: number;
   }
 
 export default TwitsAndShares;
