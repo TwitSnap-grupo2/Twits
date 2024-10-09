@@ -42,7 +42,6 @@ router.get("/", async (_req, res, next) => {
 
 router.get("/feed", async (req, res, next) => {
   try {
-    console.log("req.query", req.query);
     const result = feedSchema.parse(req.query);
     const date = new Date(result.timestamp_start);
     const feed = await twitSnapsService.getFeed(date, result.limit);
@@ -56,7 +55,6 @@ router.get("/feed", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    console.log("req.params.id", req.params.id);
     const twitSnap = await twitSnapsService.getTwitSnap(req.params.id);
 
     if (!twitSnap) {

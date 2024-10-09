@@ -8,7 +8,6 @@ import { db } from "../setup";
 import { and, desc, eq, gt, gte, lt, sql} from "drizzle-orm";
 import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/snapshareSchema";
-import { unionAll } from "drizzle-orm/mysql-core";
 import TwitsAndShares from "../schemas/twitsAndShares";
 
 
@@ -132,6 +131,7 @@ const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<Twit
     isPrivate: twitSnapsTable.isPrivate
   }).from(twitSnapsTable)
     .where(lt(twitSnapsTable.createdAt, timestamp_start))
+    .orderBy(desc(twitSnapsTable.createdAt))
     .limit(limit);
   
 
@@ -145,12 +145,15 @@ const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<Twit
   }).from(snapshareTable)
     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
     .where(lt(snapshareTable.sharedAt, timestamp_start))
+    .orderBy(desc(snapshareTable.sharedAt))
     .limit(limit);
 
+  console.log(retweetedTwits);
   const combinedTwits = [...originalTwits, ...retweetedTwits];
   combinedTwits.sort((a, b) => {
     return b.createdAt.getTime() - a.createdAt.getTime();
   });
+  combinedTwits.splice(limit);
   return combinedTwits;
 }
 

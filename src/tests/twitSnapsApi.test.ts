@@ -5,6 +5,7 @@ import { testTwitSnap } from "./testHelper";
 import twitSnapRepository from "../db/repositories/twits";
 import twitSnapService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
+import exp from "constants";
 
 const api = supertest(app);
 
@@ -257,6 +258,7 @@ describe("snapshares", () => {
 describe("feed", () => {
   beforeEach(async () => {
     await twitSnapRepository.deleteTwitsnaps();
+    await twitSnapRepository.deleteSnapshares();
   });
 
   test("can be obtained when there are no twitsnaps", async () => {
@@ -264,6 +266,113 @@ describe("feed", () => {
       .get("/api/twits/feed?timestamp_start=" + new Date().toISOString() + "&limit=10")
       .expect(200);
     expect(response.body).toHaveLength(0);
+  }
+  );
+
+  test("can be obtained when there are twitsnaps", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+    await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const newTwitSnap2: SelectTwitsnap | null = await twitSnapService.createTwitSnap({
+      message: "This is another twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    if (!newTwitSnap2) {
+      throw new Error("Error creating twitsnap 2");
+    }
+
+    const response = await api
+      .get("/api/twits/feed?timestamp_start=" + new Date().toISOString() + "&limit=10")
+      .expect(200);
+
+    const data = response.body;
+
+    expect(data).toHaveLength(2);
+
+    expect(data[0].id).toBe(newTwitSnap2.id);
+    expect(data[0].message).toBe(newTwitSnap2.message);
+    expect(data[0].createdBy).toBe(newTwitSnap2.createdBy);
+    expect(data[0].createdAt).toBe(newTwitSnap2.createdAt.toISOString());
+
+    expect(data[1].id).toBe(newTwitSnap.id);
+    expect(data[1].message).toBe(newTwitSnap.message);
+    expect(data[1].createdBy).toBe(newTwitSnap.createdBy);
+    expect(data[1].createdAt).toBe(newTwitSnap.createdAt.toISOString());
+  })
+
+  test("can be obtained when there are shared twitsnaps", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+    await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await twitSnapService.createTwitSnap({
+      message: "This is another twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapService.createSnapshare({
+      twitsnapId: newTwitSnap.id,
+      sharedBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    const response = await api
+      .get("/api/twits/feed?timestamp_start=" + new Date().toISOString() + "&limit=10")
+      .expect(200);
+
+    const data = response.body;
+
+    expect(data).toHaveLength(3);
+
+    expect(data[0].id).toBe(newTwitSnap.id);
+    expect(data[0].message).toBe(newTwitSnap.message);
+    expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
+    expect(data[0].sharedBy).toBe("12345678-1234-1234-1234-123456789012");
+  }
+  ); 
+
+  test("can be obtained setting a timestamp and limit", async () => {
+    await twitSnapService.createTwitSnap(testTwitSnap);
+
+    const second_twitsnap: SelectTwitsnap | null= await twitSnapService.createTwitSnap({
+      message: "This is another twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    if (!second_twitsnap) {
+      throw new Error("Error creating second twitsnap");
+    }
+
+    const third_twitsnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap({
+      message: "This is a third twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    if (!third_twitsnap) {
+      throw new Error("Error creating third twitsnap");
+    }
+
+    const response = await api
+      .get("/api/twits/feed?timestamp_start=" + third_twitsnap.createdAt.toISOString() + "&limit=1")
+      .expect(200);
+
+    const data = response.body;
+
+    expect(data).toHaveLength(1);
+
+    expect(data[0].id).toBe(second_twitsnap.id);
+    expect(data[0].message).toBe(second_twitsnap.message);
+    expect(data[0].createdBy).toBe(second_twitsnap.createdBy);
+    expect(data[0].createdAt).toBe(second_twitsnap.createdAt.toISOString());
+
+
   }
   );
 });
