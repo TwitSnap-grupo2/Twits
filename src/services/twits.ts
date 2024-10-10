@@ -4,6 +4,7 @@ import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
 import TwitsAndShares from "../db/schemas/twitsAndShares";
+import { SelectMention } from "../db/schemas/mentionsSchema";
 
 const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return await db.getTwitSnaps();
@@ -51,6 +52,21 @@ const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<Twit
   return await db.getFeed(timestamp_start, limit);
 }
 
+const mentionUser = async (twitSnap_id: string, mentionedUser: string): Promise<SelectMention> => {
+  const result = await db.mentionUser(twitSnap_id, mentionedUser);
+  if (!result){
+    throw new Error("TwitSnap not found");
+  }
+  return result;
+}
+
+const getTwitSnapMentions = async (twitSnap_id: string): Promise<Array<SelectMention>> => {
+  return await db.getTwitSnapMentions(twitSnap_id);
+}
+
+const deleteTwitSnapMention = async (twitSnap_id: string, mentionedUser: string): Promise<void> => {
+  return await db.deleteTwitSnapMention(twitSnap_id, mentionedUser);
+}
 
 
 export default {
@@ -62,5 +78,8 @@ export default {
   deleteTwitSnapLike,
   createSnapshare,
   deleteSnapshare,
-  getFeed
+  getFeed,
+  mentionUser,
+  getTwitSnapMentions,
+  deleteTwitSnapMention
 };

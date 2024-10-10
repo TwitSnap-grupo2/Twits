@@ -285,9 +285,10 @@ describe("feed", () => {
     if (!newTwitSnap2) {
       throw new Error("Error creating twitsnap 2");
     }
-
+    const date_actual = new Date()
+    date_actual.setMinutes(date_actual.getMinutes() + 1)
     const response = await api
-      .get("/api/twits/feed?timestamp_start=" + new Date().toISOString() + "&limit=10")
+      .get("/api/twits/feed?timestamp_start=" + date_actual.toISOString()  + "&limit=10")
       .expect(200);
 
     const data = response.body;
@@ -323,8 +324,11 @@ describe("feed", () => {
       sharedBy: "12345678-1234-1234-1234-123456789012",
     });
 
+    const date_actual = new Date()
+    date_actual.setMinutes(date_actual.getMinutes() + 1)
+
     const response = await api
-      .get("/api/twits/feed?timestamp_start=" + new Date().toISOString() + "&limit=10")
+      .get("/api/twits/feed?timestamp_start=" + date_actual.toISOString() + "&limit=10")
       .expect(200);
 
     const data = response.body;
@@ -412,3 +416,59 @@ describe("feed", () => {
     expect(data[0].shares_count).toBe("1");
   });
 });
+
+describe("mentions", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteTwitsnaps()
+    await twitSnapRepository.deleteMentions();
+  }
+  );
+
+  test("can be created", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/mention")
+      .send({ mentionedUser: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+    
+    const res = await twitSnapRepository.getTwitSnapMentions(newTwitSnap.id);
+    expect(res).toHaveLength(1);
+
+    expect(res[0].twitsnapId).toBe(newTwitSnap.id);
+    expect(res[0].userMentionedId).toBe("12345678-1234-1234-1234-123456789012");
+  }
+  );
+
+  test("cannot be created if twitsnap does not exist", async () => {
+    await api
+      .post("/api/twits/12345678-1234-1234-1234-123456789012/mention")
+      .send({ mentionedUser: "12345678-1234-1234-1234-123456789012" })
+      .expect(400);
+  }
+  );
+
+  test("can be removed", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/mention")
+      .send({ mentionedUser: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    await api
+      .delete("/api/twits/" + newTwitSnap.id + "/mention")
+      .send({ mentionedUser: "12345678-1234-1234-1234-123456789012" })
+      .expect(204);
+  }
+);
+})
+
