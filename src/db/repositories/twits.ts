@@ -9,6 +9,7 @@ import { and, desc, eq, gt, gte, lt, sql} from "drizzle-orm";
 import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/snapshareSchema";
 import TwitsAndShares from "../schemas/twitsAndShares";
+import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
 
 
 
@@ -137,6 +138,39 @@ const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<Twit
   return combinedTwits;
 }
 
+const mentionUser = async (twitSnap_id: string, mentionedUser: string): Promise<SelectMention | null> => {
+  return db
+    .insert(mentionsTable)
+    .values({
+      twitsnapId: twitSnap_id,
+      userMentionedId: mentionedUser
+    })
+    .returning()
+    .then((result) => (result.length > 0 ? result[0] : null));
+}
+
+const deleteMentions = async () => {
+  await db.delete(mentionsTable);
+}
+
+const getTwitSnapMentions = async (twitSnap_id: string): Promise<Array<SelectMention>> => {
+  return db
+    .select()
+    .from(mentionsTable)
+    .where(eq(mentionsTable.twitsnapId, twitSnap_id))
+}
+
+const deleteTwitSnapMention = async (twitSnap_id: string, mentionedUser: string): Promise<void> => {
+  if (!twitSnap_id || !mentionedUser) {
+    throw new Error("invalid parameters")
+  }
+  const res = await db.delete(mentionsTable).where(and(eq(mentionsTable.twitsnapId, twitSnap_id), eq(mentionsTable.userMentionedId, mentionedUser)))
+  .returning()
+  if (res.length === 0) {
+    throw new Error("TwitSnap mention not found")
+  }
+}
+
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
@@ -150,5 +184,10 @@ export default {
   createSnapshare,
   deleteSnapshares,
   deleteSnapshare,
-  getFeed
+  getFeed,
+  mentionUser,
+  deleteMentions,
+  getTwitSnapMentions,
+  deleteTwitSnapMention
+
 };

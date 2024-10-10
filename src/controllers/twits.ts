@@ -26,6 +26,10 @@ const feedSchema = z.object({
   limit: z.coerce.number().int(),
 })
 
+const mentionSchema = z.object({
+  mentionedUser: z.string().uuid(),
+})
+
 router.get("/", async (_req, res, next) => {
   try {
     const twitSnaps = await twitSnapsService.getTwitSnaps();
@@ -184,6 +188,40 @@ router.delete("/:id/share", async (req, res, next) => {
 }
 );
 
+router.post("/:id/mention", async (req, res, next) => {
+  try {
+    const result = mentionSchema.parse(req.body);
+    const twitsnapId = req.params.id;
+    const body = await twitSnapsService.mentionUser(twitsnapId, result.mentionedUser);
+    res.status(201).send(body);
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+);
+
+router.get("/:id/mention", async (req, res, next) => {
+  try {
+    const twitsnapId = req.params.id;
+    const mentions = await twitSnapsService.getTwitSnapMentions(twitsnapId);
+    res.status(200).json(mentions);
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+);
+
+router.delete("/:id/mention", async (req, res, next) => {
+  try {
+    const result = mentionSchema.parse(req.body);
+    const twitsnapId = req.params.id;
+    await twitSnapsService.deleteTwitSnapMention(twitsnapId, result.mentionedUser);
+    res.status(204).send();
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+);
 
 
 export default router;
