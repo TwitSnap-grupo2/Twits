@@ -141,8 +141,7 @@ describe("twitsnap likes", () => {
       .expect(201);
 
     await api
-      .delete("/api/twits/" + newTwitSnap.id + "/like")
-      .send({ likedBy: testTwitSnap.createdBy })
+      .delete("/api/twits/" + newTwitSnap.id + "/like?likedBy=" + testTwitSnap.createdBy)
       .expect(204);
   }
   );
@@ -161,13 +160,11 @@ describe("twitsnap likes", () => {
       .expect(201);
 
     await api
-      .delete("/api/twits/" + newTwitSnap.id + "/like")
-      .send({ likedBy: testTwitSnap.createdBy })
+      .delete("/api/twits/" + newTwitSnap.id + "/like?likedBy=" + testTwitSnap.createdBy)
       .expect(204);
 
     await api
-      .delete("/api/twits/" + newTwitSnap.id + "/like")
-      .send({ likedBy: testTwitSnap.createdBy })
+      .delete("/api/twits/" + newTwitSnap.id + "/like?likedBy=" + testTwitSnap.createdBy)
       .expect(400);
 
   })
@@ -248,8 +245,7 @@ describe("snapshares", () => {
       .expect(201);
 
     await api
-      .delete("/api/twits/" + newTwitSnap.id + "/share")
-      .send({ sharedBy: testTwitSnap.createdBy })
+      .delete("/api/twits/" + newTwitSnap.id + "/share?sharedBy=" + testTwitSnap.createdBy)
       .expect(204);
   }
   );
@@ -465,8 +461,7 @@ describe("mentions", () => {
       .expect(201);
 
     await api
-      .delete("/api/twits/" + newTwitSnap.id + "/mention")
-      .send({ mentionedUser: "12345678-1234-1234-1234-123456789012" })
+      .delete("/api/twits/" + newTwitSnap.id + "/mention?mentionedUser=12345678-1234-1234-1234-123456789012")
       .expect(204);
   }
 );

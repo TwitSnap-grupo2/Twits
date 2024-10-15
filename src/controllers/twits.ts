@@ -148,7 +148,7 @@ router.get("/:id/like", async (req, res, next) => {
 
 router.delete("/:id/like", async (req, res, next) => {
   try {
-    const result = likeTwitSnapSchema.parse(req.body);
+    const result = likeTwitSnapSchema.parse(req.query);
     const twitsnapId = req.params.id;
     const schema: LikeSchema = { ...result, twitsnapId};
     const twitSnapLikes = await twitSnapsService.deleteTwitSnapLike(schema);
@@ -177,7 +177,7 @@ router.post("/:id/share", async (req, res, next) => {
 
 router.delete("/:id/share", async (req, res, next) => {
   try {
-    const result = snapshareTwitSnapSchema.parse(req.body);
+    const result = snapshareTwitSnapSchema.parse(req.query);
     const twitsnapId = req.params.id;
     const schema: InsertSnapshare = { ...result, twitsnapId};
     await twitSnapsService.deleteSnapshare(schema);
@@ -213,7 +213,7 @@ router.get("/:id/mention", async (req, res, next) => {
 
 router.delete("/:id/mention", async (req, res, next) => {
   try {
-    const result = mentionSchema.parse(req.body);
+    const result = mentionSchema.parse(req.query);
     const twitsnapId = req.params.id;
     await twitSnapsService.deleteTwitSnapMention(twitsnapId, result.mentionedUser);
     res.status(204).send();
