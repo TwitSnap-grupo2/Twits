@@ -5,7 +5,7 @@ import {
   twitSnap as twitSnapsTable,
 } from "../schemas/twisnapSchema";
 import { db } from "../setup";
-import { and, desc, eq, gt, gte, lt, sql} from "drizzle-orm";
+import { and, desc, eq, gt, gte, inArray, lt, sql} from "drizzle-orm";
 import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/snapshareSchema";
 import TwitsAndShares from "../schemas/twitsAndShares";
@@ -99,7 +99,7 @@ const deleteSnapshare = async (snapshare: InsertSnapshare): Promise<void> => {
   }
 }
 
-const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<TwitsAndShares>> => {
+const getFeed = async (timestamp_start: Date, limit: number, followeds: Array<string>): Promise<Array<TwitsAndShares>> => {
   const originalTwits = await db.select({
     id: twitSnapsTable.id,
     message: twitSnapsTable.message,
@@ -110,7 +110,7 @@ const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<Twit
     likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
     shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`
   }).from(twitSnapsTable)
-    .where(lt(twitSnapsTable.createdAt, timestamp_start))
+    .where(and(lt(twitSnapsTable.createdAt, timestamp_start), inArray(twitSnapsTable.createdBy, followeds)))
     .orderBy(desc(twitSnapsTable.createdAt))
     .limit(limit);
   
@@ -126,7 +126,7 @@ const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<Twit
     shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`
   }).from(snapshareTable)
     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
-    .where(lt(snapshareTable.sharedAt, timestamp_start))
+    .where(and(lt(snapshareTable.sharedAt, timestamp_start), inArray(snapshareTable.sharedBy, followeds)))
     .orderBy(desc(snapshareTable.sharedAt))
     .limit(limit);
 

@@ -48,8 +48,8 @@ const deleteSnapshare = async (snapshare: InsertSnapshare): Promise<void> => {
   return await db.deleteSnapshare(snapshare);
 }
 
-const getFeed = async (timestamp_start: Date, limit: number): Promise<Array<TwitsAndShares>> => {
-  return await db.getFeed(timestamp_start, limit);
+const getFeed = async (timestamp_start: Date, limit: number, followeds: Array<string>): Promise<Array<TwitsAndShares>> => {
+  return await db.getFeed(timestamp_start, limit, followeds);
 }
 
 const mentionUser = async (twitSnap_id: string, mentionedUser: string): Promise<SelectMention> => {

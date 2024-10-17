@@ -6,6 +6,7 @@ import twitSnapRepository from "../db/repositories/twits";
 import twitSnapService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import exp from "constants";
+import { timestamp } from "drizzle-orm/mysql-core";
 
 const api = supertest(app);
 
@@ -258,48 +259,56 @@ describe("feed", () => {
   });
 
   test("can be obtained when there are no twitsnaps", async () => {
+    const body = {
+      timestamp_start: new Date().toISOString(),
+      limit: 10,
+      followeds: [],
+    }
     const response = await api
-      .get("/api/twits/feed?timestamp_start=" + new Date().toISOString() + "&limit=10")
+      .post("/api/twits/feed")
+      .send(body)
       .expect(200);
     expect(response.body).toHaveLength(0);
   }
   );
 
-  test("can be obtained when there are twitsnaps", async () => {
-    const newTwitSnap: SelectTwitsnap | null =
+  test("can be obtained when there are twitsnaps by followeds", async () => {
+    const newTwitSnapNonFollowed: SelectTwitsnap | null =
     await twitSnapService.createTwitSnap(testTwitSnap);
 
-    if (!newTwitSnap) {
+    if (!newTwitSnapNonFollowed) {
       throw new Error("Error creating twitsnap");
     }
 
-    const newTwitSnap2: SelectTwitsnap | null = await twitSnapService.createTwitSnap({
+    const newTwitSnapFollowed: SelectTwitsnap | null = await twitSnapService.createTwitSnap({
       message: "This is another twitsnap",
       createdBy: "12345678-1234-1234-1234-123456789012",
     });
 
-    if (!newTwitSnap2) {
+    if (!newTwitSnapFollowed) {
       throw new Error("Error creating twitsnap 2");
     }
     const date_actual = new Date()
     date_actual.setMinutes(date_actual.getMinutes() + 1)
+    const body = {
+      timestamp_start: date_actual.toISOString(),
+      limit: 10,
+      followeds: ["12345678-1234-1234-1234-123456789012"],
+    }
     const response = await api
-      .get("/api/twits/feed?timestamp_start=" + date_actual.toISOString()  + "&limit=10")
+      .post("/api/twits/feed")
+      .send(body)
       .expect(200);
+
 
     const data = response.body;
 
-    expect(data).toHaveLength(2);
+    expect(data).toHaveLength(1);
 
-    expect(data[0].id).toBe(newTwitSnap2.id);
-    expect(data[0].message).toBe(newTwitSnap2.message);
-    expect(data[0].createdBy).toBe(newTwitSnap2.createdBy);
-    expect(data[0].createdAt).toBe(newTwitSnap2.createdAt.toISOString());
-
-    expect(data[1].id).toBe(newTwitSnap.id);
-    expect(data[1].message).toBe(newTwitSnap.message);
-    expect(data[1].createdBy).toBe(newTwitSnap.createdBy);
-    expect(data[1].createdAt).toBe(newTwitSnap.createdAt.toISOString());
+    expect(data[0].id).toBe(newTwitSnapFollowed.id);
+    expect(data[0].message).toBe(newTwitSnapFollowed.message);
+    expect(data[0].createdBy).toBe(newTwitSnapFollowed.createdBy);
+    expect(data[0].createdAt).toBe(newTwitSnapFollowed.createdAt.toISOString());
   })
 
   test("can be obtained when there are shared twitsnaps", async () => {
@@ -322,14 +331,20 @@ describe("feed", () => {
 
     const date_actual = new Date()
     date_actual.setMinutes(date_actual.getMinutes() + 1)
+    const body = {
+      timestamp_start: date_actual.toISOString(),
+      limit: 10,
+      followeds: ["12345678-1234-1234-1234-123456789012"],
+    }
 
     const response = await api
-      .get("/api/twits/feed?timestamp_start=" + date_actual.toISOString() + "&limit=10")
+      .post("/api/twits/feed")
+      .send(body)
       .expect(200);
 
     const data = response.body;
 
-    expect(data).toHaveLength(3);
+    expect(data).toHaveLength(2);
 
     expect(data[0].id).toBe(newTwitSnap.id);
     expect(data[0].message).toBe(newTwitSnap.message);
@@ -359,8 +374,15 @@ describe("feed", () => {
       throw new Error("Error creating third twitsnap");
     }
 
+    const body = {
+      timestamp_start: third_twitsnap.createdAt.toISOString(),
+      limit: 1,
+      followeds: ["12345678-1234-1234-1234-123456789012"],
+    }
+
     const response = await api
-      .get("/api/twits/feed?timestamp_start=" + third_twitsnap.createdAt.toISOString() + "&limit=1")
+      .post("/api/twits/feed")
+      .send(body)
       .expect(200);
 
     const data = response.body;
@@ -396,13 +418,19 @@ describe("feed", () => {
       twitsnapId: newTwitSnap.id,
     });
 
+    const body = {
+      timestamp_start: new Date().toISOString(),
+      limit: 10,
+      followeds: ["12345678-1234-1234-1234-123456789012"],
+    }
     const response = await api
-      .get("/api/twits/feed?timestamp_start=" + new Date().toISOString() + "&limit=10")
+      .post("/api/twits/feed")
+      .send(body)
       .expect(200);
 
     const data = response.body;
 
-    expect(data).toHaveLength(3);
+    expect(data).toHaveLength(2);
 
     expect(data[0].id).toBe(newTwitSnap.id);
     expect(data[0].message).toBe(newTwitSnap.message);

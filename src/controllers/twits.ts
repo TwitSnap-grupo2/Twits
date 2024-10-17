@@ -24,6 +24,7 @@ const snapshareTwitSnapSchema = z.object({
 const feedSchema = z.object({
   timestamp_start: z.string().datetime(),
   limit: z.coerce.number().int(),
+  followeds: z.array(z.string().uuid()),
 })
 
 const mentionSchema = z.object({
@@ -44,11 +45,11 @@ router.get("/", async (_req, res, next) => {
   }
 });
 
-router.get("/feed", async (req, res, next) => {
+router.post("/feed", async (req, res, next) => {
   try {
-    const result = feedSchema.parse(req.query);
+    const result = feedSchema.parse(req.body);
     const date = new Date(result.timestamp_start);
-    const feed = await twitSnapsService.getFeed(date, result.limit);
+    const feed = await twitSnapsService.getFeed(date, result.limit, result.followeds);
     res.status(200).json(feed);
   } catch (err: unknown) {
     next(err);
@@ -151,7 +152,7 @@ router.delete("/:id/like", async (req, res, next) => {
     const result = likeTwitSnapSchema.parse(req.query);
     const twitsnapId = req.params.id;
     const schema: LikeSchema = { ...result, twitsnapId};
-    const twitSnapLikes = await twitSnapsService.deleteTwitSnapLike(schema);
+    await twitSnapsService.deleteTwitSnapLike(schema);
     res.status(204).send();
   } catch (err: unknown) {
     next(err)
