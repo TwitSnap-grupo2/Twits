@@ -60,7 +60,7 @@ router.post("/feed", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    const twitSnap = await twitSnapsService.getTwitSnap(req.params.id);
+    const twitSnap = await twitSnapsService.getTwitSnapsById(req.params.id);
 
     if (!twitSnap) {
       next({

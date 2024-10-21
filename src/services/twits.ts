@@ -10,8 +10,8 @@ const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return await db.getTwitSnaps();
 };
 
-const getTwitSnap = async (id: string): Promise<Array<SelectTwitsnap>> => {
-  return await db.getTwitSnap(id);
+const getTwitSnapsById = async (id: string): Promise<Array<TwitsAndShares>> => {
+  return await db.getTwitSnapsById(id);
 }
 
 const createTwitSnap = async (
@@ -73,7 +73,7 @@ export default {
   getTwitSnaps,
   createTwitSnap,
   likeTwitSnap,
-  getTwitSnap,
+  getTwitSnapsById,
   getTwitSnapLikes,
   deleteTwitSnapLike,
   createSnapshare,

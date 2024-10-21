@@ -21,11 +21,39 @@ const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
     
 
 
-const getTwitSnap = async (id: string): Promise<Array<SelectTwitsnap>> => {
-  return db
-    .select()
-    .from(twitSnapsTable)
+const getTwitSnapsById = async (id: string): Promise<Array<TwitsAndShares>> => {
+  const originalTwits = await db.select({
+    id: twitSnapsTable.id,
+    message: twitSnapsTable.message,
+    createdAt: twitSnapsTable.createdAt,
+    createdBy: twitSnapsTable.createdBy,
+    sharedBy: sql<string | null>`NULL`,
+    isPrivate: twitSnapsTable.isPrivate,
+    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`
+  }).from(twitSnapsTable)
     .where(eq(twitSnapsTable.createdBy, id))
+    .orderBy(desc(twitSnapsTable.createdAt))  
+
+  const retweetedTwits = await db.select({
+    id: twitSnapsTable.id,
+    message: twitSnapsTable.message,
+    createdBy: twitSnapsTable.createdBy,
+    sharedBy: snapshareTable.sharedBy,
+    createdAt: snapshareTable.sharedAt,
+    isPrivate: twitSnapsTable.isPrivate,
+    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`
+  }).from(snapshareTable)
+    .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
+    .where(eq(snapshareTable.sharedBy, id))
+    .orderBy(desc(snapshareTable.sharedAt))
+
+  const combinedTwits = [...originalTwits, ...retweetedTwits];
+  combinedTwits.sort((a, b) => {
+    return b.createdAt.getTime() - a.createdAt.getTime();
+  });
+  return combinedTwits;
 };
 
 const createTwitSnap = async (
@@ -174,7 +202,7 @@ const deleteTwitSnapMention = async (twitSnap_id: string, mentionedUser: string)
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
-  getTwitSnap,
+  getTwitSnapsById,
   createTwitSnap,
   deleteTwitsnaps,
   likeTwitSnap,
