@@ -50,11 +50,14 @@ jobs:
           # Default: ${{ github.workspace }}
           cwd: ""
 
-      - name: test-coverage
-        run: |
-          npm install 
-          jest --runInBand --coverage && coveralls < coverage/lcov.info
-          COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} coveralls
+      - name: Install dependencies
+        run: npm install
 
-      - name: Coveralls
+      - name: Run tests with coverage
+        run: npm run test:ci # Ensure this script runs tests and generates a coverage report (e.g., via nyc)
+
+      - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub
+          path-to-lcov: "./coverage/lcov.info" # Ensure this matches the location of your lcov report
