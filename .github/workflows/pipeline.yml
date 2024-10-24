@@ -53,7 +53,7 @@ jobs:
       - name: test-coverage
         run: |
           npm install 
-          jest --runInBand --coverage && coveralls < coverage/lcov.info
+          npm run jest --runInBand --coverage && coveralls < coverage/lcov.info
           COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} coveralls
 
       - name: Coveralls
