@@ -1,3 +1,4 @@
+[![Coverage Status](https://coveralls.io/repos/github/TwitSnap-grupo2/Twits/badge.svg)](https://coveralls.io/github/TwitSnap-grupo2/Twits)
 ## Levantar app:
 
 - Development
