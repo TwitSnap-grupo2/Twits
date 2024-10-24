@@ -50,6 +50,11 @@ jobs:
           # Default: ${{ github.workspace }}
           cwd: ""
 
-      - name: Trigger deployment
-        if: ${{ github.event_name == 'push' }}
-        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: test-coverage
+        run: |
+          npm install 
+          jest --runInBand --coverage && coveralls < coverage/lcov.info
+          COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} coveralls
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
