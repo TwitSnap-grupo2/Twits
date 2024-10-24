@@ -50,6 +50,9 @@ jobs:
           # Default: ${{ github.workspace }}
           cwd: ""
 
+      - name: Run tests with coverage
+        run: npm run test:ci # Ensure this script runs tests and generates a coverage report (e.g., via nyc)
+
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         with:
