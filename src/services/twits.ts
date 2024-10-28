@@ -17,7 +17,17 @@ const getTwitSnapsById = async (id: string): Promise<Array<TwitsAndShares>> => {
 const createTwitSnap = async (
   newTwitSnap: InsertTwitsnap
 ): Promise<SelectTwitsnap | null> => {
-  return await db.createTwitSnap(newTwitSnap);
+  const res = await db.createTwitSnap(newTwitSnap);
+  if (!res?.id){
+    return null
+  }
+  for(const word of newTwitSnap.message.split(" ")){
+    if(word.charAt(0) === "#"){
+      console.log("Adding hashtag")
+      const _ = await db.addHashtag(word, res?.id)
+    }
+  }
+  return res
 };
 
 const likeTwitSnap = async( newLike: LikeSchema): Promise<SelectLike> => {

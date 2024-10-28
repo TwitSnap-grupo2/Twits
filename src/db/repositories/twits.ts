@@ -10,6 +10,7 @@ import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema
 import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/snapshareSchema";
 import TwitsAndShares from "../schemas/twitsAndShares";
 import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
+import {hashtagTable, SelectHashtag} from "../schemas/hashtagSchema"
 
 
 
@@ -199,6 +200,17 @@ const deleteTwitSnapMention = async (twitSnap_id: string, mentionedUser: string)
   }
 }
 
+const addHashtag = async (hashtag: string, twitsnap_id: string): Promise<SelectHashtag | null> => {
+  return db.insert(hashtagTable).values({twitsnapId: twitsnap_id, name: hashtag.toLowerCase()}).returning().then((result) => (result.length > 0 ? result[0] : null));
+}
+
+const getTwitSnapHashtags = async (twitsnap_id: string): Promise<Array<SelectHashtag>> => {
+  return db.select().from(hashtagTable).where(eq(hashtagTable.twitsnapId, twitsnap_id))
+}
+
+const deleteAllHashTags = async () => {
+  await db.delete(hashtagTable);
+}
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
@@ -216,6 +228,9 @@ export default {
   mentionUser,
   deleteMentions,
   getTwitSnapMentions,
-  deleteTwitSnapMention
+  deleteTwitSnapMention,
+  addHashtag,
+  getTwitSnapHashtags,
+  deleteAllHashTags
 
 };
