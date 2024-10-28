@@ -11,6 +11,8 @@ import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/sna
 import TwitsAndShares from "../schemas/twitsAndShares";
 import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
 import {hashtagTable, SelectHashtag} from "../schemas/hashtagSchema"
+import { TwitSnap } from "../../utils/types";
+import { hash } from "crypto";
 
 
 
@@ -212,6 +214,35 @@ const deleteAllHashTags = async () => {
   await db.delete(hashtagTable);
 }
 
+const getTwitSnapsByHashtag = async (hashtag: string): Promise<Array<SelectTwitsnap>> => {
+  const twits = await db.select({
+    id: twitSnapsTable.id,
+    message: twitSnapsTable.message,
+    createdAt: twitSnapsTable.createdAt,
+    createdBy: twitSnapsTable.createdBy,
+    isPrivate: twitSnapsTable.isPrivate,
+    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`
+  }).from(twitSnapsTable)
+    .innerJoin(hashtagTable, eq(twitSnapsTable.id, hashtagTable.twitsnapId))
+    .where(eq(hashtagTable.name, hashtag))
+    .orderBy(desc(twitSnapsTable.createdAt))
+  return twits;
+}
+
+const searchHashtags = async (hashtag: string): Promise<Array<string>> => {
+  const res = await db.execute(
+    sql<Array<{ name: string }>>`
+      SELECT name FROM hashtags 
+      WHERE similarity(name, ${hashtag}) > ${0.1} 
+      ORDER BY similarity(name, ${hashtag}) DESC
+    `
+  );
+
+  return res.rows.map(row => row.name) as never;
+}
+
+
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
   getTwitSnapsById,
@@ -231,6 +262,8 @@ export default {
   deleteTwitSnapMention,
   addHashtag,
   getTwitSnapHashtags,
-  deleteAllHashTags
+  deleteAllHashTags,
+  getTwitSnapsByHashtag,
+  searchHashtags
 
 };

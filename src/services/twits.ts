@@ -23,7 +23,6 @@ const createTwitSnap = async (
   }
   for(const word of newTwitSnap.message.split(" ")){
     if(word.charAt(0) === "#"){
-      console.log("Adding hashtag")
       const _ = await db.addHashtag(word, res?.id)
     }
   }
@@ -78,6 +77,14 @@ const deleteTwitSnapMention = async (twitSnap_id: string, mentionedUser: string)
   return await db.deleteTwitSnapMention(twitSnap_id, mentionedUser);
 }
 
+const getTwitSnapsByHashtag = async (hashtag: string): Promise<Array<SelectTwitsnap>> => {
+  return await db.getTwitSnapsByHashtag(hashtag);
+}
+
+const searchHashtags = async (hashtag: string): Promise<Array<string>> => {
+  return await db.searchHashtags(hashtag);
+}
+
 
 export default {
   getTwitSnaps,
@@ -91,5 +98,7 @@ export default {
   getFeed,
   mentionUser,
   getTwitSnapMentions,
-  deleteTwitSnapMention
+  deleteTwitSnapMention,
+  getTwitSnapsByHashtag,
+  searchHashtags,
 };

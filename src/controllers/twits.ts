@@ -31,6 +31,10 @@ const mentionSchema = z.object({
   mentionedUser: z.string().uuid(),
 })
 
+const hashtagSchema = z.object({
+  hashtag: z.string().max(280),
+})
+
 router.get("/", async (_req, res, next) => {
   try {
     const twitSnaps = await twitSnapsService.getTwitSnaps();
@@ -44,6 +48,36 @@ router.get("/", async (_req, res, next) => {
     next({ message: errDescription, name: "DatabaseError" });
   }
 });
+
+router.get("/hashtag", async (req, res, next) => {
+  try {
+    const result = hashtagSchema.parse(req.query);
+    const twitSnaps = await twitSnapsService.getTwitSnapsByHashtag(result.hashtag);
+    res.status(200).json(twitSnaps);
+  } catch (err: unknown) {
+    let errDescription = "";
+    if (err instanceof Error) {
+      errDescription += err.message;
+    }
+    next({ message: errDescription, name: "DatabaseError" });
+  }
+}
+);
+
+router.get("/hashtag/search", async (req, res, next) => {
+  try {
+    const result = hashtagSchema.parse(req.query);
+    const twitSnaps = await twitSnapsService.searchHashtags(result.hashtag);
+    res.status(200).json(twitSnaps);
+  } catch (err: unknown) {
+    let errDescription = "";
+    if (err instanceof Error) {
+      errDescription += err.message;
+    }
+    next({ message: errDescription, name: "DatabaseError" });
+  }
+}
+);
 
 router.post("/feed", async (req, res, next) => {
   try {
