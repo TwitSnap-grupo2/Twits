@@ -1,7 +1,7 @@
 import { index, pgTable, primaryKey, uuid, varchar } from "drizzle-orm/pg-core";
 import { twitSnap } from "./twisnapSchema";
 
-export const hashtag = pgTable(
+export const hashtagTable = pgTable(
   "hashtags",
   {
     twitsnapId: uuid("twitsnap_id")
@@ -18,5 +18,7 @@ export const hashtag = pgTable(
   }
 );
 
-export type SelectHashtag = typeof hashtag.$inferSelect;
-export type InsertHashtag = typeof hashtag.$inferInsert;
+export type SelectHashtag = typeof hashtagTable.$inferSelect;
+export type InsertHashtag = typeof hashtagTable.$inferInsert;
+
+

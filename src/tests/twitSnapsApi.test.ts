@@ -5,8 +5,6 @@ import { testTwitSnap } from "./testHelper";
 import twitSnapRepository from "../db/repositories/twits";
 import twitSnapService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
-import exp from "constants";
-import { timestamp } from "drizzle-orm/mysql-core";
 
 const api = supertest(app);
 
@@ -495,3 +493,65 @@ describe("mentions", () => {
 );
 })
 
+describe("hashtags", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteTwitsnaps();
+    await twitSnapRepository.deleteAllHashTags();
+  });
+
+  test("are added after creating a twitsnap", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap({
+      message: "This is a #twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const res = await twitSnapRepository.getTwitSnapHashtags(newTwitSnap.id);
+
+    expect(res).toHaveLength(1);
+    expect(res[0].name).toBe("#twitsnap");
+
+})
+
+  test("twitsnaps can be obtained by hashtag", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap({
+      message: "This is a #twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const res = await twitSnapRepository.getTwitSnapsByHashtag("#twitsnap");
+
+    expect(res).toHaveLength(1);
+    expect(res[0].id).toBe(newTwitSnap.id);
+    expect(res[0].message).toBe(newTwitSnap.message);
+    expect(res[0].createdBy).toBe(newTwitSnap.createdBy);
+});
+
+  test("hashtags can be searched", async () => {
+    await twitSnapService.createTwitSnap({
+      message: "This is a #twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapService.createTwitSnap({
+      message: "This is a #anothertwitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+
+
+    const res = await twitSnapRepository.searchHashtags("twitsnap");
+
+    expect(res).toHaveLength(2);
+    expect(res[0]).toBe("#twitsnap");
+    expect(res[1]).toBe("#anothertwitsnap");
+}
+);
+});

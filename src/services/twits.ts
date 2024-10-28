@@ -17,7 +17,16 @@ const getTwitSnapsById = async (id: string): Promise<Array<TwitsAndShares>> => {
 const createTwitSnap = async (
   newTwitSnap: InsertTwitsnap
 ): Promise<SelectTwitsnap | null> => {
-  return await db.createTwitSnap(newTwitSnap);
+  const res = await db.createTwitSnap(newTwitSnap);
+  if (!res?.id){
+    return null
+  }
+  for(const word of newTwitSnap.message.split(" ")){
+    if(word.charAt(0) === "#"){
+      const _ = await db.addHashtag(word, res?.id)
+    }
+  }
+  return res
 };
 
 const likeTwitSnap = async( newLike: LikeSchema): Promise<SelectLike> => {
@@ -68,6 +77,14 @@ const deleteTwitSnapMention = async (twitSnap_id: string, mentionedUser: string)
   return await db.deleteTwitSnapMention(twitSnap_id, mentionedUser);
 }
 
+const getTwitSnapsByHashtag = async (hashtag: string): Promise<Array<SelectTwitsnap>> => {
+  return await db.getTwitSnapsByHashtag(hashtag);
+}
+
+const searchHashtags = async (hashtag: string): Promise<Array<string>> => {
+  return await db.searchHashtags(hashtag);
+}
+
 
 export default {
   getTwitSnaps,
@@ -81,5 +98,7 @@ export default {
   getFeed,
   mentionUser,
   getTwitSnapMentions,
-  deleteTwitSnapMention
+  deleteTwitSnapMention,
+  getTwitSnapsByHashtag,
+  searchHashtags,
 };
