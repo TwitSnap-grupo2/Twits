@@ -81,6 +81,34 @@ describe("twitsnaps", () => {
     expect(data[0].createdAt).toBe(newTwitSnap.createdAt.toISOString());
   }
   );
+
+  test("can be searched by text", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+      await twitSnapService.createTwitSnap(testTwitSnap);
+
+    const otherTwitSnap: InsertTwitsnap = {
+      message: "This is another twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    };
+
+    await twitSnapService.createTwitSnap(otherTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const response = await api
+      .get("/api/twits/search?q=twitsnap")
+      .expect(200);
+
+    const data: Array<SelectTwitsnap> = response.body;
+
+    expect(data).toHaveLength(2);
+
+    expect(data[0].message).toBe(otherTwitSnap.message);
+    expect(data[1].message).toBe(testTwitSnap.message);
+
+  })
 });
 
 describe("twitsnap likes", () => {
