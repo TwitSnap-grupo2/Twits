@@ -85,6 +85,9 @@ const searchHashtags = async (hashtag: string): Promise<Array<string>> => {
   return await db.searchHashtags(hashtag);
 }
 
+const getTwitSnapsBySimilarity = async (q: string): Promise<Array<SelectTwitsnap>> => {
+  return db.getTwitSnapsBySimilarity(q);
+} 
 
 export default {
   getTwitSnaps,
@@ -101,4 +104,5 @@ export default {
   deleteTwitSnapMention,
   getTwitSnapsByHashtag,
   searchHashtags,
+  getTwitSnapsBySimilarity
 };

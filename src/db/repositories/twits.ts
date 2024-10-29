@@ -11,8 +11,6 @@ import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/sna
 import TwitsAndShares from "../schemas/twitsAndShares";
 import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
 import {hashtagTable, SelectHashtag} from "../schemas/hashtagSchema"
-import { TwitSnap } from "../../utils/types";
-import { hash } from "crypto";
 
 
 
@@ -242,6 +240,30 @@ const searchHashtags = async (hashtag: string): Promise<Array<string>> => {
   return res.rows.map(row => row.name) as never;
 }
 
+const getTwitSnapsBySimilarity = async (q: string): Promise<Array<SelectTwitsnap>> => {
+  const res = await db.execute(
+    sql<string[]>`
+      SELECT id FROM twitsnaps 
+      WHERE similarity(content, ${q}) > ${0.1} 
+      ORDER BY similarity(content, ${q}) DESC
+    `
+  );
+
+  const ids = res.rows.map(row => row.id) as string[];
+  return db.select({
+    id: twitSnapsTable.id,
+    message: twitSnapsTable.message,
+    createdAt: twitSnapsTable.createdAt,
+    createdBy: twitSnapsTable.createdBy,
+    isPrivate: twitSnapsTable.isPrivate,
+    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`
+  })
+  .from(twitSnapsTable)
+  .where(inArray(twitSnapsTable.id, ids))
+  .orderBy(desc(twitSnapsTable.createdAt));
+}
+
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
@@ -264,6 +286,7 @@ export default {
   getTwitSnapHashtags,
   deleteAllHashTags,
   getTwitSnapsByHashtag,
-  searchHashtags
+  searchHashtags,
+  getTwitSnapsBySimilarity
 
 };

@@ -35,6 +35,10 @@ const hashtagSchema = z.object({
   hashtag: z.string().max(280),
 })
 
+const searchTwitSchema = z.object( {
+  q: z.string(),
+})
+
 router.get("/", async (_req, res, next) => {
   try {
     const twitSnaps = await twitSnapsService.getTwitSnaps();
@@ -48,6 +52,22 @@ router.get("/", async (_req, res, next) => {
     next({ message: errDescription, name: "DatabaseError" });
   }
 });
+
+router.get("/search", async (req, res, next) => {
+  try {
+    const result = searchTwitSchema.parse(req.query);
+    const similarTwitSnaps = await twitSnapsService.getTwitSnapsBySimilarity(result.q);
+    res.status(200).json(similarTwitSnaps);
+  } catch (err: unknown) {
+    let errDescription = "";
+    if (err instanceof Error) {
+      errDescription += err.message;
+    }
+    next({ message: errDescription, name: "DatabaseError" });
+  }
+})
+
+
 
 router.get("/hashtag", async (req, res, next) => {
   try {
