@@ -38,3 +38,7 @@ export const newTwitSnapSchema = z.object({
     isPrivate: z.boolean().default(false),
   });
   
+
+  export const statsSchema = z.object({
+    limit: z.coerce.number().int(),
+  });

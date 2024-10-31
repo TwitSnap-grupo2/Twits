@@ -5,13 +5,14 @@ import {
   twitSnap as twitSnapsTable,
 } from "../schemas/twisnapSchema";
 import { db } from "../setup";
-import { and, desc, eq, gt, gte, inArray, lt, sql} from "drizzle-orm";
+import { and, count, desc, eq, gt, gte, inArray, lt, sql} from "drizzle-orm";
 import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/snapshareSchema";
 import TwitsAndShares from "../schemas/twitsAndShares";
 import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
 import {hashtagTable, SelectHashtag} from "../schemas/hashtagSchema"
 import { editTwitSnapSchema } from "../../utils/types";
+import UserStats from "../schemas/statsSchema";
 
 
 
@@ -291,6 +292,21 @@ const deleteHashtag = async (hashtag: string, twitsnap_id: string): Promise<void
   }
 }
 
+const getUserStats = async (userId: string, timestamp: Date): Promise<UserStats> => {
+  const twitsTotal = await db.select({count: count()}).from(twitSnapsTable).where(and(eq(twitSnapsTable.createdBy, userId), gte(twitSnapsTable.createdAt, timestamp))).then((result) => result[0].count);
+  const likesTotal = await db.select({count: count()}).from(twitSnapsTable).innerJoin(likeTwitSnapTable, eq(twitSnapsTable.id, likeTwitSnapTable.twitsnapId)).where(and(eq(twitSnapsTable.createdBy, userId), gte(twitSnapsTable.createdAt, timestamp))).then((result) => result[0].count);
+  const sharesTotal = await db.select({count: count()}).from(twitSnapsTable).innerJoin(snapshareTable, eq(twitSnapsTable.id, snapshareTable.twitsnapId)).where(and(eq(twitSnapsTable.createdBy, userId), gte(twitSnapsTable.createdAt, timestamp))).then((result) => result[0].count);
+  return {twitsTotal, likesTotal, sharesTotal};
+}
+
+const addRawTwitSnapForTesting = async (twitSnap: InsertTwitsnap): Promise<SelectTwitsnap | null> => {
+  return db
+    .insert(twitSnapsTable)
+    .values(twitSnap)
+    .returning()
+    .then((result) => (result.length > 0 ? result[0] : null));
+}
+
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
   getTwitSnapsById,
@@ -316,6 +332,8 @@ export default {
   getTwitSnapsBySimilarity,
   editTwitSnap,
   deleteHashtag,
-  getTwitSnapsByTwitId
+  getTwitSnapsByTwitId,
+  getUserStats,
+  addRawTwitSnapForTesting
 
 };

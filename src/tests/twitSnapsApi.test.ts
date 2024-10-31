@@ -630,3 +630,60 @@ describe("hashtags", () => {
 );
 
 });
+
+describe("stats", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteTwitsnaps();
+  }
+);
+
+  test("can be obtained", async () => {
+    const twit1 = await twitSnapService.createTwitSnap({
+      message: "This is a #twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    const twit2 = await twitSnapService.createTwitSnap({
+      message: "This is a #anothertwitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    if (!twit1 || !twit2) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await twitSnapService.createSnapshare({
+      twitsnapId: twit1.id,
+      sharedBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapService.likeTwitSnap({
+      likedBy: "12345678-1234-1234-1234-123456789012",
+      twitsnapId: twit1.id,
+    });
+
+    await twitSnapService.likeTwitSnap({
+      likedBy: "12345678-1234-1234-1234-123456789012",
+      twitsnapId: twit2.id,
+    });
+
+    const oldDate = new Date();
+    oldDate.setDate(oldDate.getDate() - 365);
+
+    await twitSnapRepository.addRawTwitSnapForTesting({
+      id: "12345678-1234-1234-1234-123456789013",
+      message: "This is a #thirdtwitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+      createdAt: oldDate,
+    });
+
+
+    const response = await api.get("/api/twits/stats/12345678-1234-1234-1234-123456789012?limit=7").expect(200);
+    const data = response.body;
+
+    expect(data.twitsTotal).toBe(2);
+    expect(data.sharesTotal).toBe(1);
+    expect(data.likesTotal).toBe(2);
+
+  });
+})

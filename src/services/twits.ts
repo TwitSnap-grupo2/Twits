@@ -6,6 +6,7 @@ import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema"
 import TwitsAndShares from "../db/schemas/twitsAndShares";
 import { SelectMention } from "../db/schemas/mentionsSchema";
 import { editTwitSnapSchema } from "../utils/types";
+import UserStats from "../db/schemas/statsSchema";
 
 const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return await db.getTwitSnaps();
@@ -116,6 +117,12 @@ const editTwitSnap = async (twitSnapId: string, twitSnap: editTwitSnapSchema): P
   return result;
 }
 
+const getUserStats = async (userId: string, limit: number): Promise<UserStats> => {
+  const timestamp_limit = new Date();
+  timestamp_limit.setDate(timestamp_limit.getDate() - limit);
+  return db.getUserStats(userId, timestamp_limit);
+}
+
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -132,5 +139,6 @@ export default {
   getTwitSnapsByHashtag,
   searchHashtags,
   getTwitSnapsBySimilarity, 
-  editTwitSnap
+  editTwitSnap,
+  getUserStats
 };
