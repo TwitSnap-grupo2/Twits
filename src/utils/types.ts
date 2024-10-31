@@ -14,3 +14,7 @@ export interface ErrorResponse {
   detail: string;
   instance: string;
 }
+
+export type editTwitSnapSchema = {
+  message: string;
+}

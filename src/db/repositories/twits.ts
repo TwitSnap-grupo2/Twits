@@ -11,6 +11,7 @@ import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/sna
 import TwitsAndShares from "../schemas/twitsAndShares";
 import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
 import {hashtagTable, SelectHashtag} from "../schemas/hashtagSchema"
+import { editTwitSnapSchema } from "../../utils/types";
 
 
 
@@ -19,6 +20,10 @@ const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
       return  db.select().from(twitSnapsTable).orderBy(desc(twitSnapsTable.createdAt)) 
   }
 
+
+const getTwitSnapsByTwitId = async (id: string): Promise<SelectTwitsnap> => {
+  return db.select().from(twitSnapsTable).where(eq(twitSnapsTable.id, id)).then((result) => result[0]);
+}
     
 
 
@@ -264,6 +269,27 @@ const getTwitSnapsBySimilarity = async (q: string): Promise<Array<SelectTwitsnap
   .orderBy(desc(twitSnapsTable.createdAt));
 }
 
+const editTwitSnap = async (twitSnapId: string, twitSnap: editTwitSnapSchema): Promise<SelectTwitsnap | null> => {
+  return db
+    .update(twitSnapsTable)
+    .set({
+      message: twitSnap.message
+    })
+    .where(eq(twitSnapsTable.id, twitSnapId))
+    .returning()
+    .then((result) => (result.length > 0 ? result[0] : null));
+}
+
+const deleteHashtag = async (hashtag: string, twitsnap_id: string): Promise<void> => {
+  if (!hashtag || !twitsnap_id) {
+    throw new Error("invalid parameters")
+  }
+  const res = await db.delete(hashtagTable).where(and(eq(hashtagTable.twitsnapId, twitsnap_id), eq(hashtagTable.name, hashtag)))
+  .returning()
+  if (res.length === 0) {
+    throw new Error("Hashtag not found")
+  }
+}
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
@@ -287,6 +313,9 @@ export default {
   deleteAllHashTags,
   getTwitSnapsByHashtag,
   searchHashtags,
-  getTwitSnapsBySimilarity
+  getTwitSnapsBySimilarity,
+  editTwitSnap,
+  deleteHashtag,
+  getTwitSnapsByTwitId
 
 };

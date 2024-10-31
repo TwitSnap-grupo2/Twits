@@ -5,6 +5,7 @@ import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
 import TwitsAndShares from "../db/schemas/twitsAndShares";
 import { SelectMention } from "../db/schemas/mentionsSchema";
+import { editTwitSnapSchema } from "../utils/types";
 
 const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return await db.getTwitSnaps();
@@ -89,6 +90,32 @@ const getTwitSnapsBySimilarity = async (q: string): Promise<Array<SelectTwitsnap
   return db.getTwitSnapsBySimilarity(q);
 } 
 
+const editTwitSnap = async (twitSnapId: string, twitSnap: editTwitSnapSchema): Promise<SelectTwitsnap> => {
+  const previousTwitSnap = await db.getTwitSnapsByTwitId(twitSnapId);
+  if (!previousTwitSnap){
+    throw new Error("TwitSnap not found");
+  }
+  const result = await db.editTwitSnap(twitSnapId, twitSnap);
+  if (!result){
+    throw new Error("TwitSnap not found");
+  }
+  for(const word of result.message.split(" ")){
+    if(word.charAt(0) === "#"){
+      if(!previousTwitSnap.message.includes(word)){
+      const _ = await db.addHashtag(word, twitSnapId)
+      }
+    }
+  }
+  for(const word of previousTwitSnap.message.split(" ")){
+    if(word.charAt(0) === "#"){
+      if(!result.message.includes(word)){
+        const _ = await db.deleteHashtag(word, twitSnapId)
+      }
+    }
+  }
+  return result;
+}
+
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -104,5 +131,6 @@ export default {
   deleteTwitSnapMention,
   getTwitSnapsByHashtag,
   searchHashtags,
-  getTwitSnapsBySimilarity
+  getTwitSnapsBySimilarity, 
+  editTwitSnap
 };

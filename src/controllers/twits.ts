@@ -39,6 +39,11 @@ const searchTwitSchema = z.object( {
   q: z.string(),
 })
 
+const editTwitSnapSchema = z.object({
+  message: z.string().max(280),
+  isPrivate: z.boolean().default(false),
+});
+
 router.get("/", async (_req, res, next) => {
   try {
     const twitSnaps = await twitSnapsService.getTwitSnaps();
@@ -135,6 +140,21 @@ router.get("/:id", async (req, res, next) => {
 }
 );
 
+router.patch("/:id", async (req, res, next) => {
+  try{
+    const result = editTwitSnapSchema.parse(req.body);
+    const twitSnap = await twitSnapsService.editTwitSnap(req.params.id, result);
+    res.status(200).json(twitSnap);
+  }
+  catch (err: unknown) {
+    next({
+      name: "NotFound",
+      message: "Error while trying to edit twitsnap",
+    });
+  }
+}
+);
+
 router.post("/", async (req, res, next) => {
   try {
     const result: InsertTwitsnap = newTwitSnapSchema.parse(req.body);
@@ -159,6 +179,7 @@ router.post("/", async (req, res, next) => {
     next({ message: errDescription, name: "DatabaseError" });
   }
 });
+
 
 router.post("/:id/like", async (req, res, next) => {
   try {

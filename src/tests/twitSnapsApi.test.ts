@@ -109,6 +109,27 @@ describe("twitsnaps", () => {
     expect(data[1].message).toBe(testTwitSnap.message);
 
   })
+
+  test("can be edited", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+      await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const response = await api
+      .patch("/api/twits/" + newTwitSnap.id)
+      .send({ message: "This is an edited twitsnap" })
+      .expect(200);
+
+    const data: InsertTwitsnap = response.body;
+
+    expect(data.id).toBe(newTwitSnap.id);
+    expect(data.message).toBe("This is an edited twitsnap");
+    expect(data.createdBy).toBe(newTwitSnap.createdBy);
+  }
+  );
 });
 
 describe("twitsnap likes", () => {
@@ -580,6 +601,32 @@ describe("hashtags", () => {
     expect(res).toHaveLength(2);
     expect(res[0]).toBe("#twitsnap");
     expect(res[1]).toBe("#anothertwitsnap");
-}
+  }
 );
+
+  test("can be deleted or added when editing a twitsnap", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap({
+      message: "This is a #twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const res = await twitSnapRepository.getTwitSnapHashtags(newTwitSnap.id);
+
+    expect(res).toHaveLength(1);
+    expect(res[0].name).toBe("#twitsnap");
+
+    await api.patch("/api/twits/" + newTwitSnap.id).send({ message: "This is a #anothertwitsnap" }).expect(200);
+
+    const res2 = await twitSnapRepository.getTwitSnapHashtags(newTwitSnap.id);
+
+    expect(res2).toHaveLength(1);
+    expect(res2[0].name).toBe("#anothertwitsnap");
+    
+  }
+);
+
 });
