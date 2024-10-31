@@ -1,60 +1,19 @@
 import { Router } from "express";
 import twitSnapsService from "../services/twits";
-import { z } from "zod";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
+import { editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema } from "../db/schemas/validationSchemas";
+
 
 const router = Router();
-
-const newTwitSnapSchema = z.object({
-  message: z.string().max(280),
-  createdBy: z.string().uuid(),
-  isPrivate: z.boolean().default(false),
-});
-
-const likeTwitSnapSchema = z.object({
-  likedBy: z.string().uuid(),
-});
-
-const snapshareTwitSnapSchema = z.object({
-  sharedBy: z.string().uuid(),
-});
-
-const feedSchema = z.object({
-  timestamp_start: z.string().datetime(),
-  limit: z.coerce.number().int(),
-  followeds: z.array(z.string().uuid()),
-})
-
-const mentionSchema = z.object({
-  mentionedUser: z.string().uuid(),
-})
-
-const hashtagSchema = z.object({
-  hashtag: z.string().max(280),
-})
-
-const searchTwitSchema = z.object( {
-  q: z.string(),
-})
-
-const editTwitSnapSchema = z.object({
-  message: z.string().max(280),
-  isPrivate: z.boolean().default(false),
-});
 
 router.get("/", async (_req, res, next) => {
   try {
     const twitSnaps = await twitSnapsService.getTwitSnaps();
     res.status(200).json(twitSnaps);
   } catch (err: unknown) {
-    let errDescription = "";
-
-    if (err instanceof Error) {
-      errDescription += err.message;
-    }
-    next({ message: errDescription, name: "DatabaseError" });
+    next(err);
   }
 });
 
@@ -64,11 +23,7 @@ router.get("/search", async (req, res, next) => {
     const similarTwitSnaps = await twitSnapsService.getTwitSnapsBySimilarity(result.q);
     res.status(200).json(similarTwitSnaps);
   } catch (err: unknown) {
-    let errDescription = "";
-    if (err instanceof Error) {
-      errDescription += err.message;
-    }
-    next({ message: errDescription, name: "DatabaseError" });
+    next(err);
   }
 })
 
@@ -80,11 +35,7 @@ router.get("/hashtag", async (req, res, next) => {
     const twitSnaps = await twitSnapsService.getTwitSnapsByHashtag(result.hashtag);
     res.status(200).json(twitSnaps);
   } catch (err: unknown) {
-    let errDescription = "";
-    if (err instanceof Error) {
-      errDescription += err.message;
-    }
-    next({ message: errDescription, name: "DatabaseError" });
+    next(err);
   }
 }
 );
@@ -95,11 +46,7 @@ router.get("/hashtag/search", async (req, res, next) => {
     const twitSnaps = await twitSnapsService.searchHashtags(result.hashtag);
     res.status(200).json(twitSnaps);
   } catch (err: unknown) {
-    let errDescription = "";
-    if (err instanceof Error) {
-      errDescription += err.message;
-    }
-    next({ message: errDescription, name: "DatabaseError" });
+    next(err);
   }
 }
 );
@@ -130,12 +77,7 @@ router.get("/:id", async (req, res, next) => {
 
     res.status(200).json(twitSnap);
   } catch (err: unknown) {
-    let errDescription = "";
-
-    if (err instanceof Error) {
-      errDescription += err.message;
-    }
-    next({ message: errDescription, name: "DatabaseError" });
+    next(err);
   }
 }
 );
@@ -147,10 +89,7 @@ router.patch("/:id", async (req, res, next) => {
     res.status(200).json(twitSnap);
   }
   catch (err: unknown) {
-    next({
-      name: "NotFound",
-      message: "Error while trying to edit twitsnap",
-    });
+    next(err);
   }
 }
 );
@@ -171,12 +110,7 @@ router.post("/", async (req, res, next) => {
 
     res.status(201).json(newTwitSnap);
   } catch (err: unknown) {
-    let errDescription = "";
-
-    if (err instanceof Error) {
-      errDescription += err.message;
-    }
-    next({ message: errDescription, name: "DatabaseError" });
+    next(err);
   }
 });
 
@@ -198,7 +132,6 @@ router.post("/:id/like", async (req, res, next) => {
 
     res.status(201).json(like);
   } catch (err: unknown) {
-
     next(err);
   }
 });
@@ -211,12 +144,7 @@ router.get("/:id/like", async (req, res, next) => {
 
     res.status(200).json(twitSnapLikes);
   } catch (err: unknown) {
-    let errDescription = "";
-
-    if (err instanceof Error) {
-      errDescription += err.message;
-    }
-    next({ message: errDescription, name: "DatabaseError" });
+    next(err);
   }
 }
 );
