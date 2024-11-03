@@ -3,7 +3,7 @@ import twitSnapsService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
-import { editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
+import { deleteResponseSchema, editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
 
 
 const router = Router();
@@ -113,6 +113,47 @@ router.post("/", async (req, res, next) => {
     next(err);
   }
 });
+
+router.post("/:id/response", async (req, res, next) => {
+  try {
+    const result = newTwitSnapSchema.parse(req.body);
+    const twitsnapId = req.params.id;
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapsService.createResponse(twitsnapId, result);
+    if (!newTwitSnap) {
+      next({
+        name: "NotFound",
+        message: "Error while trying to create twitsnap",
+      });
+    }
+    res.status(201).json(newTwitSnap);
+  } catch (err: unknown) {
+    next(err);
+  }
+}
+)
+
+router.get("/:id/responses", async (req, res, next) => {
+  try {
+    const twitsnapId = req.params.id;
+    const twitSnapResponses = await twitSnapsService.getTwitSnapResponses(twitsnapId);
+    res.status(200).json(twitSnapResponses);
+  } catch (err: unknown) {
+    next(err);
+  }
+}
+);
+
+router.delete("/:id/response", async (req, res, next) => {
+  try {
+    const result = deleteResponseSchema.parse(req.query);
+    const twitsnapId = req.params.id;
+    await twitSnapsService.deleteTwitSnapResponse(twitsnapId);
+    res.status(204).send();
+  } catch (err: unknown) {
+    next(err);
+  }
+}
+);
 
 
 router.post("/:id/like", async (req, res, next) => {

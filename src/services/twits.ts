@@ -3,10 +3,11 @@ import db from "../db/repositories/twits";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
-import TwitsAndShares from "../db/schemas/twitsAndShares";
+import {TwitsAndShares, TwitResponse} from "../db/schemas/twitsAndShares";
 import { SelectMention } from "../db/schemas/mentionsSchema";
 import { editTwitSnapSchema } from "../utils/types";
 import UserStats from "../db/schemas/statsSchema";
+import { SelectTwitsnapResponse } from "../db/schemas/twitsnapResponse";
 
 const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return await db.getTwitSnaps();
@@ -37,6 +38,14 @@ const likeTwitSnap = async( newLike: LikeSchema): Promise<SelectLike> => {
     throw new Error("TwitSnap not found");
   }
   return result;
+}
+
+const createResponse = async (twitSnapId: string, newResponse: InsertTwitsnap): Promise<SelectTwitsnapResponse | null> => {
+  return await db.createResponse(twitSnapId, newResponse);
+}
+
+const getTwitSnapResponses = async (twitSnapId: string): Promise<Array<TwitResponse>> => {
+  return await db.getTwitSnapResponses(twitSnapId);
 }
 
 const getTwitSnapLikes = async (getLike: string): Promise<Array<SelectLike>> => {
@@ -123,6 +132,9 @@ const getUserStats = async (userId: string, limit: number): Promise<UserStats> =
   return db.getUserStats(userId, timestamp_limit);
 }
 
+const deleteTwitSnapResponse = async (twitSnapId: string): Promise<void> => {
+  return db.deleteTwitSnapResponse(twitSnapId);
+}
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -140,5 +152,8 @@ export default {
   searchHashtags,
   getTwitSnapsBySimilarity, 
   editTwitSnap,
-  getUserStats
+  getUserStats,
+  createResponse,
+  getTwitSnapResponses,
+  deleteTwitSnapResponse,
 };

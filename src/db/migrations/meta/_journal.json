@@ -71,6 +71,20 @@
       "when": 1728596213353,
       "tag": "0009_shallow_marvel_boy",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1730605705912,
+      "tag": "0010_bored_cerise",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1730609397496,
+      "tag": "0011_skinny_medusa",
+      "breakpoints": true
     }
   ]
 }

@@ -8,6 +8,19 @@ type TwitsAndShares = {
     isPrivate: boolean;
     likes_count: number;
     shares_count: number;
+    responses_count: number;
   }
 
-export default TwitsAndShares;
+type TwitResponse = {
+    id: string;
+    inResponseToId: string;
+    message: string;
+    createdAt: Date;
+    createdBy: string;
+    isPrivate: boolean;
+    likes_count: number;
+    shares_count: number;
+    responses_count: number;
+
+}
+export { TwitResponse, TwitsAndShares };

@@ -1,0 +1,327 @@
+{
+  "id": "67b78dc5-d0a0-4b3b-bd6c-8e846596ea4f",
+  "prevId": "7ae998a8-5945-4ec1-ac77-d2b112fb60af",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.hashtags": {
+      "name": "hashtags",
+      "schema": "",
+      "columns": {
+        "twitsnap_id": {
+          "name": "twitsnap_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "hashtag_twitsnap_idx": {
+          "name": "hashtag_twitsnap_idx",
+          "columns": [
+            {
+              "expression": "twitsnap_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "hashtags_twitsnap_id_twitsnaps_id_fk": {
+          "name": "hashtags_twitsnap_id_twitsnaps_id_fk",
+          "tableFrom": "hashtags",
+          "tableTo": "twitsnaps",
+          "columnsFrom": [
+            "twitsnap_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "hashtags_twitsnap_id_name_pk": {
+          "name": "hashtags_twitsnap_id_name_pk",
+          "columns": [
+            "twitsnap_id",
+            "name"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.likes": {
+      "name": "likes",
+      "schema": "",
+      "columns": {
+        "twitsnap_id": {
+          "name": "twitsnap_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "liked_by": {
+          "name": "liked_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "likes_twitsnap_id_twitsnaps_id_fk": {
+          "name": "likes_twitsnap_id_twitsnaps_id_fk",
+          "tableFrom": "likes",
+          "tableTo": "twitsnaps",
+          "columnsFrom": [
+            "twitsnap_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "likes_twitsnap_id_liked_by_pk": {
+          "name": "likes_twitsnap_id_liked_by_pk",
+          "columns": [
+            "twitsnap_id",
+            "liked_by"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.mentions": {
+      "name": "mentions",
+      "schema": "",
+      "columns": {
+        "twitsnap_id": {
+          "name": "twitsnap_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_mentioned": {
+          "name": "user_mentioned",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "mentions_twitsnap_id_twitsnaps_id_fk": {
+          "name": "mentions_twitsnap_id_twitsnaps_id_fk",
+          "tableFrom": "mentions",
+          "tableTo": "twitsnaps",
+          "columnsFrom": [
+            "twitsnap_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "mentions_twitsnap_id_user_mentioned_pk": {
+          "name": "mentions_twitsnap_id_user_mentioned_pk",
+          "columns": [
+            "twitsnap_id",
+            "user_mentioned"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.snapshares": {
+      "name": "snapshares",
+      "schema": "",
+      "columns": {
+        "twitsnap_id": {
+          "name": "twitsnap_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shared_by": {
+          "name": "shared_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "snapshares_twitsnap_id_twitsnaps_id_fk": {
+          "name": "snapshares_twitsnap_id_twitsnaps_id_fk",
+          "tableFrom": "snapshares",
+          "tableTo": "twitsnaps",
+          "columnsFrom": [
+            "twitsnap_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "snapshares_twitsnap_id_shared_by_pk": {
+          "name": "snapshares_twitsnap_id_shared_by_pk",
+          "columns": [
+            "twitsnap_id",
+            "shared_by"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.twitsnaps": {
+      "name": "twitsnaps",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "content": {
+          "name": "content",
+          "type": "varchar(280)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_private": {
+          "name": "is_private",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.twitsnaps_responses": {
+      "name": "twitsnaps_responses",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "in_response_to_id": {
+          "name": "in_response_to_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "varchar(280)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_private": {
+          "name": "is_private",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "twitsnaps_responses_in_response_to_id_twitsnaps_id_fk": {
+          "name": "twitsnaps_responses_in_response_to_id_twitsnaps_id_fk",
+          "tableFrom": "twitsnaps_responses",
+          "tableTo": "twitsnaps",
+          "columnsFrom": [
+            "in_response_to_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

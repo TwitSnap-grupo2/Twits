@@ -42,3 +42,8 @@ export const newTwitSnapSchema = z.object({
   export const statsSchema = z.object({
     limit: z.coerce.number().int(),
   });
+
+  export const deleteResponseSchema = z.object({
+    id: z.string().uuid(),
+    created_by: z.string().uuid(),
+  });

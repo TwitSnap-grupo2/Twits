@@ -5,6 +5,7 @@ import { testTwitSnap } from "./testHelper";
 import twitSnapRepository from "../db/repositories/twits";
 import twitSnapService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
+import { before } from "node:test";
 
 const api = supertest(app);
 
@@ -443,7 +444,7 @@ describe("feed", () => {
   }
   );
 
-  test("can be obtained with likes and shares count", async () => {
+  test("can be obtained with likes, shares count, and responses", async () => {
     const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
 
     if (!newTwitSnap) {
@@ -463,6 +464,11 @@ describe("feed", () => {
     await twitSnapService.likeTwitSnap({
       likedBy: "12345678-1234-1234-1234-123456789012",
       twitsnapId: newTwitSnap.id,
+    });
+
+    await twitSnapService.createResponse(newTwitSnap.id, {
+      message: "This is a response",
+      createdBy: "12345678-1234-1234-1234-123456789012",
     });
 
     const body = {
@@ -485,6 +491,7 @@ describe("feed", () => {
     expect(data[0].sharedBy).toBe("12345678-1234-1234-1234-123456789012");
     expect(data[0].likes_count).toBe("1");
     expect(data[0].shares_count).toBe("1");
+    expect(data[0].responses_count).toBe("1");
   });
 });
 
@@ -667,6 +674,16 @@ describe("stats", () => {
       twitsnapId: twit2.id,
     });
 
+    await twitSnapService.createResponse(twit1.id, {
+      message: "This is a response",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapService.createResponse(twit1.id, {
+      message: "This is another response",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
     const oldDate = new Date();
     oldDate.setDate(oldDate.getDate() - 365);
 
@@ -684,6 +701,73 @@ describe("stats", () => {
     expect(data.twitsTotal).toBe(2);
     expect(data.sharesTotal).toBe(1);
     expect(data.likesTotal).toBe(2);
+    expect(data.responsesTotal).toBe(2);
 
   });
 })
+
+describe("twitsnaps responses", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteTwitsnaps();
+    await twitSnapRepository.deleteAllTwitSnapResponses();
+  })
+
+  test("can be created", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const response = await api
+      .post("/api/twits/" + newTwitSnap.id + "/response")
+      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    const data = response.body;
+
+    expect(data.inResponseToId).toBe(newTwitSnap.id);
+    expect(data.message).toBe("This is a response");
+    expect(data.createdBy).toBe("12345678-1234-1234-1234-123456789012");
+  }
+  );
+
+  test("cannot be created if twitsnap does not exist", async () => {
+    await api
+      .post("/api/twits/12345678-1234-1234-1234-123456789012/response")
+      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(400);
+  }
+  );
+
+  test("can be obtained by twitsnap id", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await twitSnapService.createResponse(newTwitSnap.id, {
+      message: "This is a response",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapService.createResponse(newTwitSnap.id, {
+      message: "This is another response",
+      createdBy: "12345678-1234-4234-1234-123456789012"
+    });
+
+    const response = await api
+      .get("/api/twits/" + newTwitSnap.id + "/responses")
+      .expect(200);
+
+    const data = response.body;
+
+    expect(data).toHaveLength(2);
+
+    expect(data[0].message).toBe("This is another response");
+    expect(data[1].message).toBe("This is a response");
+  }
+
+);
+});
