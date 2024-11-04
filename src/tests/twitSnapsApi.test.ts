@@ -768,6 +768,79 @@ describe("twitsnaps responses", () => {
     expect(data[0].message).toBe("This is another response");
     expect(data[1].message).toBe("This is a response");
   }
-
+  
 );
+
+  test("can be responded to", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const response = await api
+      .post("/api/twits/" + newTwitSnap.id + "/response")
+      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    const data = response.body;
+
+    expect(data.inResponseToId).toBe(newTwitSnap.id);
+    expect(data.message).toBe("This is a response");
+    expect(data.createdBy).toBe("12345678-1234-1234-1234-123456789012");
+
+    const response2 = await api.post("/api/twits/" + data.id + "/response").send({ message: "This is a response to a response", createdBy: "12345678-1234-1234-1234-123456789012" }).expect(201);
+
+    const data2 = response2.body;
+
+    expect(data2.inResponseToId).toBe(data.id);
+    expect(data2.message).toBe("This is a response to a response");
+  })
+
+  test("can be deleted", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const response = await api
+      .post("/api/twits/" + newTwitSnap.id + "/response")
+      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    const data = response.body;
+
+    await api.delete("/api/twits/" + data.id + "/response").expect(204);
+  }
+  );
+
+  test("can be edited", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const response = await api
+      .post("/api/twits/" + newTwitSnap.id + "/response")
+      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    const data = response.body;
+
+    const response2 = await api
+      .patch("/api/twits/" + data.id + "/response")
+      .send({ message: "This is an edited response" })
+      .expect(200);
+
+    const data2 = response2.body;
+
+    expect(data2.id).toBe(data.id);
+    expect(data2.message).toBe("This is an edited response");
+    expect(data2.createdBy).toBe(data.createdBy);
+  }
+  );
+
+
 });

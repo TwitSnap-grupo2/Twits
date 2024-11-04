@@ -7,7 +7,7 @@ import {TwitsAndShares, TwitResponse} from "../db/schemas/twitsAndShares";
 import { SelectMention } from "../db/schemas/mentionsSchema";
 import { editTwitSnapSchema } from "../utils/types";
 import UserStats from "../db/schemas/statsSchema";
-import { SelectTwitsnapResponse } from "../db/schemas/twitsnapResponse";
+import { SelectTwitsnapResponse } from "../db/schemas/twitsnapResponses";
 
 const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return await db.getTwitSnaps();

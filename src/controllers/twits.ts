@@ -119,6 +119,7 @@ router.post("/:id/response", async (req, res, next) => {
     const result = newTwitSnapSchema.parse(req.body);
     const twitsnapId = req.params.id;
     const newTwitSnap: SelectTwitsnap | null = await twitSnapsService.createResponse(twitsnapId, result);
+    console.log(newTwitSnap);
     if (!newTwitSnap) {
       next({
         name: "NotFound",
@@ -127,6 +128,7 @@ router.post("/:id/response", async (req, res, next) => {
     }
     res.status(201).json(newTwitSnap);
   } catch (err: unknown) {
+    console.log(err);
     next(err);
   }
 }

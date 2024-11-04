@@ -13,7 +13,7 @@ import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
 import {hashtagTable, SelectHashtag} from "../schemas/hashtagSchema"
 import { editTwitSnapSchema } from "../../utils/types";
 import UserStats from "../schemas/statsSchema";
-import { SelectTwitsnapResponse, twitSnapResponse } from "../schemas/twitsnapResponse";
+import { SelectTwitsnapResponse, twitSnapResponse } from "../schemas/twitsnapResponses";
 
 
 
@@ -318,8 +318,9 @@ const addRawTwitSnapForTesting = async (twitSnap: InsertTwitsnap): Promise<Selec
 
 const createResponse = async (twitsnapId: string, newTwitSnap: InsertTwitsnap): Promise<SelectTwitsnapResponse | null> => {
   const twitSnap = await getTwitSnapsByTwitId(twitsnapId);
-  if (!twitSnap) {
-    throw new Error("Twitsnap not found");
+  const twitResponse = await getTwitSnapResponseById(twitsnapId);
+  if (!twitSnap && !twitResponse) {
+    throw new Error("TwitSnap not found")
   }
   return db
     .insert(twitSnapResponse)
@@ -350,6 +351,14 @@ const getTwitSnapResponses = async (twitsnapId: string): Promise<Array<TwitRespo
     .orderBy(desc(twitSnapResponse.createdAt))
 }
 
+const getTwitSnapResponseById = async (twitsnapId: string): Promise<SelectTwitsnapResponse | null> => {
+  return db
+    .select()
+    .from(twitSnapResponse)
+    .where(eq(twitSnapResponse.id, twitsnapId))
+    .then((result) => (result.length > 0 ? result[0] : null));
+}
+
 const deleteTwitSnapResponse = async (twitSnapId: string): Promise<void> => {
   const res = await db.delete(twitSnapResponse).where(eq(twitSnapResponse.inResponseToId, twitSnapId))
   .returning()
@@ -361,6 +370,7 @@ const deleteTwitSnapResponse = async (twitSnapId: string): Promise<void> => {
 const deleteAllTwitSnapResponses = async () => {
   await db.delete(twitSnapResponse);
 }
+
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
@@ -394,5 +404,4 @@ export default {
   getTwitSnapResponses,
   deleteTwitSnapResponse,
   deleteAllTwitSnapResponses
-
 };
