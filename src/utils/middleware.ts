@@ -1,6 +1,6 @@
 import { type NextFunction, type Request, type Response } from "express";
 import { z } from "zod";
-import { createErrorResponse } from "./errors";
+import { createErrorResponse, ErrorWithStatusCode } from "./errors";
 import logger from "./logger";
 
 /**
@@ -62,19 +62,31 @@ export const errorMiddleware = (
         )
       );
     return;
-  } else if (err instanceof Error) {
-    const error = err as Error & { statusCode?: number };
+  } else if (err instanceof ErrorWithStatusCode) {
     res
-      .status(error.statusCode ?? 400)
+      .status(err.statusCode ?? 400)
       .json(
         createErrorResponse(
           "about:blank",
-          error.name,
+          err.name,
           400,
-          error.message,
+          err.message,
           req.url
         )
       );
     return;
+  }else {
+    logger.error(err);
+    res
+      .status(500)
+      .json(
+        createErrorResponse(
+          "about:blank",
+          "Internal Server Error",
+          500,
+          "An unexpected error occurred",
+          req.url
+        )
+      );
   }
 };

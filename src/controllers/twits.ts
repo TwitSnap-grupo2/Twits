@@ -4,6 +4,7 @@ import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
 import { deleteResponseSchema, editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
+import { NeonDbError } from "@neondatabase/serverless";
 
 
 const router = Router();
@@ -160,7 +161,6 @@ router.patch("/:id/response", async (req, res, next) => {
     const result = editTwitSnapSchema.parse(req.body);
     const twitSnapId = req.params.id;
     const twitSnapEdited = await twitSnapsService.editTwitSnapResponse(twitSnapId, result.message);
-    console.log(twitSnapEdited)
     if (!twitSnapEdited){
       next({
         name: "NotFound",
@@ -169,7 +169,6 @@ router.patch("/:id/response", async (req, res, next) => {
     }
     res.status(200).send(twitSnapEdited);
   } catch (err: unknown){
-    console.log(err)
     next(err);
   }
 
@@ -184,27 +183,16 @@ router.post("/:id/like", async (req, res, next) => {
     const twitsnapId = req.params.id;
     const schema: LikeSchema = { ...result, twitsnapId};
     const like: SelectLike | null = await twitSnapsService.likeTwitSnap(schema);
-    
-
-    if (!like) {
-      next({
-        name: "LikeError",
-        message: "Error while trying to like twitsnap",
-      });
-    }
-
     res.status(201).json(like);
-  } catch (err: unknown) {
+  } catch (err: any) {
     next(err);
-  }
+  } 
 });
 
 router.get("/:id/like", async (req, res, next) => {
   try {
     const twitsnapId = req.params.id;
     const twitSnapLikes = await twitSnapsService.getTwitSnapLikes(twitsnapId);
-    
-
     res.status(200).json(twitSnapLikes);
   } catch (err: unknown) {
     next(err);

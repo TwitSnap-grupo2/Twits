@@ -8,6 +8,7 @@ import { SelectMention } from "../db/schemas/mentionsSchema";
 import { editTwitSnapSchema } from "../utils/types";
 import UserStats from "../db/schemas/statsSchema";
 import { SelectTwitsnapResponse } from "../db/schemas/twitsnapResponses";
+import { ErrorWithStatusCode } from "../utils/errors";
 
 const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return await db.getTwitSnaps();
@@ -32,12 +33,19 @@ const createTwitSnap = async (
   return res
 };
 
-const likeTwitSnap = async( newLike: LikeSchema): Promise<SelectLike> => {
-  const result = await db.likeTwitSnap(newLike);
-  if (!result){
-    throw new Error("TwitSnap not found");
+const likeTwitSnap = async( newLike: LikeSchema): Promise<SelectLike| null> => {
+  try {
+    return await db.likeTwitSnap(newLike);
+  } catch (error:any) {
+    if (error.name == "NeonDbError") {
+      if(error.code == "23505"){
+        throw new ErrorWithStatusCode("LikeError", "TwitSnap like already exists", 400);
+      } else if (error.code == "23503"){
+      throw new ErrorWithStatusCode("LikeError", "TwitSnap not found", 404);
+      }
+   }
+    throw error;
   }
-  return result;
 }
 
 const createResponse = async (twitSnapId: string, newResponse: InsertTwitsnap): Promise<SelectTwitsnapResponse | null> => {
@@ -58,14 +66,22 @@ const getTwitSnapLikes = async (getLike: string): Promise<Array<SelectLike>> => 
 
 const deleteTwitSnapLike = async(like: LikeSchema): Promise<void> => {
   return await db.deleteTwitSnapLike(like);
+ 
 }
 
-const createSnapshare = async (newSnapshare: InsertSnapshare): Promise<SelectSnapshare> => {
-  const result = await db.createSnapshare(newSnapshare);
-  if (!result){
-    throw new Error("TwitSnap not found");
+const createSnapshare = async (newSnapshare: InsertSnapshare): Promise<SelectSnapshare| null> => {
+  try {
+    return await db.createSnapshare(newSnapshare);
+  } catch (error: any) {
+    if (error.name == "NeonDbError") {
+      if(error.code == "23505"){
+        throw new ErrorWithStatusCode("SnapshareError", "TwitSnap share already exists", 400);
+      } else if (error.code == "23503"){
+      throw new ErrorWithStatusCode("SnapshareError", "TwitSnap not found", 404);
+      }
+   }
+    throw error;
   }
-  return result;
 }
 
 const deleteSnapshare = async (snapshare: InsertSnapshare): Promise<void> => {
@@ -76,12 +92,19 @@ const getFeed = async (timestamp_start: Date, limit: number, followeds: Array<st
   return await db.getFeed(timestamp_start, limit, followeds);
 }
 
-const mentionUser = async (twitSnap_id: string, mentionedUser: string): Promise<SelectMention> => {
-  const result = await db.mentionUser(twitSnap_id, mentionedUser);
-  if (!result){
-    throw new Error("TwitSnap not found");
+const mentionUser = async (twitSnap_id: string, mentionedUser: string): Promise<SelectMention | null> => {
+  try {
+    return await db.mentionUser(twitSnap_id, mentionedUser);
+  }catch (e:any){
+    if (e.name == "NeonDbError") {
+      if(e.code == "23505"){
+        throw new ErrorWithStatusCode("MentionError", "TwitSnap mention already exists", 400);
+      } else if (e.code == "23503"){
+      throw new ErrorWithStatusCode("MentionError", "TwitSnap not found", 404);
+      }
+   }
+    throw e;
   }
-  return result;
 }
 
 const getTwitSnapMentions = async (twitSnap_id: string): Promise<Array<SelectMention>> => {

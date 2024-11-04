@@ -214,7 +214,7 @@ describe("twitsnap likes", () => {
 
     await api
       .delete("/api/twits/" + newTwitSnap.id + "/like?likedBy=" + testTwitSnap.createdBy)
-      .expect(400);
+      .expect(404);
 
   })
 });
@@ -276,7 +276,7 @@ describe("snapshares", () => {
     await api
       .post("/api/twits/12345678-1234-1234-1234-123456789012/share")
       .send({ sharedBy: testTwitSnap.createdBy })
-      .expect(400);
+      .expect(404);
   }
   );
 
@@ -526,7 +526,7 @@ describe("mentions", () => {
     await api
       .post("/api/twits/12345678-1234-1234-1234-123456789012/mention")
       .send({ mentionedUser: "12345678-1234-1234-1234-123456789012" })
-      .expect(400);
+      .expect(404);
   }
   );
 
@@ -736,7 +736,7 @@ describe("twitsnaps responses", () => {
     await api
       .post("/api/twits/12345678-1234-1234-1234-123456789012/response")
       .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
-      .expect(400);
+      .expect(404);
   }
   );
 

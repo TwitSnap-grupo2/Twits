@@ -1,4 +1,6 @@
 import { v4 as uuid4 } from "uuid";
+
+
 import {
   InsertTwitsnap,
   SelectTwitsnap,
@@ -14,6 +16,8 @@ import {hashtagTable, SelectHashtag} from "../schemas/hashtagSchema"
 import { editTwitSnapSchema } from "../../utils/types";
 import UserStats from "../schemas/statsSchema";
 import { SelectTwitsnapResponse, twitSnapResponse } from "../schemas/twitsnapResponses";
+import { NeonDbError } from "@neondatabase/serverless";
+import { ErrorWithStatusCode } from "../../utils/errors";
 
 
 
@@ -84,11 +88,14 @@ const deleteTwitsnaps = async () => {
 };
 
 const likeTwitSnap = async (newLike: LikeSchema): Promise<SelectLike | null> => {
-  return db
+    return db
     .insert(likeTwitSnapTable)
     .values(newLike)
     .returning()
     .then((result) => (result.length > 0 ? result[0] : null));
+  
+  
+  
 }
 
 const getTwitSnapLikes = async (twitsnapId: string): Promise<Array<SelectLike>> => {
@@ -110,7 +117,7 @@ const deleteTwitSnapLike = async (like: LikeSchema): Promise<void> => {
   const res = await db.delete(likeTwitSnapTable).where(and(eq(likeTwitSnapTable.twitsnapId, like.twitsnapId), eq(likeTwitSnapTable.likedBy, like.likedBy)))
   .returning()
   if (res.length === 0) {
-    throw new Error("TwitSnap like not found")
+    throw new ErrorWithStatusCode("LikeError", "TwitSnap like not found", 404);
   }
 }
 
@@ -320,7 +327,7 @@ const createResponse = async (twitsnapId: string, newTwitSnap: InsertTwitsnap): 
   const twitSnap = await getTwitSnapsByTwitId(twitsnapId);
   const twitResponse = await getTwitSnapResponseById(twitsnapId);
   if (!twitSnap && !twitResponse) {
-    throw new Error("TwitSnap not found")
+    throw new ErrorWithStatusCode("ResponseError", "TwitSnap not found", 404);
   }
   return db
     .insert(twitSnapResponse)

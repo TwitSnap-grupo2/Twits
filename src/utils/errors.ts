@@ -36,3 +36,13 @@ export const createErrorResponse = (
     instance,
   };
 };
+
+export class ErrorWithStatusCode extends Error {
+  statusCode: number;
+
+  constructor(name:string, message:string, statusCode: number) {
+    super(message);
+    super.name = name;
+    this.statusCode = statusCode;
+  }
+}
