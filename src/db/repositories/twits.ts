@@ -360,7 +360,7 @@ const getTwitSnapResponseById = async (twitsnapId: string): Promise<SelectTwitsn
 }
 
 const deleteTwitSnapResponse = async (twitSnapId: string): Promise<void> => {
-  const res = await db.delete(twitSnapResponse).where(eq(twitSnapResponse.inResponseToId, twitSnapId))
+  const res = await db.delete(twitSnapResponse).where(eq(twitSnapResponse.id, twitSnapId))
   .returning()
   if (res.length === 0) {
     throw new Error("TwitSnap response not found")

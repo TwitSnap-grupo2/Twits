@@ -119,7 +119,6 @@ router.post("/:id/response", async (req, res, next) => {
     const result = newTwitSnapSchema.parse(req.body);
     const twitsnapId = req.params.id;
     const newTwitSnap: SelectTwitsnap | null = await twitSnapsService.createResponse(twitsnapId, result);
-    console.log(newTwitSnap);
     if (!newTwitSnap) {
       next({
         name: "NotFound",
@@ -128,7 +127,6 @@ router.post("/:id/response", async (req, res, next) => {
     }
     res.status(201).json(newTwitSnap);
   } catch (err: unknown) {
-    console.log(err);
     next(err);
   }
 }
@@ -147,7 +145,7 @@ router.get("/:id/responses", async (req, res, next) => {
 
 router.delete("/:id/response", async (req, res, next) => {
   try {
-    const result = deleteResponseSchema.parse(req.query);
+    // const result = deleteResponseSchema.parse(req.query);
     const twitsnapId = req.params.id;
     await twitSnapsService.deleteTwitSnapResponse(twitsnapId);
     res.status(204).send();
@@ -156,6 +154,9 @@ router.delete("/:id/response", async (req, res, next) => {
   }
 }
 );
+
+
+
 
 
 router.post("/:id/like", async (req, res, next) => {
