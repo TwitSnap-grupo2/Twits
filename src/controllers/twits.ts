@@ -155,6 +155,25 @@ router.delete("/:id/response", async (req, res, next) => {
 }
 );
 
+router.patch("/:id/response", async (req, res, next) => {
+  try{
+    const result = editTwitSnapSchema.parse(req.body);
+    const twitSnapId = req.params.id;
+    const twitSnapEdited = await twitSnapsService.editTwitSnapResponse(twitSnapId, result.message);
+    console.log(twitSnapEdited)
+    if (!twitSnapEdited){
+      next({
+        name: "NotFound",
+        message: "Error while trying to create twitsnap",
+      });
+    }
+    res.status(200).send(twitSnapEdited);
+  } catch (err: unknown){
+    console.log(err)
+    next(err);
+  }
+
+});
 
 
 

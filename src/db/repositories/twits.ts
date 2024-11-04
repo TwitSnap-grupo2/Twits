@@ -371,6 +371,17 @@ const deleteAllTwitSnapResponses = async () => {
   await db.delete(twitSnapResponse);
 }
 
+const editTwitSnapResponse = async (twitSnapId:string, newMessage: string): Promise<SelectTwitsnapResponse | null> => {
+  return db
+    .update(twitSnapResponse)
+    .set({
+      message: newMessage
+    })
+    .where(eq(twitSnapResponse.id, twitSnapId))
+    .returning()
+    .then((result) => (result.length > 0 ? result[0] : null));
+}
+
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
@@ -403,5 +414,6 @@ export default {
   createResponse,
   getTwitSnapResponses,
   deleteTwitSnapResponse,
-  deleteAllTwitSnapResponses
+  deleteAllTwitSnapResponses,
+  editTwitSnapResponse
 };

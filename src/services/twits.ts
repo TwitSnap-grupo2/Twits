@@ -48,6 +48,10 @@ const getTwitSnapResponses = async (twitSnapId: string): Promise<Array<TwitRespo
   return await db.getTwitSnapResponses(twitSnapId);
 }
 
+const editTwitSnapResponse = async (twitSnapId: string, newMessage: string):Promise<SelectTwitsnapResponse | null> => {
+  return await db.editTwitSnapResponse(twitSnapId, newMessage)
+}
+
 const getTwitSnapLikes = async (getLike: string): Promise<Array<SelectLike>> => {
   return await db.getTwitSnapLikes(getLike);
 }
@@ -135,6 +139,7 @@ const getUserStats = async (userId: string, limit: number): Promise<UserStats> =
 const deleteTwitSnapResponse = async (twitSnapId: string): Promise<void> => {
   return db.deleteTwitSnapResponse(twitSnapId);
 }
+
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -156,4 +161,5 @@ export default {
   createResponse,
   getTwitSnapResponses,
   deleteTwitSnapResponse,
+  editTwitSnapResponse
 };
