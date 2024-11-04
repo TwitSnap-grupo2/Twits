@@ -568,7 +568,7 @@ describe("hashtags", () => {
     const res = await twitSnapRepository.getTwitSnapHashtags(newTwitSnap.id);
 
     expect(res).toHaveLength(1);
-    expect(res[0].name).toBe("#twitsnap");
+    expect(res[0].name).toBe("twitsnap");
 
 })
 
@@ -582,12 +582,15 @@ describe("hashtags", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const res = await twitSnapRepository.getTwitSnapsByHashtag("#twitsnap");
+    const res = await api.get("/api/twits/hashtag?name=twitsnap").expect(200);
 
-    expect(res).toHaveLength(1);
-    expect(res[0].id).toBe(newTwitSnap.id);
-    expect(res[0].message).toBe(newTwitSnap.message);
-    expect(res[0].createdBy).toBe(newTwitSnap.createdBy);
+    const data = res.body;
+
+
+    expect(data).toHaveLength(1);
+    expect(data[0].id).toBe(newTwitSnap.id);
+    expect(data[0].message).toBe(newTwitSnap.message);
+    expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
 });
 
   test("hashtags can be searched", async () => {
@@ -603,11 +606,11 @@ describe("hashtags", () => {
 
 
 
-    const res = await twitSnapRepository.searchHashtags("twitsnap");
+    const res = await twitSnapService.searchHashtags("twitsnap");
 
     expect(res).toHaveLength(2);
-    expect(res[0]).toBe("#twitsnap");
-    expect(res[1]).toBe("#anothertwitsnap");
+    expect(res[0]).toBe("twitsnap");
+    expect(res[1]).toBe("anothertwitsnap");
   }
 );
 
@@ -624,14 +627,14 @@ describe("hashtags", () => {
     const res = await twitSnapRepository.getTwitSnapHashtags(newTwitSnap.id);
 
     expect(res).toHaveLength(1);
-    expect(res[0].name).toBe("#twitsnap");
+    expect(res[0].name).toBe("twitsnap");
 
     await api.patch("/api/twits/" + newTwitSnap.id).send({ message: "This is a #anothertwitsnap" }).expect(200);
 
     const res2 = await twitSnapRepository.getTwitSnapHashtags(newTwitSnap.id);
 
     expect(res2).toHaveLength(1);
-    expect(res2[0].name).toBe("#anothertwitsnap");
+    expect(res2[0].name).toBe("anothertwitsnap");
     
   }
 );

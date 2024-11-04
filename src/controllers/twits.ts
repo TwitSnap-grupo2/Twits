@@ -33,7 +33,7 @@ router.get("/search", async (req, res, next) => {
 router.get("/hashtag", async (req, res, next) => {
   try {
     const result = hashtagSchema.parse(req.query);
-    const twitSnaps = await twitSnapsService.getTwitSnapsByHashtag(result.hashtag);
+    const twitSnaps = await twitSnapsService.getTwitSnapsByHashtag(result.name);
     res.status(200).json(twitSnaps);
   } catch (err: unknown) {
     next(err);
@@ -44,7 +44,7 @@ router.get("/hashtag", async (req, res, next) => {
 router.get("/hashtag/search", async (req, res, next) => {
   try {
     const result = hashtagSchema.parse(req.query);
-    const twitSnaps = await twitSnapsService.searchHashtags(result.hashtag);
+    const twitSnaps = await twitSnapsService.searchHashtags(result.name);
     res.status(200).json(twitSnaps);
   } catch (err: unknown) {
     next(err);

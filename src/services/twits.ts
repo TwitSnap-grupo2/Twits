@@ -27,7 +27,7 @@ const createTwitSnap = async (
   }
   for(const word of newTwitSnap.message.split(" ")){
     if(word.charAt(0) === "#"){
-      const _ = await db.addHashtag(word, res?.id)
+      const _ = await db.addHashtag(word.slice(1), res?.id)
     }
   }
   return res
@@ -115,7 +115,7 @@ const deleteTwitSnapMention = async (twitSnap_id: string, mentionedUser: string)
   return await db.deleteTwitSnapMention(twitSnap_id, mentionedUser);
 }
 
-const getTwitSnapsByHashtag = async (hashtag: string): Promise<Array<SelectTwitsnap>> => {
+const getTwitSnapsByHashtag = async (hashtag: string): Promise<Array<TwitsAndShares>> => {
   return await db.getTwitSnapsByHashtag(hashtag);
 }
 
@@ -130,23 +130,23 @@ const getTwitSnapsBySimilarity = async (q: string): Promise<Array<SelectTwitsnap
 const editTwitSnap = async (twitSnapId: string, twitSnap: editTwitSnapSchema): Promise<SelectTwitsnap> => {
   const previousTwitSnap = await db.getTwitSnapsByTwitId(twitSnapId);
   if (!previousTwitSnap){
-    throw new Error("TwitSnap not found");
+    throw new ErrorWithStatusCode("TwitSnapError", "TwitSnap not found", 404);
   }
   const result = await db.editTwitSnap(twitSnapId, twitSnap);
   if (!result){
-    throw new Error("TwitSnap not found");
+    throw new ErrorWithStatusCode("TwitSnapError", "TwitSnap not found", 404);
   }
   for(const word of result.message.split(" ")){
     if(word.charAt(0) === "#"){
       if(!previousTwitSnap.message.includes(word)){
-      const _ = await db.addHashtag(word, twitSnapId)
+      const _ = await db.addHashtag(word.slice(1), twitSnapId)
       }
     }
   }
   for(const word of previousTwitSnap.message.split(" ")){
     if(word.charAt(0) === "#"){
       if(!result.message.includes(word)){
-        const _ = await db.deleteHashtag(word, twitSnapId)
+        const _ = await db.deleteHashtag(word.slice(1), twitSnapId)
       }
     }
   }

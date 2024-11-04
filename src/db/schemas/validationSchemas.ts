@@ -26,7 +26,7 @@ export const newTwitSnapSchema = z.object({
   })
   
   export const hashtagSchema = z.object({
-    hashtag: z.string().max(280),
+    name: z.string().max(280).min(1),
   })
   
   export const searchTwitSchema = z.object( {
