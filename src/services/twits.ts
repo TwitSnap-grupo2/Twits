@@ -46,6 +46,7 @@ const deleteTwitSnap = async (id: string): Promise<void> => {
   }
   if (res.parentId){
     return await db.deleteReply(id);
+    
   }
   return await db.deleteTwitSnap(id);
 }
