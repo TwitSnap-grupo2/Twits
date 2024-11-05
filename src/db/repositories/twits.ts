@@ -7,16 +7,14 @@ import {
   twitSnap as twitSnapsTable,
 } from "../schemas/twisnapSchema";
 import { db } from "../setup";
-import { and, count, desc, eq, gt, gte, inArray, is, lt, sql} from "drizzle-orm";
+import { aliasedTable, and, count, desc, eq, gt, gte, inArray, is, isNotNull, isNull, lt, not, sql} from "drizzle-orm";
 import { LikeSchema, likeTwitSnapTable, SelectLike } from "../schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/snapshareSchema";
-import {TwitsAndShares, TwitResponse} from "../schemas/twitsAndShares";
+import {TwitsAndShares} from "../schemas/twitsAndShares";
 import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
 import {hashtagTable, SelectHashtag} from "../schemas/hashtagSchema"
 import { editTwitSnapSchema } from "../../utils/types";
 import UserStats from "../schemas/statsSchema";
-import { SelectTwitsnapResponse, twitSnapResponse } from "../schemas/twitsnapResponses";
-import { NeonDbError } from "@neondatabase/serverless";
 import { ErrorWithStatusCode } from "../../utils/errors";
 
 
@@ -41,9 +39,10 @@ const getTwitSnapsById = async (id: string): Promise<Array<TwitsAndShares>> => {
     createdBy: twitSnapsTable.createdBy,
     sharedBy: sql<string | null>`NULL`,
     isPrivate: twitSnapsTable.isPrivate,
-    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
-    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
-    responses_count: sql<number>`(SELECT COUNT(*) FROM ${twitSnapResponse} WHERE ${twitSnapResponse.inResponseToId} = ${twitSnapsTable.id})`
+    parentId: twitSnapsTable.parentId,
+    likesCount: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    sharesCount: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
+    repliesCount: sql<number>`(SELECT COUNT(*) FROM ${twitSnapsTable} WHERE ${twitSnapsTable.parentId} = ${twitSnapsTable.id})`
   }).from(twitSnapsTable)
     .where(eq(twitSnapsTable.createdBy, id))
     .orderBy(desc(twitSnapsTable.createdAt))  
@@ -54,13 +53,14 @@ const getTwitSnapsById = async (id: string): Promise<Array<TwitsAndShares>> => {
     createdBy: twitSnapsTable.createdBy,
     sharedBy: snapshareTable.sharedBy,
     createdAt: snapshareTable.sharedAt,
+    parentId: twitSnapsTable.parentId,
     isPrivate: twitSnapsTable.isPrivate,
-    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
-    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
-    responses_count: sql<number>`(SELECT COUNT(*) FROM ${twitSnapResponse} WHERE ${twitSnapResponse.inResponseToId} = ${twitSnapsTable.id})`
+    likesCount: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    sharesCount: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
+    repliesCount: sql<number>`(SELECT COUNT(*) FROM ${twitSnapsTable} WHERE ${twitSnapsTable.parentId} = ${twitSnapsTable.id})`
   }).from(snapshareTable)
     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
-    .where(eq(snapshareTable.sharedBy, id))
+    .where(and(eq(snapshareTable.sharedBy, id), isNotNull(twitSnapsTable.message)))
     .orderBy(desc(snapshareTable.sharedAt))
 
   const combinedTwits = [...originalTwits, ...retweetedTwits];
@@ -152,15 +152,15 @@ const getFeed = async (timestamp_start: Date, limit: number, followeds: Array<st
     createdBy: twitSnapsTable.createdBy,
     sharedBy: sql<string | null>`NULL`,
     isPrivate: twitSnapsTable.isPrivate,
-    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
-    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
-    responses_count: sql<number>`(SELECT COUNT(*) FROM ${twitSnapResponse} WHERE ${twitSnapResponse.inResponseToId} = ${twitSnapsTable.id})`
+    parentId: twitSnapsTable.parentId,
+    likesCount:  sql<number>`0`,
+    sharesCount: sql<number>`0`,
+    repliesCount: sql<number>`0`
   }).from(twitSnapsTable)
-    .where(and(lt(twitSnapsTable.createdAt, timestamp_start), inArray(twitSnapsTable.createdBy, followeds)))
+    .where(and(lt(twitSnapsTable.createdAt, timestamp_start), inArray(twitSnapsTable.createdBy, followeds), isNotNull(twitSnapsTable.message), isNull(twitSnapsTable.parentId)))
     .orderBy(desc(twitSnapsTable.createdAt))
     .limit(limit);
   
-
   const retweetedTwits = await db.select({
     id: twitSnapsTable.id,
     message: twitSnapsTable.message,
@@ -168,22 +168,29 @@ const getFeed = async (timestamp_start: Date, limit: number, followeds: Array<st
     sharedBy: snapshareTable.sharedBy,
     createdAt: snapshareTable.sharedAt,
     isPrivate: twitSnapsTable.isPrivate,
-    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
-    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
-    responses_count: sql<number>`(SELECT COUNT(*) FROM ${twitSnapResponse} WHERE ${twitSnapResponse.inResponseToId} = ${twitSnapsTable.id})`
+    parentId: twitSnapsTable.parentId,
+    likesCount:  sql<number>`0`,
+    sharesCount: sql<number>`0`,
+    repliesCount: sql<number>`0`
   }).from(snapshareTable)
     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
-    .where(and(lt(snapshareTable.sharedAt, timestamp_start), inArray(snapshareTable.sharedBy, followeds)))
+    .where(and(lt(snapshareTable.sharedAt, timestamp_start), inArray(snapshareTable.sharedBy, followeds), isNotNull(twitSnapsTable.message), isNull(twitSnapsTable.parentId)))
     .orderBy(desc(snapshareTable.sharedAt))
     .limit(limit);
 
   const combinedTwits = [...originalTwits, ...retweetedTwits];
-  combinedTwits.sort((a, b) => {
-    return b.createdAt.getTime() - a.createdAt.getTime();
-  });
+  combinedTwits.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   combinedTwits.splice(limit);
+  
+  for (const twit of combinedTwits) {
+    twit.likesCount = await getLikesCount(twit.id);
+    twit.sharesCount = await getSharesCount(twit.id);
+    twit.repliesCount = await getRepliesCount(twit.id);
+  }
+
   return combinedTwits;
 }
+
 
 const mentionUser = async (twitSnap_id: string, mentionedUser: string): Promise<SelectMention | null> => {
   return db
@@ -238,9 +245,10 @@ const getTwitSnapsByHashtag = async (hashtag: string): Promise<Array<TwitsAndSha
     createdBy: twitSnapsTable.createdBy,
     isPrivate: twitSnapsTable.isPrivate,
     sharedBy: sql<string | null>`NULL`,
-    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
-    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
-    responses_count: sql<number>`(SELECT COUNT(*) FROM ${twitSnapResponse} WHERE ${twitSnapResponse.inResponseToId} = ${twitSnapsTable.id})`
+    parentId: twitSnapsTable.parentId,
+    likesCount: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    sharesCount: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
+    repliesCount: sql<number>`(SELECT COUNT(*) FROM ${twitSnapsTable} WHERE ${twitSnapsTable.parentId} = ${twitSnapsTable.id})`
   }).from(twitSnapsTable)
     .innerJoin(hashtagTable, eq(twitSnapsTable.id, hashtagTable.twitsnapId))
     .where(eq(hashtagTable.name, hashtag.toLowerCase()))
@@ -276,9 +284,10 @@ const getTwitSnapsBySimilarity = async (q: string): Promise<Array<SelectTwitsnap
     createdAt: twitSnapsTable.createdAt,
     createdBy: twitSnapsTable.createdBy,
     isPrivate: twitSnapsTable.isPrivate,
-    likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
-    shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
-    responses_count: sql<number>`(SELECT COUNT(*) FROM ${twitSnapResponse} WHERE ${twitSnapResponse.inResponseToId} = ${twitSnapsTable.id})`
+    parentId: twitSnapsTable.parentId,
+    likesCount: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+    sharesCount: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`,
+    repliesCount: sql<number>`(SELECT COUNT(*) FROM ${twitSnapsTable} WHERE ${twitSnapsTable.parentId} = ${twitSnapsTable.id})`
 
   })
   .from(twitSnapsTable)
@@ -309,11 +318,12 @@ const deleteHashtag = async (hashtag: string, twitsnap_id: string): Promise<void
 }
 
 const getUserStats = async (userId: string, timestamp: Date): Promise<UserStats> => {
-  const twitsTotal = await db.select({count: count()}).from(twitSnapsTable).where(and(eq(twitSnapsTable.createdBy, userId), gte(twitSnapsTable.createdAt, timestamp))).then((result) => result[0].count);
+  const table2 = aliasedTable(twitSnapsTable, "table2");
+  const twitsTotal = await db.select({count: count()}).from(twitSnapsTable).where(and(eq(twitSnapsTable.createdBy, userId), gte(twitSnapsTable.createdAt, timestamp), isNull(twitSnapsTable.parentId))).then((result) => result[0].count);
   const likesTotal = await db.select({count: count()}).from(twitSnapsTable).innerJoin(likeTwitSnapTable, eq(twitSnapsTable.id, likeTwitSnapTable.twitsnapId)).where(and(eq(twitSnapsTable.createdBy, userId), gte(twitSnapsTable.createdAt, timestamp))).then((result) => result[0].count);
   const sharesTotal = await db.select({count: count()}).from(twitSnapsTable).innerJoin(snapshareTable, eq(twitSnapsTable.id, snapshareTable.twitsnapId)).where(and(eq(twitSnapsTable.createdBy, userId), gte(twitSnapsTable.createdAt, timestamp))).then((result) => result[0].count);
-  const responsesTotal = await db.select({count: count()}).from(twitSnapsTable).innerJoin(twitSnapResponse, eq(twitSnapsTable.id, twitSnapResponse.inResponseToId)).where(and(eq(twitSnapsTable.createdBy, userId), gte(twitSnapsTable.createdAt, timestamp))).then((result) => result[0].count);
-  return {twitsTotal, likesTotal, sharesTotal, responsesTotal};
+  const repliesTotal = await db.select({count: count()}).from(twitSnapsTable).innerJoin(table2, eq(table2.parentId, twitSnapsTable.id)).where(and(eq(twitSnapsTable.createdBy, userId), gte(twitSnapsTable.createdAt, timestamp))).then((result) => result[0].count);
+  return {twitsTotal, likesTotal, sharesTotal, repliesTotal};
 }
 
 const addRawTwitSnapForTesting = async (twitSnap: InsertTwitsnap): Promise<SelectTwitsnap | null> => {
@@ -324,71 +334,72 @@ const addRawTwitSnapForTesting = async (twitSnap: InsertTwitsnap): Promise<Selec
     .then((result) => (result.length > 0 ? result[0] : null));
 }
 
-const createResponse = async (twitsnapId: string, newTwitSnap: InsertTwitsnap): Promise<SelectTwitsnapResponse | null> => {
+const createReply = async (twitsnapId: string, newTwitSnap: InsertTwitsnap): Promise<SelectTwitsnap | null> => {
   const twitSnap = await getTwitSnapsByTwitId(twitsnapId);
-  const twitResponse = await getTwitSnapResponseById(twitsnapId);
-  if (!twitSnap && !twitResponse) {
-    throw new ErrorWithStatusCode("ResponseError", "TwitSnap not found", 404);
+  if (!twitSnap) {
+    throw new ErrorWithStatusCode("ReplyError", "TwitSnap not found", 404);
   }
   return db
-    .insert(twitSnapResponse)
+    .insert(twitSnapsTable)
     .values({
       ...newTwitSnap,
-      id: uuid4(),
-      inResponseToId: twitsnapId,
+      parentId: twitsnapId,
     })
     .returning()
     .then((result) => (result.length > 0 ? result[0] : null));
 }
 
-const getTwitSnapResponses = async (twitsnapId: string): Promise<Array<TwitResponse>> => {
+const getTwitSnapReplies = async (twitsnapId: string): Promise<Array<SelectTwitsnap>> => {
   return db
     .select({
-      id: twitSnapResponse.id,
-      message: twitSnapResponse.message,
-      createdAt: twitSnapResponse.createdAt,
-      createdBy: twitSnapResponse.createdBy,
-      inResponseToId: twitSnapResponse.inResponseToId,
-      isPrivate: twitSnapResponse.isPrivate,
-      likes_count: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapResponse.id})`,
-      responses_count: sql<number>`(SELECT COUNT(*) FROM ${twitSnapResponse} WHERE ${twitSnapResponse.inResponseToId} = ${twitSnapResponse.id})`,
-      shares_count: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapResponse.id})`
+      id: twitSnapsTable.id,
+      message: twitSnapsTable.message,
+      createdAt: twitSnapsTable.createdAt,
+      createdBy: twitSnapsTable.createdBy,
+      parent: twitSnapsTable.parentId,
+      isPrivate: twitSnapsTable.isPrivate,
+      parentId: twitSnapsTable.parentId,
+      likesCount: sql<number>`(SELECT COUNT(*) FROM ${likeTwitSnapTable} WHERE ${likeTwitSnapTable.twitsnapId} = ${twitSnapsTable.id})`,
+      repliesCount: sql<number>`(SELECT COUNT(*) FROM ${twitSnapsTable} WHERE ${twitSnapsTable.parentId} = ${twitSnapsTable.id})`,
+      sharesCount: sql<number>`(SELECT COUNT(*) FROM ${snapshareTable} WHERE ${snapshareTable.twitsnapId} = ${twitSnapsTable.id})`
     })
-    .from(twitSnapResponse)
-    .where(eq(twitSnapResponse.inResponseToId, twitsnapId))
-    .orderBy(desc(twitSnapResponse.createdAt))
+    .from(twitSnapsTable)
+    .where(eq(twitSnapsTable.parentId, twitsnapId))
+    .orderBy(desc(twitSnapsTable.createdAt))
 }
 
-const getTwitSnapResponseById = async (twitsnapId: string): Promise<SelectTwitsnapResponse | null> => {
-  return db
-    .select()
-    .from(twitSnapResponse)
-    .where(eq(twitSnapResponse.id, twitsnapId))
-    .then((result) => (result.length > 0 ? result[0] : null));
+const getLikesCount = async (twitId: string) => {
+  const result = await db.select({count: count()})
+    .from(likeTwitSnapTable)
+    .where(eq(likeTwitSnapTable.twitsnapId, twitId));
+  return result[0]?.count || 0;
+};
+
+const getSharesCount = async (twitId: string) => {
+  const result = await db.select({count: count()})
+    .from(snapshareTable)
+    .where(eq(snapshareTable.twitsnapId, twitId));
+  return result[0]?.count || 0;
+};
+
+const getRepliesCount = async (twitId: string) => {
+  const result = await db.select({count: count()})
+    .from(twitSnapsTable)
+    .where(eq(twitSnapsTable.parentId, twitId));
+  return result[0]?.count || 0;
+};
+
+const deleteReply = async(twitSnapId: string) => {
+  await db.update(twitSnapsTable).set({message: null}).where(eq(twitSnapsTable.id, twitSnapId));
 }
 
-const deleteTwitSnapResponse = async (twitSnapId: string): Promise<void> => {
-  const res = await db.delete(twitSnapResponse).where(eq(twitSnapResponse.id, twitSnapId))
-  .returning()
+const deleteTwitSnap = async (id: string): Promise<void> => { 
+  const res = await db.delete(twitSnapsTable).where(eq(twitSnapsTable.id, id)).returning();
   if (res.length === 0) {
-    throw new Error("TwitSnap response not found")
+    throw new ErrorWithStatusCode("TwitSnapError", "TwitSnap not found", 404);
   }
 }
 
-const deleteAllTwitSnapResponses = async () => {
-  await db.delete(twitSnapResponse);
-}
-
-const editTwitSnapResponse = async (twitSnapId:string, newMessage: string): Promise<SelectTwitsnapResponse | null> => {
-  return db
-    .update(twitSnapResponse)
-    .set({
-      message: newMessage
-    })
-    .where(eq(twitSnapResponse.id, twitSnapId))
-    .returning()
-    .then((result) => (result.length > 0 ? result[0] : null));
-}
 
 
 export default {
@@ -419,9 +430,10 @@ export default {
   getTwitSnapsByTwitId,
   getUserStats,
   addRawTwitSnapForTesting,
-  createResponse,
-  getTwitSnapResponses,
-  deleteTwitSnapResponse,
-  deleteAllTwitSnapResponses,
-  editTwitSnapResponse
+  createReply,
+  getTwitSnapReplies,
+  deleteReply,
+  deleteTwitSnap
 };
+
+

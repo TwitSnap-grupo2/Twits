@@ -5,7 +5,6 @@ import { testTwitSnap } from "./testHelper";
 import twitSnapRepository from "../db/repositories/twits";
 import twitSnapService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
-import { before } from "node:test";
 
 const api = supertest(app);
 
@@ -15,17 +14,17 @@ describe("twitsnaps", () => {
   });
 
   test("can be obtained when there are no twitsnaps", async () => {
-    const response = await api.get("/api/twits").expect(200);
-    expect(response.body).toHaveLength(0);
+    const Reply = await api.get("/api/twits").expect(200);
+    expect(Reply.body).toHaveLength(0);
   });
 
   test("can be created", async () => {
-    const response = await api
+    const Reply = await api
       .post("/api/twits")
       .send(testTwitSnap)
       .expect(201);
 
-    const data: InsertTwitsnap = response.body;
+    const data: InsertTwitsnap = Reply.body;
 
     expect(data.id).toBeDefined();
     expect(data.createdAt).toBeDefined();
@@ -41,9 +40,9 @@ describe("twitsnaps", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const response = await api.get("/api/twits").expect(200);
+    const Reply = await api.get("/api/twits").expect(200);
 
-    const data: Array<SelectTwitsnap> = response.body;
+    const data: Array<SelectTwitsnap> = Reply.body;
 
     expect(data).toHaveLength(1);
 
@@ -68,11 +67,11 @@ describe("twitsnaps", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const response = await api
+    const Reply = await api
       .get("/api/twits/" + newTwitSnap.createdBy)
       .expect(200);
 
-    const data: Array<SelectTwitsnap> = response.body;
+    const data: Array<SelectTwitsnap> = Reply.body;
 
     expect(data).toHaveLength(1);
 
@@ -98,11 +97,11 @@ describe("twitsnaps", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const response = await api
+    const Reply = await api
       .get("/api/twits/search?q=twitsnap")
       .expect(200);
 
-    const data: Array<SelectTwitsnap> = response.body;
+    const data: Array<SelectTwitsnap> = Reply.body;
 
     expect(data).toHaveLength(2);
 
@@ -119,16 +118,28 @@ describe("twitsnaps", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const response = await api
+    const Reply = await api
       .patch("/api/twits/" + newTwitSnap.id)
       .send({ message: "This is an edited twitsnap" })
       .expect(200);
 
-    const data: InsertTwitsnap = response.body;
+    const data: InsertTwitsnap = Reply.body;
 
     expect(data.id).toBe(newTwitSnap.id);
     expect(data.message).toBe("This is an edited twitsnap");
     expect(data.createdBy).toBe(newTwitSnap.createdBy);
+  }
+  );
+
+  test("can be deleted", async () => {
+    const newTwitSnap: SelectTwitsnap | null =
+      await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api.delete("/api/twits/" + newTwitSnap.id).expect(204);
   }
   );
 });
@@ -146,12 +157,12 @@ describe("twitsnap likes", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const response = await api
+    const Reply = await api
       .post("/api/twits/" + newTwitSnap.id + "/like")
       .send({ likedBy: testTwitSnap.createdBy })
       .expect(201);
 
-    const data = response.body;
+    const data = Reply.body;
 
     expect(data.likedBy).toBe(testTwitSnap.createdBy);
     expect(data.twitsnapId).toBe(newTwitSnap.id);
@@ -237,11 +248,11 @@ describe("twitsnap likes", () => {
     .send({ likedBy: "12345678-1234-1234-1234-123456789012" })
     .expect(201);
 
-    const response = await api
+    const Reply = await api
       .get("/api/twits/" + newTwitSnap.id + "/like")
       .expect(200);
 
-    const data = response.body;
+    const data = Reply.body;
 
     expect(data).toHaveLength(2);
   }
@@ -260,12 +271,12 @@ describe("snapshares", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const response = await api
+    const Reply = await api
       .post("/api/twits/" + newTwitSnap.id + "/share")
       .send({ sharedBy: testTwitSnap.createdBy })
       .expect(201);
 
-    const data = response.body;
+    const data = Reply.body;
 
     expect(data.twitsnapId).toBe(newTwitSnap.id);
     expect(data.sharedBy).toBe(testTwitSnap.createdBy);
@@ -312,11 +323,11 @@ describe("feed", () => {
       limit: 10,
       followeds: [],
     }
-    const response = await api
+    const Reply = await api
       .post("/api/twits/feed")
       .send(body)
       .expect(200);
-    expect(response.body).toHaveLength(0);
+    expect(Reply.body).toHaveLength(0);
   }
   );
 
@@ -343,13 +354,13 @@ describe("feed", () => {
       limit: 10,
       followeds: ["12345678-1234-1234-1234-123456789012"],
     }
-    const response = await api
+    const Reply = await api
       .post("/api/twits/feed")
       .send(body)
       .expect(200);
 
 
-    const data = response.body;
+    const data = Reply.body;
 
     expect(data).toHaveLength(1);
 
@@ -385,12 +396,12 @@ describe("feed", () => {
       followeds: ["12345678-1234-1234-1234-123456789012"],
     }
 
-    const response = await api
+    const Reply = await api
       .post("/api/twits/feed")
       .send(body)
       .expect(200);
 
-    const data = response.body;
+    const data = Reply.body;
 
     expect(data).toHaveLength(2);
 
@@ -428,12 +439,12 @@ describe("feed", () => {
       followeds: ["12345678-1234-1234-1234-123456789012"],
     }
 
-    const response = await api
+    const Reply = await api
       .post("/api/twits/feed")
       .send(body)
       .expect(200);
 
-    const data = response.body;
+    const data = Reply.body;
 
     expect(data).toHaveLength(1);
 
@@ -444,7 +455,7 @@ describe("feed", () => {
   }
   );
 
-  test("can be obtained with likes, shares count, and responses", async () => {
+  test("can be obtained with likes, shares count, and replies", async () => {
     const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
 
     if (!newTwitSnap) {
@@ -455,6 +466,7 @@ describe("feed", () => {
       message: "This is another twitsnap",
       createdBy: "12345678-1234-1234-1234-123456789012",
     });
+   
 
     await twitSnapService.createSnapshare({
       twitsnapId: newTwitSnap.id,
@@ -466,15 +478,15 @@ describe("feed", () => {
       twitsnapId: newTwitSnap.id,
     });
 
-    await twitSnapService.createResponse(newTwitSnap.id, {
-      message: "This is a response",
+    await twitSnapService.createReply(newTwitSnap.id, {
+      message: "This is a Reply",
       createdBy: "12345678-1234-1234-1234-123456789012",
     });
 
     const body = {
       timestamp_start: new Date().toISOString(),
       limit: 10,
-      followeds: ["12345678-1234-1234-1234-123456789012"],
+      followeds: ["12345678-1234-1234-1234-123456789012", newTwitSnap.createdBy],
     }
     const response = await api
       .post("/api/twits/feed")
@@ -483,16 +495,15 @@ describe("feed", () => {
 
     const data = response.body;
 
-    expect(data).toHaveLength(2);
+    expect(data).toHaveLength(3);
 
-    expect(data[0].id).toBe(newTwitSnap.id);
-    expect(data[0].message).toBe(newTwitSnap.message);
-    expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
-    expect(data[0].sharedBy).toBe("12345678-1234-1234-1234-123456789012");
-    expect(data[0].likes_count).toBe("1");
-    expect(data[0].shares_count).toBe("1");
-    expect(data[0].responses_count).toBe("1");
-  });
+    expect(data[2].id).toBe(newTwitSnap.id);
+    expect(data[2].message).toBe(newTwitSnap.message);
+    expect(data[2].createdBy).toBe(newTwitSnap.createdBy);
+    expect(data[2].likesCount).toBe(1);
+    expect(data[2].sharesCount).toBe(1);
+    expect(data[2].repliesCount).toBe(1);
+  }, 10000);
 });
 
 describe("mentions", () => {
@@ -677,13 +688,13 @@ describe("stats", () => {
       twitsnapId: twit2.id,
     });
 
-    await twitSnapService.createResponse(twit1.id, {
-      message: "This is a response",
+    await twitSnapService.createReply(twit1.id, {
+      message: "This is a Reply",
       createdBy: "12345678-1234-1234-1234-123456789012",
     });
 
-    await twitSnapService.createResponse(twit1.id, {
-      message: "This is another response",
+    await twitSnapService.createReply(twit1.id, {
+      message: "This is another Reply",
       createdBy: "12345678-1234-1234-1234-123456789012",
     });
 
@@ -698,21 +709,20 @@ describe("stats", () => {
     });
 
 
-    const response = await api.get("/api/twits/stats/12345678-1234-1234-1234-123456789012?limit=7").expect(200);
-    const data = response.body;
+    const Reply = await api.get("/api/twits/stats/12345678-1234-1234-1234-123456789012?limit=7").expect(200);
+    const data = Reply.body;
 
     expect(data.twitsTotal).toBe(2);
     expect(data.sharesTotal).toBe(1);
     expect(data.likesTotal).toBe(2);
-    expect(data.responsesTotal).toBe(2);
+    expect(data.repliesTotal).toBe(2);
 
   }, 6000);
 })
 
-describe("twitsnaps responses", () => {
+describe("twitsnaps replies", () => {
   beforeEach(async () => {
     await twitSnapRepository.deleteTwitsnaps();
-    await twitSnapRepository.deleteAllTwitSnapResponses();
   })
 
   test("can be created", async () => {
@@ -722,23 +732,23 @@ describe("twitsnaps responses", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const response = await api
-      .post("/api/twits/" + newTwitSnap.id + "/response")
-      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+    const Reply = await api
+      .post("/api/twits/" + newTwitSnap.id + "/reply")
+      .send({ message: "This is a Reply", createdBy: "12345678-1234-1234-1234-123456789012" })
       .expect(201);
 
-    const data = response.body;
+    const data = Reply.body;
 
-    expect(data.inResponseToId).toBe(newTwitSnap.id);
-    expect(data.message).toBe("This is a response");
+    expect(data.parentId).toBe(newTwitSnap.id);
+    expect(data.message).toBe("This is a Reply");
     expect(data.createdBy).toBe("12345678-1234-1234-1234-123456789012");
   }
   );
 
   test("cannot be created if twitsnap does not exist", async () => {
     await api
-      .post("/api/twits/12345678-1234-1234-1234-123456789012/response")
-      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .post("/api/twits/12345678-1234-1234-1234-123456789012/reply")
+      .send({ message: "This is a Reply", createdBy: "12345678-1234-1234-1234-123456789012" })
       .expect(404);
   }
   );
@@ -750,26 +760,26 @@ describe("twitsnaps responses", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    await twitSnapService.createResponse(newTwitSnap.id, {
-      message: "This is a response",
+    await twitSnapService.createReply(newTwitSnap.id, {
+      message: "This is a Reply",
       createdBy: "12345678-1234-1234-1234-123456789012",
     });
 
-    await twitSnapService.createResponse(newTwitSnap.id, {
-      message: "This is another response",
+    await twitSnapService.createReply(newTwitSnap.id, {
+      message: "This is another Reply",
       createdBy: "12345678-1234-4234-1234-123456789012"
     });
 
-    const response = await api
-      .get("/api/twits/" + newTwitSnap.id + "/responses")
+    const Reply = await api
+      .get("/api/twits/" + newTwitSnap.id + "/replies")
       .expect(200);
 
-    const data = response.body;
+    const data = Reply.body;
 
     expect(data).toHaveLength(2);
 
-    expect(data[0].message).toBe("This is another response");
-    expect(data[1].message).toBe("This is a response");
+    expect(data[0].message).toBe("This is another Reply");
+    expect(data[1].message).toBe("This is a Reply");
   }
   
 );
@@ -781,23 +791,23 @@ describe("twitsnaps responses", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const response = await api
-      .post("/api/twits/" + newTwitSnap.id + "/response")
-      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+    const Reply = await api
+      .post("/api/twits/" + newTwitSnap.id + "/Reply")
+      .send({ message: "This is a Reply", createdBy: "12345678-1234-1234-1234-123456789012" })
       .expect(201);
 
-    const data = response.body;
+    const data = Reply.body;
 
-    expect(data.inResponseToId).toBe(newTwitSnap.id);
-    expect(data.message).toBe("This is a response");
+    expect(data.parentId).toBe(newTwitSnap.id);
+    expect(data.message).toBe("This is a Reply");
     expect(data.createdBy).toBe("12345678-1234-1234-1234-123456789012");
 
-    const response2 = await api.post("/api/twits/" + data.id + "/response").send({ message: "This is a response to a response", createdBy: "12345678-1234-1234-1234-123456789012" }).expect(201);
+    const Reply2 = await api.post("/api/twits/" + data.id + "/Reply").send({ message: "This is a Reply to a Reply", createdBy: "12345678-1234-1234-1234-123456789012" }).expect(201);
 
-    const data2 = response2.body;
+    const data2 = Reply2.body;
 
-    expect(data2.inResponseToId).toBe(data.id);
-    expect(data2.message).toBe("This is a response to a response");
+    expect(data2.parentId).toBe(data.id);
+    expect(data2.message).toBe("This is a Reply to a Reply");
   })
 
   test("can be deleted", async () => {
@@ -808,13 +818,17 @@ describe("twitsnaps responses", () => {
     }
 
     const response = await api
-      .post("/api/twits/" + newTwitSnap.id + "/response")
-      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .post("/api/twits/" + newTwitSnap.id + "/reply")
+      .send({ message: "This is a Reply", createdBy: "12345678-1234-1234-1234-123456789012" })
       .expect(201);
 
     const data = response.body;
 
-    await api.delete("/api/twits/" + data.id + "/response").expect(204);
+    await api.delete("/api/twits/" + data.id).expect(204);
+
+    const res = await twitSnapRepository.getTwitSnapsByTwitId(data.id);
+
+    expect(res.message).toBeNull();
   }
   );
 
@@ -825,22 +839,22 @@ describe("twitsnaps responses", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const response = await api
-      .post("/api/twits/" + newTwitSnap.id + "/response")
-      .send({ message: "This is a response", createdBy: "12345678-1234-1234-1234-123456789012" })
+    const Reply = await api
+      .post("/api/twits/" + newTwitSnap.id + "/reply")
+      .send({ message: "This is a Reply", createdBy: "12345678-1234-1234-1234-123456789012" })
       .expect(201);
 
-    const data = response.body;
+    const data = Reply.body;
 
-    const response2 = await api
-      .patch("/api/twits/" + data.id + "/response")
-      .send({ message: "This is an edited response" })
+    const Reply2 = await api
+      .patch("/api/twits/" + data.id)
+      .send({ message: "This is an edited Reply" })
       .expect(200);
 
-    const data2 = response2.body;
+    const data2 = Reply2.body;
 
     expect(data2.id).toBe(data.id);
-    expect(data2.message).toBe("This is an edited response");
+    expect(data2.message).toBe("This is an edited Reply");
     expect(data2.createdBy).toBe(data.createdBy);
   }
   );

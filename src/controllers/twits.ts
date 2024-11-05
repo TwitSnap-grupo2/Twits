@@ -3,8 +3,7 @@ import twitSnapsService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
-import { deleteResponseSchema, editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
-import { NeonDbError } from "@neondatabase/serverless";
+import { editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
 
 
 const router = Router();
@@ -95,6 +94,17 @@ router.patch("/:id", async (req, res, next) => {
 }
 );
 
+router.delete("/:id", async (req, res, next) => {
+  try {
+    await twitSnapsService.deleteTwitSnap(req.params.id);
+    res.status(204).send();
+  } catch (err: unknown) {
+    next(err);
+  }
+}
+);
+
+
 router.post("/", async (req, res, next) => {
   try {
     const result: InsertTwitsnap = newTwitSnapSchema.parse(req.body);
@@ -115,17 +125,12 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.post("/:id/response", async (req, res, next) => {
+router.post("/:id/reply", async (req, res, next) => {
   try {
     const result = newTwitSnapSchema.parse(req.body);
     const twitsnapId = req.params.id;
-    const newTwitSnap: SelectTwitsnap | null = await twitSnapsService.createResponse(twitsnapId, result);
-    if (!newTwitSnap) {
-      next({
-        name: "NotFound",
-        message: "Error while trying to create twitsnap",
-      });
-    }
+    const newTwitSnapReply: InsertTwitsnap = { ...result, parentId: twitsnapId };
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapsService.createTwitSnap(newTwitSnapReply);
     res.status(201).json(newTwitSnap);
   } catch (err: unknown) {
     next(err);
@@ -133,46 +138,46 @@ router.post("/:id/response", async (req, res, next) => {
 }
 )
 
-router.get("/:id/responses", async (req, res, next) => {
+router.get("/:id/replies", async (req, res, next) => {
   try {
     const twitsnapId = req.params.id;
-    const twitSnapResponses = await twitSnapsService.getTwitSnapResponses(twitsnapId);
-    res.status(200).json(twitSnapResponses);
+    const twitSnapReplies = await twitSnapsService.getTwitSnapReplies(twitsnapId);
+    res.status(200).json(twitSnapReplies);
   } catch (err: unknown) {
     next(err);
   }
 }
 );
 
-router.delete("/:id/response", async (req, res, next) => {
-  try {
-    // const result = deleteResponseSchema.parse(req.query);
-    const twitsnapId = req.params.id;
-    await twitSnapsService.deleteTwitSnapResponse(twitsnapId);
-    res.status(204).send();
-  } catch (err: unknown) {
-    next(err);
-  }
-}
-);
+// router.delete("/:id/reply", async (req, res, next) => {
+//   try {
+//     // const result = deleteReplySchema.parse(req.query);
+//     const twitsnapId = req.params.id;
+//     await twitSnapsService.deleteTwitSnapReply(twitsnapId);
+//     res.status(204).send();
+//   } catch (err: unknown) {
+//     next(err);
+//   }
+// }
+// );
 
-router.patch("/:id/response", async (req, res, next) => {
-  try{
-    const result = editTwitSnapSchema.parse(req.body);
-    const twitSnapId = req.params.id;
-    const twitSnapEdited = await twitSnapsService.editTwitSnapResponse(twitSnapId, result.message);
-    if (!twitSnapEdited){
-      next({
-        name: "NotFound",
-        message: "Error while trying to create twitsnap",
-      });
-    }
-    res.status(200).send(twitSnapEdited);
-  } catch (err: unknown){
-    next(err);
-  }
+// router.patch("/:id/reply", async (req, res, next) => {
+//   try{
+//     const result = editTwitSnapSchema.parse(req.body);
+//     const twitSnapId = req.params.id;
+//     const twitSnapEdited = await twitSnapsService.editTwitSnapReply(twitSnapId, result.message);
+//     if (!twitSnapEdited){
+//       next({
+//         name: "NotFound",
+//         message: "Error while trying to create twitsnap",
+//       });
+//     }
+//     res.status(200).send(twitSnapEdited);
+//   } catch (err: unknown){
+//     next(err);
+//   }
 
-});
+// });
 
 
 

@@ -2,7 +2,7 @@ type UserStats = {
     twitsTotal: number;
     likesTotal: number;
     sharesTotal: number;
-    responsesTotal: number;
+    repliesTotal: number;
 }
 
 export default UserStats;

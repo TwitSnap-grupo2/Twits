@@ -1,26 +1,15 @@
 
 type TwitsAndShares = {
     id: string;
-    message: string;
+    message: string | null;
     createdAt: Date;
     createdBy: string;
     sharedBy: string | null;
     isPrivate: boolean;
-    likes_count: number;
-    shares_count: number;
-    responses_count: number;
+    likesCount: number;
+    sharesCount: number;
+    repliesCount: number;
+    parentId: string | null;
   }
 
-type TwitResponse = {
-    id: string;
-    inResponseToId: string;
-    message: string;
-    createdAt: Date;
-    createdBy: string;
-    isPrivate: boolean;
-    likes_count: number;
-    shares_count: number;
-    responses_count: number;
-
-}
-export { TwitResponse, TwitsAndShares };
+export { TwitsAndShares };

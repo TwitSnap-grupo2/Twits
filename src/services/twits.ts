@@ -3,11 +3,10 @@ import db from "../db/repositories/twits";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
-import {TwitsAndShares, TwitResponse} from "../db/schemas/twitsAndShares";
+import {TwitsAndShares} from "../db/schemas/twitsAndShares";
 import { SelectMention } from "../db/schemas/mentionsSchema";
 import { editTwitSnapSchema } from "../utils/types";
 import UserStats from "../db/schemas/statsSchema";
-import { SelectTwitsnapResponse } from "../db/schemas/twitsnapResponses";
 import { ErrorWithStatusCode } from "../utils/errors";
 
 const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
@@ -22,9 +21,16 @@ const createTwitSnap = async (
   newTwitSnap: InsertTwitsnap
 ): Promise<SelectTwitsnap | null> => {
   const res = await db.createTwitSnap(newTwitSnap);
-  if (!res?.id){
+  if (!res?.id || !newTwitSnap.message){
     return null
   }
+  if(newTwitSnap.parentId){
+    const parent = await db.getTwitSnapsByTwitId(newTwitSnap.parentId)
+    if(!parent){
+      throw new ErrorWithStatusCode("TwitSnapError", "TwitSnap not found", 404
+      );
+  }
+}
   for(const word of newTwitSnap.message.split(" ")){
     if(word.charAt(0) === "#"){
       const _ = await db.addHashtag(word.slice(1), res?.id)
@@ -32,6 +38,17 @@ const createTwitSnap = async (
   }
   return res
 };
+
+const deleteTwitSnap = async (id: string): Promise<void> => {
+  const res = await db.getTwitSnapsByTwitId(id);
+  if (!res || !res.message){
+    throw new ErrorWithStatusCode("TwitSnapError", "TwitSnap not found", 404);
+  }
+  if (res.parentId){
+    return await db.deleteReply(id);
+  }
+  return await db.deleteTwitSnap(id);
+}
 
 const likeTwitSnap = async( newLike: LikeSchema): Promise<SelectLike| null> => {
   try {
@@ -48,16 +65,12 @@ const likeTwitSnap = async( newLike: LikeSchema): Promise<SelectLike| null> => {
   }
 }
 
-const createResponse = async (twitSnapId: string, newResponse: InsertTwitsnap): Promise<SelectTwitsnapResponse | null> => {
-  return await db.createResponse(twitSnapId, newResponse);
+const createReply = async (twitSnapId: string, newReply: InsertTwitsnap): Promise<SelectTwitsnap | null> => {
+  return await db.createReply(twitSnapId, newReply);
 }
 
-const getTwitSnapResponses = async (twitSnapId: string): Promise<Array<TwitResponse>> => {
-  return await db.getTwitSnapResponses(twitSnapId);
-}
-
-const editTwitSnapResponse = async (twitSnapId: string, newMessage: string):Promise<SelectTwitsnapResponse | null> => {
-  return await db.editTwitSnapResponse(twitSnapId, newMessage)
+const getTwitSnapReplies = async (twitSnapId: string): Promise<Array<SelectTwitsnap>> => {
+  return await db.getTwitSnapReplies(twitSnapId);
 }
 
 const getTwitSnapLikes = async (getLike: string): Promise<Array<SelectLike>> => {
@@ -129,11 +142,11 @@ const getTwitSnapsBySimilarity = async (q: string): Promise<Array<SelectTwitsnap
 
 const editTwitSnap = async (twitSnapId: string, twitSnap: editTwitSnapSchema): Promise<SelectTwitsnap> => {
   const previousTwitSnap = await db.getTwitSnapsByTwitId(twitSnapId);
-  if (!previousTwitSnap){
+  if (!previousTwitSnap || !previousTwitSnap.message){
     throw new ErrorWithStatusCode("TwitSnapError", "TwitSnap not found", 404);
   }
   const result = await db.editTwitSnap(twitSnapId, twitSnap);
-  if (!result){
+  if (!result || !result.message){
     throw new ErrorWithStatusCode("TwitSnapError", "TwitSnap not found", 404);
   }
   for(const word of result.message.split(" ")){
@@ -159,10 +172,6 @@ const getUserStats = async (userId: string, limit: number): Promise<UserStats> =
   return db.getUserStats(userId, timestamp_limit);
 }
 
-const deleteTwitSnapResponse = async (twitSnapId: string): Promise<void> => {
-  return db.deleteTwitSnapResponse(twitSnapId);
-}
-
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -181,8 +190,7 @@ export default {
   getTwitSnapsBySimilarity, 
   editTwitSnap,
   getUserStats,
-  createResponse,
-  getTwitSnapResponses,
-  deleteTwitSnapResponse,
-  editTwitSnapResponse
+  createReply,
+  getTwitSnapReplies,
+  deleteTwitSnap
 };
