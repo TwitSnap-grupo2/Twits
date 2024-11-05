@@ -149,39 +149,6 @@ router.get("/:id/replies", async (req, res, next) => {
 }
 );
 
-// router.delete("/:id/reply", async (req, res, next) => {
-//   try {
-//     // const result = deleteReplySchema.parse(req.query);
-//     const twitsnapId = req.params.id;
-//     await twitSnapsService.deleteTwitSnapReply(twitsnapId);
-//     res.status(204).send();
-//   } catch (err: unknown) {
-//     next(err);
-//   }
-// }
-// );
-
-// router.patch("/:id/reply", async (req, res, next) => {
-//   try{
-//     const result = editTwitSnapSchema.parse(req.body);
-//     const twitSnapId = req.params.id;
-//     const twitSnapEdited = await twitSnapsService.editTwitSnapReply(twitSnapId, result.message);
-//     if (!twitSnapEdited){
-//       next({
-//         name: "NotFound",
-//         message: "Error while trying to create twitsnap",
-//       });
-//     }
-//     res.status(200).send(twitSnapEdited);
-//   } catch (err: unknown){
-//     next(err);
-//   }
-
-// });
-
-
-
-
 router.post("/:id/like", async (req, res, next) => {
   try {
     const result = likeTwitSnapSchema.parse(req.body);

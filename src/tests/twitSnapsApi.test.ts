@@ -5,6 +5,7 @@ import { testTwitSnap } from "./testHelper";
 import twitSnapRepository from "../db/repositories/twits";
 import twitSnapService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
+import { response } from "express";
 
 const api = supertest(app);
 
@@ -52,7 +53,7 @@ describe("twitsnaps", () => {
     expect(data[0].createdAt).toBe(newTwitSnap.createdAt.toISOString());
   });
 
-  test("can be obtained by id", async () => {
+  test("can be obtained by user id", async () => {
     const newTwitSnap: SelectTwitsnap | null =
       await twitSnapService.createTwitSnap(testTwitSnap);
 
@@ -67,11 +68,27 @@ describe("twitsnaps", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    const Reply = await api
+    await twitSnapRepository.likeTwitSnap({
+      likedBy: "12345678-1234-1234-1234-123456789012",
+      twitsnapId: newTwitSnap.id,
+    });
+
+    await twitSnapRepository.createSnapshare({
+      twitsnapId: newTwitSnap.id,
+      sharedBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapRepository.createReply(newTwitSnap.id, {
+      message: "This is a Reply",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    const response = await api
       .get("/api/twits/" + newTwitSnap.createdBy)
       .expect(200);
 
-    const data: Array<SelectTwitsnap> = Reply.body;
+    const data = response.body;
+
 
     expect(data).toHaveLength(1);
 
@@ -79,6 +96,9 @@ describe("twitsnaps", () => {
     expect(data[0].message).toBe(newTwitSnap.message);
     expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
     expect(data[0].createdAt).toBe(newTwitSnap.createdAt.toISOString());
+    expect(data[0].likesCount).toBe(1);
+    expect(data[0].sharesCount).toBe(1);
+    expect(data[0].repliesCount).toBe(1);
   }
   );
 
@@ -593,6 +613,23 @@ describe("hashtags", () => {
       throw new Error("Error creating twitsnap");
     }
 
+    await twitSnapService.createSnapshare({
+      twitsnapId: newTwitSnap.id,
+      sharedBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapService.likeTwitSnap({
+      likedBy: "12345678-1234-1234-1234-123456789012",
+      twitsnapId: newTwitSnap.id,
+    });
+
+    await twitSnapService.createReply(newTwitSnap.id, {
+      message: "This is a Reply",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    });
+
+   
+
     const res = await api.get("/api/twits/hashtag?name=twitsnap").expect(200);
 
     const data = res.body;
@@ -602,6 +639,9 @@ describe("hashtags", () => {
     expect(data[0].id).toBe(newTwitSnap.id);
     expect(data[0].message).toBe(newTwitSnap.message);
     expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
+    expect(data[0].likesCount).toBe(1);
+    expect(data[0].sharesCount).toBe(1);
+    expect(data[0].repliesCount).toBe(1);
 });
 
   test("hashtags can be searched", async () => {
@@ -760,15 +800,38 @@ describe("twitsnaps replies", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    await twitSnapService.createReply(newTwitSnap.id, {
+    const response1 = await twitSnapService.createReply(newTwitSnap.id, {
       message: "This is a Reply",
       createdBy: "12345678-1234-1234-1234-123456789012",
     });
 
-    await twitSnapService.createReply(newTwitSnap.id, {
+    if (!response1) {
+      throw new Error("Error creating reply");
+    }
+
+    await twitSnapRepository.likeTwitSnap(
+      {
+        likedBy: "12345678-1234-1234-1234-123456789012",
+        twitsnapId: response1.id,
+      }
+    )
+    
+
+    const response2 = await twitSnapService.createReply(newTwitSnap.id, {
       message: "This is another Reply",
       createdBy: "12345678-1234-4234-1234-123456789012"
     });
+
+    if (!response2) {
+      throw new Error("Error creating reply");
+    }
+
+    await twitSnapRepository.likeTwitSnap(
+      {
+        likedBy: "12345678-1234-4234-1234-123456789012",
+        twitsnapId: response2.id,
+      }
+    )
 
     const Reply = await api
       .get("/api/twits/" + newTwitSnap.id + "/replies")
@@ -779,7 +842,9 @@ describe("twitsnaps replies", () => {
     expect(data).toHaveLength(2);
 
     expect(data[0].message).toBe("This is another Reply");
+    expect(data[0].likesCount).toBe(1);
     expect(data[1].message).toBe("This is a Reply");
+    expect(data[1].likesCount).toBe(1);
   }
   
 );
@@ -856,6 +921,91 @@ describe("twitsnaps replies", () => {
     expect(data2.id).toBe(data.id);
     expect(data2.message).toBe("This is an edited Reply");
     expect(data2.createdBy).toBe(data.createdBy);
+  }
+  );
+
+  test("can be liked", async() => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const reply = await api
+      .post("/api/twits/" + newTwitSnap.id + "/reply")
+      .send({ message: "This is a Reply", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    const data =  reply.body;
+
+    await api
+      .post("/api/twits/" + data.id + "/like")
+      .send({ likedBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+  })
+
+  test("can be shared", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const reply = await api
+      .post("/api/twits/" + newTwitSnap.id + "/reply")
+      .send({ message: "This is a Reply", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    const data =  reply.body;
+
+    await api
+      .post("/api/twits/" + data.id + "/share")
+      .send({ sharedBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+  })
+
+  test("can have mentions", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const reply = await api
+      .post("/api/twits/" + newTwitSnap.id + "/reply")
+      .send({ message: "This is a Reply", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    const data =  reply.body;
+
+    await api
+      .post("/api/twits/" + data.id + "/mention")
+      .send({ mentionedUser: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+  }
+  );
+
+  test("can have hashtags", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    const reply = await api
+      .post("/api/twits/" + newTwitSnap.id + "/reply")
+      .send({ message: "This is a #reply", createdBy: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    const data =  reply.body;
+
+    const hashtags = await twitSnapRepository.getTwitSnapHashtags(data.id);
+
+    expect(hashtags).toHaveLength(1);
+
+    expect(hashtags[0].name).toBe("reply");
+
   }
   );
 
