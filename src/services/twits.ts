@@ -167,10 +167,14 @@ const editTwitSnap = async (twitSnapId: string, twitSnap: editTwitSnapSchema): P
   return result;
 }
 
-const getUserStats = async (userId: string, limit: number): Promise<UserStats> => {
-  const timestamp_limit = new Date();
-  timestamp_limit.setDate(timestamp_limit.getDate() - limit);
-  return db.getUserStats(userId, timestamp_limit);
+const getUserStats = async (userId: string, limit: number | undefined): Promise<UserStats> => {
+  if(limit && limit > 0){
+    const timestamp_limit = new Date();
+    timestamp_limit.setDate(timestamp_limit.getDate() - limit);
+    return db.getUserStatsFiltered(userId, timestamp_limit);
+  }
+  return db.getTotalUserStats(userId);
+  
 }
 
 export default {

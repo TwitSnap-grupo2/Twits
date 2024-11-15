@@ -698,7 +698,76 @@ describe("stats", () => {
   }
 );
 
-  test("can be obtained", async () => {
+  test("can be obtained filtered", async () => {
+    const author = "12345678-1234-1234-1234-123456789012";
+    const twit1 = await twitSnapService.createTwitSnap({
+      message: "This is a #twitsnap",
+      createdBy: author,
+    });
+
+    const twit2 = await twitSnapService.createTwitSnap({
+      message: "This is a #anothertwitsnap",
+      createdBy: author,
+    });
+
+
+
+    if (!twit1 || !twit2) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await twitSnapService.createSnapshare({
+      twitsnapId: twit1.id,
+      sharedBy: author,
+    });
+
+    await twitSnapService.likeTwitSnap({
+      likedBy: author,
+      twitsnapId: twit1.id,
+    });
+
+    await twitSnapService.likeTwitSnap({
+      likedBy: author,
+      twitsnapId: twit2.id,
+    });
+
+    await twitSnapService.createReply(twit1.id, {
+      message: "This is a Reply",
+      createdBy: "12345678-1234-1234-1934-123456789012",
+    });
+
+    await twitSnapService.createReply(twit1.id, {
+      message: "This is another Reply",
+      createdBy: "12345678-1234-1234-1734-123456789012",
+    });
+
+    await twitSnapService.createReply(twit1.id, {
+      message: "This is another Reply",
+      createdBy: author,
+    });
+
+    const oldDate = new Date();
+    oldDate.setDate(oldDate.getDate() - 365);
+
+    await twitSnapRepository.addRawTwitSnapForTesting({
+      id: "12345678-1234-1234-1234-123456789013",
+      message: "This is a #thirdtwitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+      createdAt: oldDate,
+    });
+
+
+    const Reply = await api.get("/api/twits/stats/12345678-1234-1234-1234-123456789012?limit=7").expect(200);
+    const data = Reply.body;
+
+    expect(data.twitsTotal).toBe(3);
+    expect(data.sharesTotal).toBe(1);
+    expect(data.likesTotal).toBe(2);
+    expect(data.repliesTotal).toBe(3);
+
+  }, 6000);
+
+  test("can be obtained without filter", async () => {
     const twit1 = await twitSnapService.createTwitSnap({
       message: "This is a #twitsnap",
       createdBy: "12345678-1234-1234-1234-123456789012",
@@ -708,6 +777,8 @@ describe("stats", () => {
       message: "This is a #anothertwitsnap",
       createdBy: "12345678-1234-1234-1234-123456789012",
     });
+
+
 
     if (!twit1 || !twit2) {
       throw new Error("Error creating twitsnap");
@@ -730,7 +801,12 @@ describe("stats", () => {
 
     await twitSnapService.createReply(twit1.id, {
       message: "This is a Reply",
-      createdBy: "12345678-1234-1234-1234-123456789012",
+      createdBy: "12345608-1234-1234-1234-123456789012",
+    });
+
+    await twitSnapService.createReply(twit1.id, {
+      message: "This is another Reply",
+      createdBy: "52345678-1234-1234-1234-123456789012",
     });
 
     await twitSnapService.createReply(twit1.id, {
@@ -749,13 +825,13 @@ describe("stats", () => {
     });
 
 
-    const Reply = await api.get("/api/twits/stats/12345678-1234-1234-1234-123456789012?limit=7").expect(200);
+    const Reply = await api.get("/api/twits/stats/12345678-1234-1234-1234-123456789012").expect(200);
     const data = Reply.body;
 
-    expect(data.twitsTotal).toBe(2);
+    expect(data.twitsTotal).toBe(4);
     expect(data.sharesTotal).toBe(1);
     expect(data.likesTotal).toBe(2);
-    expect(data.repliesTotal).toBe(2);
+    expect(data.repliesTotal).toBe(3);
 
   }, 6000);
 })
