@@ -261,4 +261,9 @@ router.get("/stats/:id", async (req, res, next) => {
   }
 }) 
 
+router.post("/ping", async (req, res) => {
+  res.status(200).json({ message: "pong" });
+});
+
+
 export default router;
