@@ -5,7 +5,6 @@ export const hashtagTable = pgTable(
   "hashtags",
   {
     twitsnapId: uuid("twitsnap_id")
-      // Delete all entries of the specific twitsnapId if twitsnap gets deleted
       .references(() => twitSnap.id, { onDelete: "cascade" })
       .notNull(),
     name: varchar("name", { length: 100 }).notNull(),
