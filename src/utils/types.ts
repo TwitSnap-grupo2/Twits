@@ -18,3 +18,12 @@ export interface ErrorResponse {
 export type editTwitSnapSchema = {
   message: string;
 }
+
+
+export type Metrics = {
+  total: number;
+  frequency: Array<{
+    date: string;
+    count: number;
+  }>;
+}

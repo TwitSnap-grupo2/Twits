@@ -5,7 +5,7 @@ import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
 import {TwitsAndShares} from "../db/schemas/twitsAndShares";
 import { SelectMention } from "../db/schemas/mentionsSchema";
-import { editTwitSnapSchema } from "../utils/types";
+import { editTwitSnapSchema, Metrics } from "../utils/types";
 import UserStats from "../db/schemas/statsSchema";
 import { ErrorWithStatusCode } from "../utils/errors";
 
@@ -169,13 +169,22 @@ const editTwitSnap = async (twitSnapId: string, twitSnap: editTwitSnapSchema): P
 
 const getUserStats = async (userId: string, limit: number | undefined): Promise<UserStats> => {
   if(limit && limit > 0){
-    const timestamp_limit = new Date();
-    timestamp_limit.setDate(timestamp_limit.getDate() - limit);
-    return db.getUserStatsFiltered(userId, timestamp_limit);
+    const timestampLimit = new Date();
+    timestampLimit.setDate(timestampLimit.getDate() - limit);
+    return db.getUserStatsFiltered(userId, timestampLimit);
   }
   return db.getTotalUserStats(userId);
   
 }
+
+const getMetrics = async (range: string, limit: number): Promise<Metrics> => {
+  const limitDate = new Date();
+  limitDate.setDate(limitDate.getDate() - limit);
+  const res =  db.getMetrics(range, limitDate);
+  return res;
+
+}
+
 
 export default {
   getTwitSnaps,
@@ -197,5 +206,6 @@ export default {
   getUserStats,
   createReply,
   getTwitSnapReplies,
-  deleteTwitSnap
+  deleteTwitSnap,
+  getMetrics
 };

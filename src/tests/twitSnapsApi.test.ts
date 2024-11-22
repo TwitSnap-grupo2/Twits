@@ -1084,6 +1084,54 @@ describe("twitsnaps replies", () => {
 
   }
   );
-
-
 });
+
+describe("content metrics", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteTwitsnaps();
+  })
+
+  test("can be obtained with total and frequency", async () => {
+    const monthAgoDate = new Date();
+    monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
+    const twit1 = await twitSnapRepository.addRawTwitSnapForTesting({
+      message: "This is a #twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+      createdAt: monthAgoDate,
+    });
+
+    const twit2 = await twitSnapRepository.addRawTwitSnapForTesting({
+      message: "This is a #twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+      createdAt: monthAgoDate,
+    });
+    const twoMonthsAgoDate = new Date();
+    twoMonthsAgoDate.setMonth(twoMonthsAgoDate.getMonth() - 2);
+    const twit3 = await twitSnapRepository.addRawTwitSnapForTesting({
+      message: "This is a #twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+      createdAt: twoMonthsAgoDate,
+    });
+    
+    const twit4 = await twitSnapRepository.addRawTwitSnapForTesting({
+      message: "This is a #twitsnap",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+      createdAt: twoMonthsAgoDate,
+    });
+
+    if(!twit1 || !twit2 || !twit3 || !twit4) {
+      throw new Error("Error creating twitsnaps");
+    }
+
+    const res = await api.get('/api/twits/metrics?range=day&limit=200').expect(200);
+
+    const data = res.body;
+
+    expect(data.total).toBe(4);
+
+    expect(data.frequency).toHaveLength(2);
+
+
+  
+    })
+})

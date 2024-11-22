@@ -3,7 +3,7 @@ import twitSnapsService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
-import { editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
+import { editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, metricsSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
 
 
 const router = Router();
@@ -47,6 +47,17 @@ router.get("/hashtag/search", async (req, res, next) => {
     res.status(200).json(twitSnaps);
   } catch (err: unknown) {
     next(err);
+  }
+}
+);
+
+router.get("/metrics", async (req, res, next) => {
+  try {
+    const result = metricsSchema.parse(req.query);
+    const metrics = await twitSnapsService.getMetrics(result.range, result.limit);
+    res.status(200).json(metrics);
+  } catch (err: unknown) {
+    next(err)
   }
 }
 );
@@ -264,6 +275,7 @@ router.get("/stats/:id", async (req, res, next) => {
 router.post("/ping", async (req, res) => {
   res.status(200).json({ message: "pong" });
 });
+
 
 
 export default router;

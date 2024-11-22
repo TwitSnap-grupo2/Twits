@@ -47,3 +47,8 @@ export const newTwitSnapSchema = z.object({
     id: z.string().uuid(),
     created_by: z.string().uuid(),
   });
+
+  export const metricsSchema = z.object({
+    range: z.enum(["day", "week", "month", "year"]),
+    limit: z.coerce.number().int()
+  });

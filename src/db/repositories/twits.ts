@@ -13,7 +13,7 @@ import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/sna
 import {TwitsAndShares} from "../schemas/twitsAndShares";
 import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
 import {hashtagTable, SelectHashtag} from "../schemas/hashtagSchema"
-import { editTwitSnapSchema } from "../../utils/types";
+import { editTwitSnapSchema, Metrics } from "../../utils/types";
 import UserStats from "../schemas/statsSchema";
 import { ErrorWithStatusCode } from "../../utils/errors";
 
@@ -428,6 +428,22 @@ const deleteTwitSnap = async (id: string): Promise<void> => {
   }
 }
 
+const getMetrics = async (range: string, limit: Date) => {
+  const total = await db.select({count: count()}).from(twitSnapsTable).where(gte(twitSnapsTable.createdAt, limit)).then((result) => result[0].count);
+  const frecuency = await db.execute(
+    sql<Array<{ count: number, date: string }>>`
+      SELECT COUNT(id) as count, DATE_TRUNC(${range}, created_at) as date
+      FROM twitsnaps
+      WHERE created_at > ${limit.toISOString()}
+      GROUP BY date
+      ORDER BY date
+    `
+  );
+  const frecuencyRes = frecuency.rows.map(row => ({count: row.count, date: row.date})) as {count: number, date: string}[];
+  const metrics: Metrics = {total, frequency: frecuencyRes};
+  return metrics;
+}
+
 
 
 export default {
@@ -462,7 +478,8 @@ export default {
   createReply,
   getTwitSnapReplies,
   deleteReply,
-  deleteTwitSnap
+  deleteTwitSnap,
+  getMetrics
 };
 
 
