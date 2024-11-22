@@ -185,6 +185,13 @@ const getMetrics = async (range: string, limit: number): Promise<Metrics> => {
 
 }
 
+const getHashtagMetrics = async (hashtag: string, range: string, limit: number): Promise<Metrics> => {
+  const limitDate = new Date();
+  limitDate.setDate(limitDate.getDate() - limit);
+  const res =  db.getHashtagMetrics(hashtag, range, limitDate);
+  return res;
+}
+
 
 export default {
   getTwitSnaps,
@@ -207,5 +214,6 @@ export default {
   createReply,
   getTwitSnapReplies,
   deleteTwitSnap,
-  getMetrics
+  getMetrics,
+  getHashtagMetrics
 };

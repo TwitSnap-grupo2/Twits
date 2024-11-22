@@ -52,3 +52,10 @@ export const newTwitSnapSchema = z.object({
     range: z.enum(["day", "week", "month", "year"]),
     limit: z.coerce.number().int()
   });
+
+
+  export const metricsHashtagSchema = z.object({
+    name: z.string().max(280).min(1),
+    range: z.enum(["day", "week", "month", "year"]),
+    limit: z.coerce.number().int()
+  });

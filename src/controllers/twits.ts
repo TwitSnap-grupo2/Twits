@@ -3,7 +3,7 @@ import twitSnapsService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
-import { editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, metricsSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
+import { editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, metricsHashtagSchema, metricsSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
 
 
 const router = Router();
@@ -61,6 +61,18 @@ router.get("/metrics", async (req, res, next) => {
   }
 }
 );
+
+router.get("/metrics/hashtag", async (req, res, next) => {
+  try {
+    const result = metricsHashtagSchema.parse(req.query);
+    const metrics = await twitSnapsService.getHashtagMetrics(result.name, result.range, result.limit);
+    res.status(200).json(metrics);
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+);
+
 
 router.post("/feed", async (req, res, next) => {
   try {

@@ -1089,6 +1089,7 @@ describe("twitsnaps replies", () => {
 describe("content metrics", () => {
   beforeEach(async () => {
     await twitSnapRepository.deleteTwitsnaps();
+    await twitSnapRepository.deleteAllHashTags()
   })
 
   test("can be obtained with total and frequency", async () => {
@@ -1130,8 +1131,29 @@ describe("content metrics", () => {
     expect(data.total).toBe(4);
 
     expect(data.frequency).toHaveLength(2);
-
-
-  
     })
+
+
+    test("hashtag metrics can be obtained", async () => {
+      const monthAgoDate = new Date();
+      monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
+      const twit1 = await api.post("/api/twits").send({
+        message: "This is a #twitsnap",
+        createdBy: "12345678-1234-1234-1234-123456789012",
+      }).expect(201);
+  
+      const twit2 =  await api.post("/api/twits").send({
+        message: "This is a #twitsnap",
+        createdBy: "12345678-1234-1234-1234-123456789012",
+      }).expect(201);
+  
+      const res = await api.get('/api/twits/metrics/hashtag?name=twitsnap&range=month&limit=200').expect(200);
+  
+      const data = res.body;
+  
+      expect(data.total).toBe(2);
+  
+      expect(data.frequency).toHaveLength(1);
+      }
+    )
 })
