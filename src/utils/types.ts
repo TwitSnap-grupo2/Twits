@@ -26,4 +26,27 @@ export type Metrics = {
     date: string;
     count: number;
   }>;
+  averageTwitsPerUser: number;
+  topLikedTwits: Array<{
+    count: number;
+    id: string;
+    message: string;
+  }>;
+  topSharedTwits: Array<{
+    count: number;
+    id: string;
+    message: string;
+  }>;
+}
+
+export type HashtagMetrics = {
+  total: number;
+  frequency: Array<{
+    date: string;
+    count: number;
+  }>;
+  topHashtags: Array<{
+    count: number;
+    name: string;
+  }>;
 }

@@ -50,7 +50,6 @@ export const newTwitSnapSchema = z.object({
 
   export const metricsSchema = z.object({
     range: z.enum(["day", "week", "month", "year"]),
-    limit: z.coerce.number().int()
   });
 
 

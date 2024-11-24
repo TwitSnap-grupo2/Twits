@@ -13,6 +13,7 @@ export const twitSnap = pgTable("twitsnaps", {
   isPrivate: boolean("is_private").default(false).notNull(),
   createdBy: uuid("created_by").notNull(),
   parentId: uuid("parent_id"),
+  isBlocked: boolean("is_blocked").default(false).notNull(),
 });
 
 export type SelectTwitsnap = typeof twitSnap.$inferSelect;

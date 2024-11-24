@@ -13,7 +13,7 @@ import { InsertSnapshare, SelectSnapshare, snapshareTable } from "../schemas/sna
 import { TwitsAndShares } from "../schemas/twitsAndShares";
 import { mentionsTable, SelectMention } from "../schemas/mentionsSchema";
 import { hashtagTable, SelectHashtag } from "../schemas/hashtagSchema"
-import { editTwitSnapSchema, Metrics } from "../../utils/types";
+import { editTwitSnapSchema, HashtagMetrics, Metrics } from "../../utils/types";
 import UserStats from "../schemas/statsSchema";
 import { ErrorWithStatusCode } from "../../utils/errors";
 
@@ -21,7 +21,7 @@ import { ErrorWithStatusCode } from "../../utils/errors";
 
 
 const getTwitSnapsOrderedByDate = async (): Promise<Array<SelectTwitsnap>> => {
-  return db.select().from(twitSnapsTable).orderBy(desc(twitSnapsTable.createdAt))
+  return db.select().from(twitSnapsTable).where(eq(twitSnapsTable.isBlocked, false)).orderBy(desc(twitSnapsTable.createdAt))
 }
 
 
@@ -60,7 +60,7 @@ const getTwitSnapsById = async (id: string): Promise<Array<TwitsAndShares>> => {
     repliesCount: sql<number>`0`
   }).from(snapshareTable)
     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
-    .where(and(eq(snapshareTable.sharedBy, id), isNotNull(twitSnapsTable.message)))
+    .where(and(eq(snapshareTable.sharedBy, id), isNotNull(twitSnapsTable.message), eq(twitSnapsTable.isBlocked, false)))
     .orderBy(desc(snapshareTable.sharedAt))
 
   const combinedTwits = [...originalTwits, ...retweetedTwits];
@@ -163,7 +163,7 @@ const getFeed = async (timestamp_start: Date, limit: number, followeds: Array<st
     sharesCount: sql<number>`0`,
     repliesCount: sql<number>`0`
   }).from(twitSnapsTable)
-    .where(and(lt(twitSnapsTable.createdAt, timestamp_start), inArray(twitSnapsTable.createdBy, followeds), isNotNull(twitSnapsTable.message), isNull(twitSnapsTable.parentId)))
+    .where(and(lt(twitSnapsTable.createdAt, timestamp_start), inArray(twitSnapsTable.createdBy, followeds), isNotNull(twitSnapsTable.message), isNull(twitSnapsTable.parentId), eq(twitSnapsTable.isBlocked, false)))
     .orderBy(desc(twitSnapsTable.createdAt))
     .limit(limit);
 
@@ -180,7 +180,7 @@ const getFeed = async (timestamp_start: Date, limit: number, followeds: Array<st
     repliesCount: sql<number>`0`
   }).from(snapshareTable)
     .innerJoin(twitSnapsTable, eq(snapshareTable.twitsnapId, twitSnapsTable.id))
-    .where(and(lt(snapshareTable.sharedAt, timestamp_start), inArray(snapshareTable.sharedBy, followeds), isNotNull(twitSnapsTable.message), isNull(twitSnapsTable.parentId)))
+    .where(and(lt(snapshareTable.sharedAt, timestamp_start), inArray(snapshareTable.sharedBy, followeds), isNotNull(twitSnapsTable.message), isNull(twitSnapsTable.parentId), eq(twitSnapsTable.isBlocked, false)))
     .orderBy(desc(snapshareTable.sharedAt))
     .limit(limit);
 
@@ -257,7 +257,7 @@ const getTwitSnapsByHashtag = async (hashtag: string): Promise<Array<TwitsAndSha
     repliesCount: sql<number>`0`
   }).from(twitSnapsTable)
     .innerJoin(hashtagTable, eq(twitSnapsTable.id, hashtagTable.twitsnapId))
-    .where(eq(hashtagTable.name, hashtag.toLowerCase()))
+    .where(and(eq(hashtagTable.name, hashtag.toLowerCase()), eq(twitSnapsTable.isBlocked, false)))
     .orderBy(desc(twitSnapsTable.createdAt))
 
   for (const twit of twits) {
@@ -297,11 +297,12 @@ const getTwitSnapsBySimilarity = async (q: string): Promise<Array<SelectTwitsnap
     createdBy: twitSnapsTable.createdBy,
     isPrivate: twitSnapsTable.isPrivate,
     parentId: twitSnapsTable.parentId,
+    isBlocked: twitSnapsTable.isBlocked,
 
 
   })
     .from(twitSnapsTable)
-    .where(inArray(twitSnapsTable.id, ids))
+    .where(and(inArray(twitSnapsTable.id, ids), eq(twitSnapsTable.isBlocked, false)))
     .orderBy(desc(twitSnapsTable.createdAt));
 }
 
@@ -378,12 +379,13 @@ const getTwitSnapReplies = async (twitsnapId: string): Promise<Array<SelectTwits
       parent: twitSnapsTable.parentId,
       isPrivate: twitSnapsTable.isPrivate,
       parentId: twitSnapsTable.parentId,
+      isBlocked: twitSnapsTable.isBlocked,
       likesCount: sql<number>`0`,
       sharesCount: sql<number>`0`,
       repliesCount: sql<number>`0`
     })
     .from(twitSnapsTable)
-    .where(eq(twitSnapsTable.parentId, twitsnapId))
+    .where(and(eq(twitSnapsTable.parentId, twitsnapId), eq(twitSnapsTable.isBlocked, false)))
     .orderBy(desc(twitSnapsTable.createdAt))
 
   for (const twit of res) {
@@ -429,18 +431,42 @@ const deleteTwitSnap = async (id: string): Promise<void> => {
 }
 
 const getMetrics = async (range: string, limit: Date) => {
+  const yearAgo = new Date();
+  yearAgo.setFullYear(yearAgo.getFullYear() - 1);
   const total = await db.select({ count: count() }).from(twitSnapsTable).where(gte(twitSnapsTable.createdAt, limit)).then((result) => result[0].count);
-  const frecuency = await db.execute(
-    sql<Array<{ count: number, date: string }>>`
-      SELECT COUNT(id) as count, DATE_TRUNC(${range}, created_at) as date
-      FROM twitsnaps
-      WHERE created_at > ${limit.toISOString()}
-      GROUP BY date
-      ORDER BY date
+  const frecuencyRes = await getWeeklyFrequency(yearAgo);
+  const averageTwitsPerUser = await calculateAverageTwitsPerUser(total);
+
+  const topLikedTwits = await db.execute(
+    sql<Array<{ count: number, id: string }>>`
+      SELECT COUNT(likes.twitsnap_id) as count, likes.twitsnap_id as id, twitsnaps.created_by as created_by, twitsnaps.content as message
+      FROM likes
+      INNER JOIN twitsnaps ON likes.twitsnap_id = twitsnaps.id
+      WHERE twitsnaps.created_at > ${limit.toISOString()}
+      GROUP BY likes.twitsnap_id
+      ORDER BY count DESC
+      LIMIT 3
     `
   );
-  const frecuencyRes = frecuency.rows.map(row => ({ count: row.count, date: row.date })) as { count: number, date: string }[];
-  const metrics: Metrics = { total, frequency: frecuencyRes };
+
+ const topLikedTwitsRes = topLikedTwits.rows.map(row => ({ count: row.count, id: row.id, created_by: row.created_by, message: row.message })) as { count: number, id: string, created_by: string, message: string }[];
+
+  const topSnapsharedTwits = await db.execute(
+    sql<Array<{ count: number, id: string }>>`
+      SELECT COUNT(snapshares.twitsnap_id) as count, snapshares.twitsnap_id as id
+      FROM snapshares
+      INNER JOIN twitsnaps ON snapshares.twitsnap_id = twitsnaps.id
+      WHERE twitsnaps.created_at > ${limit.toISOString()}
+      GROUP BY snapshares.twitsnap_id
+      ORDER BY count DESC
+      LIMIT 3
+    `
+  );
+  const topSnapsharedTwitsRes = topSnapsharedTwits.rows.map(row => ({ count: row.count, id: row.id, created_by: row.created_by, message: row.message })) as { count: number, id: string, created_by: string, message: string }[];
+
+
+
+  const metrics: Metrics = { total, frequency: frecuencyRes, averageTwitsPerUser: averageTwitsPerUser, topLikedTwits: topLikedTwitsRes, topSharedTwits: topSnapsharedTwitsRes };
   return metrics;
 }
 
@@ -459,8 +485,37 @@ const getHashtagMetrics = async (hashtag: string, range: string, limit: Date) =>
   );
 
   const frecuencyRes = frequency.rows.map(row => ({ count: row.count, date: row.date })) as { count: number, date: string }[];
-  const metrics: Metrics = { total, frequency: frecuencyRes };
+  const metrics: HashtagMetrics = { total, frequency: frecuencyRes, topHashtags: [] };
   return metrics;
+}
+
+async function calculateAverageTwitsPerUser(total: number) {
+  const usersQuantity = await db.selectDistinct({ count: count() }).from(twitSnapsTable).groupBy(twitSnapsTable.createdBy);
+  const usersQuantityRes = usersQuantity[0].count;
+  const averageTwitsPerUser = total / usersQuantityRes;
+  return averageTwitsPerUser;
+}
+
+async function getWeeklyFrequency(yearAgo: Date) {
+  const frecuency = await db.execute(
+    sql<Array<{ count: number; date: string; }>> `
+      SELECT COUNT(id) as count, DATE_TRUNC('week', created_at) as date
+      FROM twitsnaps
+      WHERE created_at > ${yearAgo.toISOString()}
+      GROUP BY date
+      ORDER BY date
+    `
+  );
+  const frecuencyRes = frecuency.rows.map(row => ({ count: row.count, date: row.date })) as { count: number; date: string; }[];
+  return frecuencyRes;
+}
+
+const blockTwitSnap = async (id: string): Promise<void> => {
+  await db.update(twitSnapsTable).set({ isBlocked: true }).where(eq(twitSnapsTable.id, id));
+}
+
+const unblockTwitSnap = async (id: string): Promise<void> => {
+  await db.update(twitSnapsTable).set({ isBlocked: false }).where(eq(twitSnapsTable.id, id));
 }
 
 
@@ -498,7 +553,10 @@ export default {
   deleteReply,
   deleteTwitSnap,
   getMetrics,
-  getHashtagMetrics
+  getHashtagMetrics,
+  blockTwitSnap,
+  unblockTwitSnap
 };
+
 
 

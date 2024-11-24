@@ -54,7 +54,7 @@ router.get("/hashtag/search", async (req, res, next) => {
 router.get("/metrics", async (req, res, next) => {
   try {
     const result = metricsSchema.parse(req.query);
-    const metrics = await twitSnapsService.getMetrics(result.range, result.limit);
+    const metrics = await twitSnapsService.getMetrics(result.range);
     res.status(200).json(metrics);
   } catch (err: unknown) {
     next(err)
@@ -116,6 +116,25 @@ router.patch("/:id", async (req, res, next) => {
   }
 }
 );
+
+router.post("/:id/block", async (req, res, next) => {
+  try {
+    await twitSnapsService.blockTwitSnap(req.params.id);
+    res.status(204).send();
+  } catch (err: unknown) {
+    next(err);
+  }
+})
+
+router.post("/:id/unblock", async (req, res, next) => {
+  try {
+    await twitSnapsService.unblockTwitSnap(req.params.id);
+    res.status(204).send();
+  } catch (err: unknown) {
+    next(err);
+  }
+})
+
 
 router.delete("/:id", async (req, res, next) => {
   try {
@@ -283,6 +302,8 @@ router.get("/stats/:id", async (req, res, next) => {
     next(err)
   }
 }) 
+
+
 
 router.post("/ping", async (req, res) => {
   res.status(200).json({ message: "pong" });

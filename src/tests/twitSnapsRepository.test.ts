@@ -2,12 +2,13 @@ import twitSnapRepository from "../db/repositories/twits";
 import { db } from "../db/setup";
 import { v4 as uuid4 } from "uuid";
 import { twitSnap as twitSnapsTable } from "../db/schemas/twisnapSchema";
-import { desc } from "drizzle-orm";
+import { desc, is, eq } from "drizzle-orm";
 
 jest.mock("../db/setup", () => ({
   db: {
     select: jest.fn().mockReturnThis(),
     from: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
     orderBy: jest.fn().mockReturnThis(),
     innerJoin: jest.fn().mockReturnThis(),
 
@@ -32,6 +33,7 @@ describe("twitSnapService", () => {
           createdAt: new Date(),
           isPrivate: false,
           createdBy: "user-1",
+          isBlocked: false,
         },
         {
           id: "2",
@@ -39,9 +41,10 @@ describe("twitSnapService", () => {
           createdAt: new Date(),
           isPrivate: false,
           createdBy: "user-2",
+          isBlocked: false,
         },
       ];
-      (db.select().from(twitSnapsTable).orderBy as jest.Mock).mockResolvedValue(
+      (db.select().from(twitSnapsTable).where(eq(twitSnapsTable.isBlocked, false)).orderBy as jest.Mock).mockResolvedValue(
         mockTwitSnaps
       );
 
@@ -49,7 +52,7 @@ describe("twitSnapService", () => {
 
       expect(db.select).toHaveBeenCalled();
       expect(db.select().from).toHaveBeenCalledWith(twitSnapsTable);
-      expect(db.select().from(twitSnapsTable).orderBy).toHaveBeenCalledWith(
+      expect(db.select().from(twitSnapsTable).where(eq(twitSnapsTable.isBlocked, false)).orderBy).toHaveBeenCalledWith(
         desc(twitSnapsTable.createdAt)
       );
       expect(result).toEqual(mockTwitSnaps);
