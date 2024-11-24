@@ -217,6 +217,10 @@ const unblockTwitSnap = async (id: string): Promise<void> => {
   return await db.unblockTwitSnap(id);
 }
 
+const postFavourite = async (twitId: string, userId: string): Promise<void> => {
+  return await db.postFavourite(twitId, userId);
+}
+
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -241,7 +245,8 @@ export default {
   getMetrics,
   getHashtagMetrics,
   blockTwitSnap,
-  unblockTwitSnap
+  unblockTwitSnap,
+  postFavourite
 };
 
 

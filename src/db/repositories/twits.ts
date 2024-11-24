@@ -16,6 +16,7 @@ import { hashtagTable, SelectHashtag } from "../schemas/hashtagSchema"
 import { editTwitSnapSchema, HashtagMetrics, Metrics } from "../../utils/types";
 import UserStats from "../schemas/statsSchema";
 import { ErrorWithStatusCode } from "../../utils/errors";
+import { favouritesTable } from "../schemas/favouritesSchema";
 
 
 
@@ -518,6 +519,10 @@ const unblockTwitSnap = async (id: string): Promise<void> => {
   await db.update(twitSnapsTable).set({ isBlocked: false }).where(eq(twitSnapsTable.id, id));
 }
 
+const postFavourite = async (twitId: string, userId: string): Promise<void> => {
+  await db.insert(favouritesTable).values({ twitsnapId: twitId, userId: userId });
+}
+
 
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
@@ -555,7 +560,8 @@ export default {
   getMetrics,
   getHashtagMetrics,
   blockTwitSnap,
-  unblockTwitSnap
+  unblockTwitSnap,
+  postFavourite
 };
 
 
