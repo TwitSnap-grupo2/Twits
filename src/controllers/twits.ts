@@ -310,6 +310,7 @@ router.post("/:id/favourite", async (req, res, next) => {
     const output = await twitSnapsService.postFavourite(twitsnapId, result.userId);
     res.status(201).json(output);
   } catch (err: unknown) {
+    console.log(err)
     next(err)
   }
 }
@@ -321,6 +322,17 @@ router.delete("/:id/favourite", async (req, res, next) => {
     const twitsnapId = req.params.id;
     await twitSnapsService.deleteFavourite(twitsnapId, result.userId);
     res.status(204).send();
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+)
+
+router.get("/favourites/:id", async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const favourites = await twitSnapsService.getUserFavourites(userId);
+    res.status(200).json(favourites);
   } catch (err: unknown) {
     next(err)
   }

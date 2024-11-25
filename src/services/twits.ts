@@ -221,6 +221,14 @@ const postFavourite = async (twitId: string, userId: string): Promise<void> => {
   return await db.postFavourite(twitId, userId);
 }
 
+const deleteFavourite = async (twitId: string, userId: string): Promise<void> => {
+  return await db.deleteFavourite(twitId, userId);
+}
+
+const getUserFavourites = async (userId: string) => {
+  return await db.getUserFavourites(userId);
+}
+
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -246,7 +254,9 @@ export default {
   getHashtagMetrics,
   blockTwitSnap,
   unblockTwitSnap,
-  postFavourite
+  postFavourite,
+  deleteFavourite,
+  getUserFavourites
 };
 
 
