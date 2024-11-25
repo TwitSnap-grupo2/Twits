@@ -16,7 +16,7 @@ import { hashtagTable, SelectHashtag } from "../schemas/hashtagSchema"
 import { editTwitSnapSchema, HashtagMetrics, Metrics } from "../../utils/types";
 import UserStats from "../schemas/statsSchema";
 import { ErrorWithStatusCode } from "../../utils/errors";
-import { favouritesTable } from "../schemas/favouritesSchema";
+import { favouritesTable, SelectFavourites } from "../schemas/favouritesSchema";
 
 
 
@@ -519,8 +519,8 @@ const unblockTwitSnap = async (id: string): Promise<SelectTwitsnap> => {
   return await db.update(twitSnapsTable).set({ isBlocked: false }).where(eq(twitSnapsTable.id, id)).returning().then((result) => result[0]);
 }
 
-const postFavourite = async (twitId: string, userId: string): Promise<void> => {
-  await db.insert(favouritesTable).values({ twitsnapId: twitId, userId: userId });
+const postFavourite = async (twitId: string, userId: string): Promise<SelectFavourites> => {
+  return await db.insert(favouritesTable).values({ twitsnapId: twitId, userId: userId }).returning().then((result) => result[0]);
 }
 
 const deleteFavourite = async (twitId: string, userId: string): Promise<void> => {

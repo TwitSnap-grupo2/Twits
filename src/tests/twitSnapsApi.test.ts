@@ -1260,10 +1260,15 @@ describe("twitsnaps favourites", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    await api
+    const res = await api
       .post("/api/twits/" + newTwitSnap.id + "/favourite")
       .send({ userId: "12345678-1234-1234-1234-123456789012" })
       .expect(201);
+
+    const data = res.body;
+
+    expect(data.twitsnapId).toBe(newTwitSnap.id);
+    expect(data.userId).toBe("12345678-1234-1234-1234-123456789012");
   }
   );
 

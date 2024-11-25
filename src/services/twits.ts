@@ -8,6 +8,7 @@ import { SelectMention } from "../db/schemas/mentionsSchema";
 import { editTwitSnapSchema, HashtagMetrics, Metrics } from "../utils/types";
 import UserStats from "../db/schemas/statsSchema";
 import { ErrorWithStatusCode } from "../utils/errors";
+import { SelectFavourites } from "../db/schemas/favouritesSchema";
 
 const getTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return await db.getTwitSnaps();
@@ -217,7 +218,7 @@ const unblockTwitSnap = async (id: string): Promise<SelectTwitsnap> => {
   return await db.unblockTwitSnap(id);
 }
 
-const postFavourite = async (twitId: string, userId: string): Promise<void> => {
+const postFavourite = async (twitId: string, userId: string): Promise<SelectFavourites> => {
   return await db.postFavourite(twitId, userId);
 }
 
