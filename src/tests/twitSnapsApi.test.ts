@@ -1176,10 +1176,14 @@ describe("twitsnaps block", () => {
 
     expect(data1).toHaveLength(1);
 
-    await api
-      .post("/api/twits/" + newTwitSnap.id + "/block")
-      .expect(204);
+    const output = await api
+      .patch("/api/twits/" + newTwitSnap.id + "/block")
+      .expect(200);
 
+    const body = output.body;
+    
+    expect(body.id).toBe(newTwitSnap.id);
+    expect(body.isBlocked).toBe(true);
     const res = await api.get("/api/twits/").expect(200);
 
     const data = res.body;
@@ -1195,9 +1199,9 @@ describe("twitsnaps block", () => {
       throw new Error("Error creating twitsnap");
     }
 
-    await api
-      .post("/api/twits/" + newTwitSnap.id + "/block")
-      .expect(204);
+     await api
+      .patch("/api/twits/" + newTwitSnap.id + "/block")
+      .expect(200);
 
     const res1 = await api.get("/api/twits/").expect(200);
 
@@ -1205,7 +1209,12 @@ describe("twitsnaps block", () => {
 
     expect(data1).toHaveLength(0);
 
-    await api.post("/api/twits/" + newTwitSnap.id + "/unblock").expect(204);
+    const output = await api.patch("/api/twits/" + newTwitSnap.id + "/unblock").expect(200);
+
+    const body = output.body;
+
+    expect(body.id).toBe(newTwitSnap.id);
+    expect(body.isBlocked).toBe(false);
 
     const res = await api.get("/api/twits/").expect(200);
 
@@ -1221,8 +1230,8 @@ describe("twitsnaps block", () => {
     }
 
     await api
-      .post("/api/twits/" + newTwitSnap.id + "/block")
-      .expect(204);
+      .patch("/api/twits/" + newTwitSnap.id + "/block")
+      .expect(200);
 
     const res = await api.get("/api/twits/blockeds").expect(200);
 

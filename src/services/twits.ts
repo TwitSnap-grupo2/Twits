@@ -208,12 +208,12 @@ function getLimitDateByRange(range: string) {
   return limitDate;
 }
 
-const blockTwitSnap = async (id: string): Promise<void> => {
+const blockTwitSnap = async (id: string): Promise<SelectTwitsnap> => {
   return await db.blockTwitSnap(id);
 }
 
 
-const unblockTwitSnap = async (id: string): Promise<void> => {
+const unblockTwitSnap = async (id: string): Promise<SelectTwitsnap> => {
   return await db.unblockTwitSnap(id);
 }
 

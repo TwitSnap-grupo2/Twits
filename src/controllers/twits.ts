@@ -126,19 +126,19 @@ router.patch("/:id", async (req, res, next) => {
 }
 );
 
-router.post("/:id/block", async (req, res, next) => {
+router.patch("/:id/block", async (req, res, next) => {
   try {
-    await twitSnapsService.blockTwitSnap(req.params.id);
-    res.status(204).send();
+    const body = await twitSnapsService.blockTwitSnap(req.params.id);
+    res.status(200).send(body);
   } catch (err: unknown) {
     next(err);
   }
 })
 
-router.post("/:id/unblock", async (req, res, next) => {
+router.patch("/:id/unblock", async (req, res, next) => {
   try {
-    await twitSnapsService.unblockTwitSnap(req.params.id);
-    res.status(204).send();
+    const body = await twitSnapsService.unblockTwitSnap(req.params.id);
+    res.status(200).send(body);
   } catch (err: unknown) {
     next(err);
   }

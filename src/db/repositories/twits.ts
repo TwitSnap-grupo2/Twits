@@ -511,12 +511,12 @@ async function getWeeklyFrequency(yearAgo: Date) {
   return frecuencyRes;
 }
 
-const blockTwitSnap = async (id: string): Promise<void> => {
-  await db.update(twitSnapsTable).set({ isBlocked: true }).where(eq(twitSnapsTable.id, id));
+const blockTwitSnap = async (id: string): Promise<SelectTwitsnap> => {
+  return await db.update(twitSnapsTable).set({ isBlocked: true }).where(eq(twitSnapsTable.id, id)).returning().then((result) => result[0]);
 }
 
-const unblockTwitSnap = async (id: string): Promise<void> => {
-  await db.update(twitSnapsTable).set({ isBlocked: false }).where(eq(twitSnapsTable.id, id));
+const unblockTwitSnap = async (id: string): Promise<SelectTwitsnap> => {
+  return await db.update(twitSnapsTable).set({ isBlocked: false }).where(eq(twitSnapsTable.id, id)).returning().then((result) => result[0]);
 }
 
 const postFavourite = async (twitId: string, userId: string): Promise<void> => {
