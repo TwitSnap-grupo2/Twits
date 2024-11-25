@@ -1187,7 +1187,7 @@ describe("twitsnaps block", () => {
     expect(data).toHaveLength(0);
   }
   );
-})
+
 
   test("can be unblocked", async () => {
     const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
@@ -1212,9 +1212,32 @@ describe("twitsnaps block", () => {
     const data = res.body;
 
     expect(data).toHaveLength(1);
-
-
 });
+
+  test("can be obtained", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/block")
+      .expect(204);
+
+    const res = await api.get("/api/twits/blockeds").expect(200);
+
+    const data = res.body;
+
+    expect(data).toHaveLength(1);
+    expect(data[0].id).toBe(newTwitSnap.id);
+    expect(data[0].message).toBe(newTwitSnap.message);
+    expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
+  }
+  );
+});
+
+
+
 
 
 describe("twitsnaps favourites", () => {

@@ -73,6 +73,15 @@ router.get("/metrics/hashtag", async (req, res, next) => {
 }
 );
 
+router.get("/blockeds", async (_req, res, next) => {
+  try {
+    const twitSnaps = await twitSnapsService.getBlockedTwitSnaps();
+    res.status(200).json(twitSnaps);
+  } catch (err: unknown) {
+    next(err);
+  }
+}
+);
 
 router.post("/feed", async (req, res, next) => {
   try {

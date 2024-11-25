@@ -556,6 +556,11 @@ const getUserFavourites = async (userId: string) => {
   }
   return res;
 }
+
+const getBlockedTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
+  return db.select().from(twitSnapsTable).where(eq(twitSnapsTable.isBlocked, true));
+}
+
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
   getTwitSnapsById,
@@ -595,7 +600,8 @@ export default {
   unblockTwitSnap,
   postFavourite,
   deleteFavourite,
-  getUserFavourites
+  getUserFavourites,
+  getBlockedTwitSnaps
 };
 
 

@@ -229,6 +229,10 @@ const getUserFavourites = async (userId: string) => {
   return await db.getUserFavourites(userId);
 }
 
+const getBlockedTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
+  return await db.getBlockedTwitSnaps();
+}
+
 export default {
   getTwitSnaps,
   createTwitSnap,
@@ -256,7 +260,8 @@ export default {
   unblockTwitSnap,
   postFavourite,
   deleteFavourite,
-  getUserFavourites
+  getUserFavourites,
+  getBlockedTwitSnaps
 };
 
 
