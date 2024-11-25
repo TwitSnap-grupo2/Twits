@@ -58,3 +58,8 @@ export const newTwitSnapSchema = z.object({
     range: z.enum(["day", "week", "month", "year"]),
     limit: z.coerce.number().int()
   });
+
+
+  export const postFavouriteSchema = z.object({
+    userId: z.string().uuid(),
+  });

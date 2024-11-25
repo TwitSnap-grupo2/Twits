@@ -16,6 +16,7 @@ import { hashtagTable, SelectHashtag } from "../schemas/hashtagSchema"
 import { editTwitSnapSchema, HashtagMetrics, Metrics } from "../../utils/types";
 import UserStats from "../schemas/statsSchema";
 import { ErrorWithStatusCode } from "../../utils/errors";
+import { favouritesTable } from "../schemas/favouritesSchema";
 
 
 
@@ -518,7 +519,43 @@ const unblockTwitSnap = async (id: string): Promise<void> => {
   await db.update(twitSnapsTable).set({ isBlocked: false }).where(eq(twitSnapsTable.id, id));
 }
 
+const postFavourite = async (twitId: string, userId: string): Promise<void> => {
+  await db.insert(favouritesTable).values({ twitsnapId: twitId, userId: userId });
+}
 
+const deleteFavourite = async (twitId: string, userId: string): Promise<void> => {
+  await db.delete(favouritesTable).where(and(eq(favouritesTable.twitsnapId, twitId), eq(favouritesTable.userId, userId)));
+}
+
+const getUserFavourites = async (userId: string) => {
+  const res = await db
+    .select({
+      id: twitSnapsTable.id,
+      message: twitSnapsTable.message,
+      createdAt: twitSnapsTable.createdAt,
+      createdBy: twitSnapsTable.createdBy,
+      parent: twitSnapsTable.parentId,
+      isPrivate: twitSnapsTable.isPrivate,
+      parentId: twitSnapsTable.parentId,
+      isBlocked: twitSnapsTable.isBlocked,
+      favBy: favouritesTable.userId,
+      likesCount: sql<number>`0`,
+      sharesCount: sql<number>`0`,
+      repliesCount: sql<number>`0`
+    })
+    .from(twitSnapsTable)
+    .innerJoin(favouritesTable, eq(favouritesTable.twitsnapId, twitSnapsTable.id))
+    .where(and(eq(favouritesTable.userId, userId), eq(twitSnapsTable.isBlocked, false)))
+    .orderBy(desc(twitSnapsTable.createdAt));
+
+
+  for (const twit of res) {
+    twit.likesCount = await getLikesCount(twit.id);
+    twit.sharesCount = await getSharesCount(twit.id);
+    twit.repliesCount = await getRepliesCount(twit.id);
+  }
+  return res;
+}
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
   getTwitSnapsById,
@@ -555,7 +592,10 @@ export default {
   getMetrics,
   getHashtagMetrics,
   blockTwitSnap,
-  unblockTwitSnap
+  unblockTwitSnap,
+  postFavourite,
+  deleteFavourite,
+  getUserFavourites
 };
 
 

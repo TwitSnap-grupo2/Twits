@@ -1216,3 +1216,63 @@ describe("twitsnaps block", () => {
 
 });
 
+
+describe("twitsnaps favourites", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteTwitsnaps();
+  })
+
+  test("can be added", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/favourite")
+      .send({ userId: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+  }
+  );
+
+  test("can be removed", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/favourite")
+      .send({ userId: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    await api
+      .delete("/api/twits/" + newTwitSnap.id + "/favourite?userId=12345678-1234-1234-1234-123456789012")
+      .expect(204);
+  }
+
+  );
+
+  test("can be obtained by user", async () => {
+    const newTwitSnap: SelectTwitsnap | null = await twitSnapService.createTwitSnap(testTwitSnap);
+    if (!newTwitSnap) {
+      throw new Error("Error creating twitsnap");
+    }
+
+    await api
+      .post("/api/twits/" + newTwitSnap.id + "/favourite")
+      .send({ userId: "12345678-1234-1234-1234-123456789012" })
+      .expect(201);
+
+    const res = await api.get("/api/twits/favourites/12345678-1234-1234-1234-123456789012").expect(200);
+
+    const data = res.body;
+
+    expect(data).toHaveLength(1);
+    expect(data[0].id).toBe(newTwitSnap.id);
+    expect(data[0].message).toBe(newTwitSnap.message);
+    expect(data[0].createdBy).toBe(newTwitSnap.createdBy);
+  }
+  );
+
+});

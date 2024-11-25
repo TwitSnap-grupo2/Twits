@@ -3,7 +3,7 @@ import twitSnapsService from "../services/twits";
 import { InsertTwitsnap, SelectTwitsnap } from "../db/schemas/twisnapSchema";
 import { LikeSchema, SelectLike } from "../db/schemas/likeSchema";
 import { InsertSnapshare, SelectSnapshare } from "../db/schemas/snapshareSchema";
-import { editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, metricsHashtagSchema, metricsSchema, newTwitSnapSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
+import { editTwitSnapSchema, feedSchema, hashtagSchema, likeTwitSnapSchema, mentionSchema, metricsHashtagSchema, metricsSchema, newTwitSnapSchema, postFavouriteSchema, searchTwitSchema, snapshareTwitSnapSchema, statsSchema } from "../db/schemas/validationSchemas";
 
 
 const router = Router();
@@ -302,6 +302,42 @@ router.get("/stats/:id", async (req, res, next) => {
     next(err)
   }
 }) 
+
+router.post("/:id/favourite", async (req, res, next) => {
+  try {
+    const result = postFavouriteSchema.parse(req.body);
+    const twitsnapId = req.params.id;
+    const output = await twitSnapsService.postFavourite(twitsnapId, result.userId);
+    res.status(201).json(output);
+  } catch (err: unknown) {
+    console.log(err)
+    next(err)
+  }
+}
+)
+
+router.delete("/:id/favourite", async (req, res, next) => {
+  try {
+    const result = postFavouriteSchema.parse(req.query);
+    const twitsnapId = req.params.id;
+    await twitSnapsService.deleteFavourite(twitsnapId, result.userId);
+    res.status(204).send();
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+)
+
+router.get("/favourites/:id", async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const favourites = await twitSnapsService.getUserFavourites(userId);
+    res.status(200).json(favourites);
+  } catch (err: unknown) {
+    next(err)
+  }
+}
+)
 
 
 
