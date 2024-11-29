@@ -4,7 +4,11 @@ import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerOutput from "./swagger_output.json";
 import { routes } from "./controllers/index";
-import { errorMiddleware, unknownEndpoint } from "./utils/middleware";
+import {
+  apiKeyValidationMiddleware,
+  errorMiddleware,
+  unknownEndpoint,
+} from "./utils/middleware";
 
 dotenv.config();
 
@@ -16,9 +20,11 @@ if (!(process.env.NODE_ENV === "test")) {
 
 app.use(express.json());
 
-app.use("/", routes);
-
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOutput));
+
+app.use(apiKeyValidationMiddleware);
+
+app.use("/", routes);
 
 app.use(errorMiddleware);
 app.use(unknownEndpoint);
