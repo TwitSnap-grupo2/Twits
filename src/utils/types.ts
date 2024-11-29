@@ -30,12 +30,12 @@ export type Metrics = {
   topLikedTwits: Array<{
     count: number;
     id: string;
-    message: string;
+    message: string | null;
   }>;
   topSharedTwits: Array<{
     count: number;
     id: string;
-    message: string;
+    message: string | null;
   }>;
 }
 

@@ -438,9 +438,9 @@ const getMetrics = async (range: string, limit: Date) => {
   const frecuencyRes = await getWeeklyFrequency(yearAgo);
   const averageTwitsPerUser = await calculateAverageTwitsPerUser(total);
 
-  const topLikedTwits = await db.execute(
+  const topLikedTwitsIDs = await db.execute(
     sql<Array<{ count: number, id: string }>>`
-      SELECT COUNT(likes.twitsnap_id) as count, likes.twitsnap_id as id, twitsnaps.created_by as created_by, twitsnaps.content as message
+      SELECT COUNT(likes.twitsnap_id) as count, likes.twitsnap_id as id
       FROM likes
       INNER JOIN twitsnaps ON likes.twitsnap_id = twitsnaps.id
       WHERE twitsnaps.created_at > ${limit.toISOString()}
@@ -450,9 +450,17 @@ const getMetrics = async (range: string, limit: Date) => {
     `
   );
 
- const topLikedTwitsRes = topLikedTwits.rows.map(row => ({ count: row.count, id: row.id, created_by: row.created_by, message: row.message })) as { count: number, id: string, created_by: string, message: string }[];
+ const topLikedTwitsResIDs = topLikedTwitsIDs.rows.map(row => ({ count: row.count, id: row.id, created_by: row.created_by, message: row.message })) as { count: number, id: string, created_by: string, message: string }[];
 
-  const topSnapsharedTwits = await db.execute(
+ const topLikedTwits = await db.select().from(twitSnapsTable).where(inArray(twitSnapsTable.id, topLikedTwitsResIDs.map(twit => twit.id)));
+
+  const topLikedTwitsRes = topLikedTwits.map(twit => {
+    const found = topLikedTwitsResIDs.find(t => t.id === twit.id);
+    return { count: found?.count || 0, id: twit.id, created_by: twit.createdBy, message: twit.message }
+  });
+
+
+  const topSnapsharedTwitsIDs = await db.execute(
     sql<Array<{ count: number, id: string }>>`
       SELECT COUNT(snapshares.twitsnap_id) as count, snapshares.twitsnap_id as id
       FROM snapshares
@@ -463,11 +471,16 @@ const getMetrics = async (range: string, limit: Date) => {
       LIMIT 3
     `
   );
-  const topSnapsharedTwitsRes = topSnapsharedTwits.rows.map(row => ({ count: row.count, id: row.id, created_by: row.created_by, message: row.message })) as { count: number, id: string, created_by: string, message: string }[];
+  const topSnapsharedTwitsResIDs = topSnapsharedTwitsIDs.rows.map(row => ({ count: row.count, id: row.id, created_by: row.created_by, message: row.message })) as { count: number, id: string, created_by: string, message: string }[];
 
+  const topSnapsharedTwits = await db.select().from(twitSnapsTable).where(inArray(twitSnapsTable.id, topSnapsharedTwitsResIDs.map(twit => twit.id)));
 
+  const topSnapsharedTwitsRes = topSnapsharedTwits.map(twit => {
+    const found = topSnapsharedTwitsResIDs.find(t => t.id === twit.id);
+    return { count: found?.count || 0, id: twit.id, created_by: twit.createdBy, message: twit.message }
+  });
 
-  const metrics: Metrics = { total, frequency: frecuencyRes, averageTwitsPerUser: averageTwitsPerUser, topLikedTwits: topLikedTwitsRes, topSharedTwits: topSnapsharedTwitsRes };
+  const metrics: Metrics = { total: total, frequency: frecuencyRes, averageTwitsPerUser: averageTwitsPerUser, topLikedTwits: topLikedTwitsRes, topSharedTwits: topSnapsharedTwitsRes };
   return metrics;
 }
 
