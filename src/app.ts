@@ -22,7 +22,9 @@ app.use(express.json());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 
-app.use(apiKeyValidationMiddleware);
+if (process.env.NODE_ENV !== "test") {
+  app.use(apiKeyValidationMiddleware);
+}
 
 app.use("/", routes);
 

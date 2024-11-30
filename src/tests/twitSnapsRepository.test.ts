@@ -3,6 +3,7 @@ import { db } from "../db/setup";
 import { v4 as uuid4 } from "uuid";
 import { twitSnap as twitSnapsTable } from "../db/schemas/twisnapSchema";
 import { desc, is, eq } from "drizzle-orm";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 
 jest.mock("../db/setup", () => ({
   db: {
@@ -44,17 +45,25 @@ describe("twitSnapService", () => {
           isBlocked: false,
         },
       ];
-      (db.select().from(twitSnapsTable).where(eq(twitSnapsTable.isBlocked, false)).orderBy as jest.Mock).mockResolvedValue(
-        mockTwitSnaps
-      );
+      (
+        db
+          .select()
+          .from(twitSnapsTable)
+          .where(eq(twitSnapsTable.isBlocked, false)).orderBy as jest.Mock
+      )
+        //@ts-ignore
+        .mockResolvedValue(mockTwitSnaps);
 
       const result = await twitSnapRepository.getTwitSnaps();
 
       expect(db.select).toHaveBeenCalled();
       expect(db.select().from).toHaveBeenCalledWith(twitSnapsTable);
-      expect(db.select().from(twitSnapsTable).where(eq(twitSnapsTable.isBlocked, false)).orderBy).toHaveBeenCalledWith(
-        desc(twitSnapsTable.createdAt)
-      );
+      expect(
+        db
+          .select()
+          .from(twitSnapsTable)
+          .where(eq(twitSnapsTable.isBlocked, false)).orderBy
+      ).toHaveBeenCalledWith(desc(twitSnapsTable.createdAt));
       expect(result).toEqual(mockTwitSnaps);
     });
   });
@@ -72,7 +81,9 @@ describe("twitSnapService", () => {
       (
         db.insert(twitSnapsTable).values({ ...mockTwitSnap, id: "new-id" })
           .returning as jest.Mock
-      ).mockResolvedValue([mockTwitSnap]);
+      )
+        //@ts-ignore
+        .mockResolvedValue([mockTwitSnap]);
 
       const newTwitSnap = {
         message: "Test message",
