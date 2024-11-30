@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Twits microservice ",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "NODE_ENV=production npx drizzle-kit --config=./dist/drizzle.config.js generate && NODE_ENV=production npx drizzle-kit migrate --config=./dist/drizzle.config.js && NODE_ENV=production node dist/src/index.js --config=./dist/drizzle.config.js",
     "dev": "NODE_ENV=development npx drizzle-kit generate && NODE_ENV=development npx drizzle-kit migrate && NODE_ENV=development nodemon --exec tsx src/index.ts",
