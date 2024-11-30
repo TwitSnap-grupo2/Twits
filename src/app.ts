@@ -22,6 +22,10 @@ app.use(express.json());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 
+app.post("/ping", async (req, res) => {
+  res.status(200).json({ message: "pong" });
+});
+
 if (process.env.NODE_ENV !== "test") {
   app.use(apiKeyValidationMiddleware);
 }
