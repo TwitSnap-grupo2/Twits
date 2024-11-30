@@ -91,7 +91,6 @@ export const apiKeyValidationMiddleware = async (
   next: NextFunction
 ) => {
   const apiKey = req.headers.authorization; // Ensure API key is sent in the Authorization header
-  console.log("🚀 ~ apiKey:", apiKey);
 
   if (!apiKey) {
     return res.status(401).send({ detail: "Missing API Key" });
@@ -111,7 +110,7 @@ export const apiKeyValidationMiddleware = async (
 
     next();
   } catch (error) {
-    console.error("API Key validation error:", error);
+    logger.error("API Key validation error:", error);
     return res
       .status(500)
       .send({ detail: "Internal server error during API key validation" });
