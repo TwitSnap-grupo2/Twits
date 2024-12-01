@@ -14,12 +14,14 @@ import {
   mentionSchema,
   metricsHashtagSchema,
   metricsSchema,
+  newApiKeySchema,
   newTwitSnapSchema,
   postFavouriteSchema,
   searchTwitSchema,
   snapshareTwitSnapSchema,
   statsSchema,
 } from "../db/schemas/validationSchemas";
+import config from "../utils/config";
 
 const router = Router();
 
@@ -352,6 +354,17 @@ router.get("/favourites/:id", async (req, res, next) => {
     const userId = req.params.id;
     const favourites = await twitSnapsService.getUserFavourites(userId);
     res.status(200).json(favourites);
+  } catch (err: unknown) {
+    next(err);
+  }
+});
+
+router.put("/apiKey", async (req, res, next) => {
+  try {
+    const data = newApiKeySchema.parse(req.body);
+    process.env["API_KEY"] = data.apiKey;
+    console.log("New apiKey: ", process.env["API_KEY"]);
+    res.status(200).json({ apiKey: data.apiKey });
   } catch (err: unknown) {
     next(err);
   }

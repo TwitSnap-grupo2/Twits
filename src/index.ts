@@ -18,9 +18,8 @@ app.listen(config.PORT, async () => {
 
     const data = await response.json();
     logger.info("API_KEY fetched successfully");
-    //@ts-ignore
-    config.API_KEY = data!.apiKey;
-    console.log("🚀 ~ app.listen ~ API_KEY:", config.API_KEY);
+    process.env["API_KEY"] = data!.apiKey;
+    console.log("New API_KEY:", process.env["API_KEY"]);
   } catch (error) {
     logger.error("API Key fetch error:", error);
     // process.exit(1);
