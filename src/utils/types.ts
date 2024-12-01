@@ -31,11 +31,17 @@ export type Metrics = {
     count: number;
     id: string;
     message: string | null;
+    createdBy: string;
+    createdAt: Date;
+    isBlocked: boolean;
   }>;
   topSharedTwits: Array<{
     count: number;
     id: string;
     message: string | null;
+    createdBy: string;
+    createdAt: Date;
+    isBlocked: boolean;
   }>;
 }
 

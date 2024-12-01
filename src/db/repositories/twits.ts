@@ -456,7 +456,7 @@ const getMetrics = async (range: string, limit: Date) => {
 
   const topLikedTwitsRes = topLikedTwits.map(twit => {
     const found = topLikedTwitsResIDs.find(t => t.id === twit.id);
-    return { count: found?.count || 0, id: twit.id, created_by: twit.createdBy, message: twit.message }
+    return { count: found?.count || 0, id: twit.id, createdBy: twit.createdBy, message: twit.message,  createdAt: twit.createdAt, isBlocked: twit.isBlocked}
   });
 
 
@@ -477,7 +477,7 @@ const getMetrics = async (range: string, limit: Date) => {
 
   const topSnapsharedTwitsRes = topSnapsharedTwits.map(twit => {
     const found = topSnapsharedTwitsResIDs.find(t => t.id === twit.id);
-    return { count: found?.count || 0, id: twit.id, created_by: twit.createdBy, message: twit.message }
+    return { count: found?.count || 0, id: twit.id, createdBy: twit.createdBy, message: twit.message, createdAt: twit.createdAt, isBlocked: twit.isBlocked}
   });
 
   const metrics: Metrics = { total: total, frequency: frecuencyRes, averageTwitsPerUser: averageTwitsPerUser, topLikedTwits: topLikedTwitsRes, topSharedTwits: topSnapsharedTwitsRes };
@@ -499,7 +499,8 @@ const getHashtagMetrics = async (hashtag: string, range: string, limit: Date) =>
   );
 
   const frecuencyRes = frequency.rows.map(row => ({ count: row.count, date: row.date })) as { count: number, date: string }[];
-  const metrics: HashtagMetrics = { total, frequency: frecuencyRes, topHashtags: [] };
+  const topHashtags = await getTopHashtags(range, limit);
+  const metrics: HashtagMetrics = { total, frequency: frecuencyRes, topHashtags: topHashtags };
   return metrics;
 }
 
@@ -522,6 +523,20 @@ async function getWeeklyFrequency(yearAgo: Date) {
   );
   const frecuencyRes = frecuency.rows.map(row => ({ count: row.count, date: row.date })) as { count: number; date: string; }[];
   return frecuencyRes;
+}
+
+const getTopHashtags = async (range: string, limitDate: Date) => {
+  const hashtags = await db.execute(
+    sql<Array<{ count: number, name: string }>>`
+      SELECT COUNT(id) as count, name
+      FROM hashtags
+      WHERE created_at > ${limitDate.toISOString()}
+      GROUP BY name
+      ORDER BY count DESC
+      LIMIT 3
+    `
+  );
+  return hashtags.rows.map(row => ({ count: row.count, name: row.name })) as { count: number, name: string }[];
 }
 
 const blockTwitSnap = async (id: string): Promise<SelectTwitsnap> => {
@@ -574,6 +589,25 @@ const getBlockedTwitSnaps = async (): Promise<Array<SelectTwitsnap>> => {
   return db.select().from(twitSnapsTable).where(eq(twitSnapsTable.isBlocked, true));
 }
 
+const getAllHashtagMetrics = async (range: string, limit: Date) => {
+  const total = await db.select({ count: count() }).from(twitSnapsTable).innerJoin(hashtagTable, eq(twitSnapsTable.id, hashtagTable.twitsnapId)).where(gte(twitSnapsTable.createdAt, limit)).then((result) => result[0].count);
+  const frequency = await db.execute(
+    sql<Array<{ count: number, date: string }>>`
+      SELECT COUNT(id) as count, DATE_TRUNC(${range}, created_at) as date
+      FROM hashtags
+      WHERE created_at > ${limit.toISOString()}
+      GROUP BY date
+      ORDER BY date
+    `
+  );
+
+  const frecuencyRes = frequency.rows.map(row => ({ count: row.count, date: row.date })) as { count: number, date: string }[];
+  const topHashtags = await getTopHashtags(range, limit);
+  const metrics: HashtagMetrics = { total, frequency: frecuencyRes, topHashtags: topHashtags };
+  return metrics;
+}
+
+
 export default {
   getTwitSnaps: getTwitSnapsOrderedByDate,
   getTwitSnapsById,
@@ -614,7 +648,8 @@ export default {
   postFavourite,
   deleteFavourite,
   getUserFavourites,
-  getBlockedTwitSnaps
+  getBlockedTwitSnaps,
+  getAllHashtagMetrics
 };
 
 

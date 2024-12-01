@@ -185,11 +185,15 @@ const getMetrics = async (range: string): Promise<Metrics> => {
 
 }
 
-const getHashtagMetrics = async (hashtag: string, range: string, limit: number): Promise<HashtagMetrics> => {
-  const limitDate = new Date();
-  limitDate.setDate(limitDate.getDate() - limit);
-  const res =  db.getHashtagMetrics(hashtag, range, limitDate);
-  return res;
+const getHashtagMetrics = async (hashtag: string | undefined, range: string): Promise<HashtagMetrics> => {
+  const limitDate = getLimitDateByRange(range);
+  if (!hashtag){
+    const res =  db.getAllHashtagMetrics(range, limitDate);
+    return res;
+  } else{
+    const res =  db.getHashtagMetrics(hashtag, range, limitDate);
+    return res;
+  }
 }
 
 function getLimitDateByRange(range: string) {
