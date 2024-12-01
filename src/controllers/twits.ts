@@ -80,7 +80,6 @@ router.get("/metrics/hashtag", async (req, res, next) => {
     const metrics = await twitSnapsService.getHashtagMetrics(
       result.name,
       result.range,
-      result.limit
     );
     res.status(200).json(metrics);
   } catch (err: unknown) {
