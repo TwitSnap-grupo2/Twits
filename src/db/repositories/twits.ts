@@ -456,7 +456,7 @@ const getMetrics = async (range: string, limit: Date) => {
 
   const topLikedTwitsRes = topLikedTwits.map(twit => {
     const found = topLikedTwitsResIDs.find(t => t.id === twit.id);
-    return { count: found?.count || 0, id: twit.id, created_by: twit.createdBy, message: twit.message }
+    return { count: found?.count || 0, id: twit.id, createdBy: twit.createdBy, message: twit.message,  createdAt: twit.createdAt, isBlocked: twit.isBlocked}
   });
 
 
@@ -477,7 +477,7 @@ const getMetrics = async (range: string, limit: Date) => {
 
   const topSnapsharedTwitsRes = topSnapsharedTwits.map(twit => {
     const found = topSnapsharedTwitsResIDs.find(t => t.id === twit.id);
-    return { count: found?.count || 0, id: twit.id, created_by: twit.createdBy, message: twit.message }
+    return { count: found?.count || 0, id: twit.id, createdBy: twit.createdBy, message: twit.message, createdAt: twit.createdAt, isBlocked: twit.isBlocked}
   });
 
   const metrics: Metrics = { total: total, frequency: frecuencyRes, averageTwitsPerUser: averageTwitsPerUser, topLikedTwits: topLikedTwitsRes, topSharedTwits: topSnapsharedTwitsRes };
