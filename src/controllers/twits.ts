@@ -130,6 +130,23 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+router.get("/twit/:id", async (req, res, next) => {
+  try {
+    const twitSnap = await twitSnapsService.getTwitSnapByTwitId(req.params.id);
+
+    if (!twitSnap) {
+      next({
+        name: "NotFound",
+        message: "Twitsnap not found",
+      });
+    }
+
+    res.status(200).json(twitSnap);
+  } catch (err: unknown) {
+    next(err);
+  }
+});
+
 router.patch("/:id", async (req, res, next) => {
   try {
     const result = editTwitSnapSchema.parse(req.body);

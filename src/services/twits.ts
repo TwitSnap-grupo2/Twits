@@ -18,6 +18,11 @@ const getTwitSnapsById = async (id: string): Promise<Array<TwitsAndShares>> => {
   return await db.getTwitSnapsById(id);
 }
 
+const getTwitSnapByTwitId = async (id: string): Promise<SelectTwitsnap | null> => {
+  return await db.getTwitSnapsByTwitId(id);
+}
+
+
 const createTwitSnap = async (
   newTwitSnap: InsertTwitsnap
 ): Promise<SelectTwitsnap | null> => {
@@ -266,7 +271,8 @@ export default {
   postFavourite,
   deleteFavourite,
   getUserFavourites,
-  getBlockedTwitSnaps
+  getBlockedTwitSnaps,
+  getTwitSnapByTwitId
 };
 
 
