@@ -485,25 +485,6 @@ const getMetrics = async (range: string, limit: Date) => {
 }
 
 
-const getHashtagMetrics = async (hashtag: string, range: string, limit: Date) => {
-  const total = await db.select({ count: count() }).from(twitSnapsTable).innerJoin(hashtagTable, eq(twitSnapsTable.id, hashtagTable.twitsnapId)).where(and(eq(hashtagTable.name, hashtag), gte(twitSnapsTable.createdAt, limit))).then((result) => result[0].count);
-  const frequency = await db.execute(
-    sql<Array<{ count: number, date: string }>>`
-      SELECT COUNT(t.id) as count, DATE_TRUNC(${range}, t.created_at) as date
-      FROM twitsnaps t
-      INNER JOIN hashtags h ON t.id = h.twitsnap_id
-      WHERE h.name = ${hashtag} AND t.created_at > ${limit.toISOString()}
-      GROUP BY date
-      ORDER BY date
-    `
-  );
-
-  const frecuencyRes = frequency.rows.map(row => ({ count: row.count, date: row.date })) as { count: number, date: string }[];
-  const topHashtags = await getTopHashtags(range, limit);
-  const metrics: HashtagMetrics = { total, frequency: frecuencyRes, topHashtags: topHashtags };
-  return metrics;
-}
-
 async function calculateAverageTwitsPerUser(total: number) {
   const usersQuantity = await db.execute(
     sql<Array<{ count: number }>>`
@@ -652,7 +633,6 @@ export default {
   deleteReply,
   deleteTwitSnap,
   getMetrics,
-  getHashtagMetrics,
   blockTwitSnap,
   unblockTwitSnap,
   postFavourite,

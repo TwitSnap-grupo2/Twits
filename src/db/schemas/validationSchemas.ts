@@ -51,7 +51,6 @@ export const metricsSchema = z.object({
 });
 
 export const metricsHashtagSchema = z.object({
-  name: z.string().max(280).min(1).optional(),
   range: z.enum(["day", "week", "month", "year"]),
 });
 
