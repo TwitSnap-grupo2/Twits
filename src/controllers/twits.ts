@@ -85,6 +85,7 @@ router.get("/metrics/hashtag", async (req, res, next) => {
     );
     res.status(200).json(metrics);
   } catch (err: unknown) {
+    console.log(err);
     next(err);
   }
 });

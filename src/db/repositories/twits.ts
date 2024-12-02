@@ -489,10 +489,10 @@ const getHashtagMetrics = async (hashtag: string, range: string, limit: Date) =>
   const total = await db.select({ count: count() }).from(twitSnapsTable).innerJoin(hashtagTable, eq(twitSnapsTable.id, hashtagTable.twitsnapId)).where(and(eq(hashtagTable.name, hashtag), gte(twitSnapsTable.createdAt, limit))).then((result) => result[0].count);
   const frequency = await db.execute(
     sql<Array<{ count: number, date: string }>>`
-      SELECT COUNT(id) as count, DATE_TRUNC(${range}, created_at) as date
-      FROM twitsnaps
-      INNER JOIN hashtags ON twitsnaps.id = hashtags.twitsnap_id
-      WHERE hashtags.name = ${hashtag} AND created_at > ${limit.toISOString()}
+      SELECT COUNT(t.id) as count, DATE_TRUNC(${range}, t.created_at) as date
+      FROM twitsnaps t
+      INNER JOIN hashtags h ON t.id = h.twitsnap_id
+      WHERE h.name = ${hashtag} AND t.created_at > ${limit.toISOString()}
       GROUP BY date
       ORDER BY date
     `
@@ -505,8 +505,14 @@ const getHashtagMetrics = async (hashtag: string, range: string, limit: Date) =>
 }
 
 async function calculateAverageTwitsPerUser(total: number) {
-  const usersQuantity = await db.selectDistinct({ count: count() }).from(twitSnapsTable).groupBy(twitSnapsTable.createdBy);
-  const usersQuantityRes = usersQuantity[0].count;
+  const usersQuantity = await db.execute(
+    sql<Array<{ count: number }>>`
+      SELECT COUNT(DISTINCT created_by) as count
+      FROM twitsnaps
+    `
+  )
+  const usersQuantityParsed = usersQuantity.rows.map(row => ({ count: row.count })) as { count: number }[];
+  const usersQuantityRes = usersQuantityParsed[0].count;
   const averageTwitsPerUser = total / usersQuantityRes;
   return averageTwitsPerUser;
 }
@@ -528,9 +534,10 @@ async function getWeeklyFrequency(yearAgo: Date) {
 const getTopHashtags = async (range: string, limitDate: Date) => {
   const hashtags = await db.execute(
     sql<Array<{ count: number, name: string }>>`
-      SELECT COUNT(id) as count, name
+      SELECT COUNT(twitsnap_id) as count, name
       FROM hashtags
-      WHERE created_at > ${limitDate.toISOString()}
+      INNER JOIN twitsnaps ON twitsnaps.id = hashtags.twitsnap_id
+      WHERE twitsnaps.created_at > ${limitDate.toISOString()}
       GROUP BY name
       ORDER BY count DESC
       LIMIT 3
@@ -593,13 +600,16 @@ const getAllHashtagMetrics = async (range: string, limit: Date) => {
   const total = await db.select({ count: count() }).from(twitSnapsTable).innerJoin(hashtagTable, eq(twitSnapsTable.id, hashtagTable.twitsnapId)).where(gte(twitSnapsTable.createdAt, limit)).then((result) => result[0].count);
   const frequency = await db.execute(
     sql<Array<{ count: number, date: string }>>`
-      SELECT COUNT(id) as count, DATE_TRUNC(${range}, created_at) as date
-      FROM hashtags
-      WHERE created_at > ${limit.toISOString()}
+      SELECT COUNT(t.id) as count, DATE_TRUNC(${range}, t.created_at) as date
+      FROM twitsnaps t
+      INNER JOIN hashtags h ON t.id = h.twitsnap_id
+      WHERE t.created_at > ${limit.toISOString()}
       GROUP BY date
       ORDER BY date
     `
   );
+
+
 
   const frecuencyRes = frequency.rows.map(row => ({ count: row.count, date: row.date })) as { count: number, date: string }[];
   const topHashtags = await getTopHashtags(range, limit);

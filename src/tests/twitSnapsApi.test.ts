@@ -1086,77 +1086,75 @@ describe("twitsnaps replies", () => {
   );
 });
 
-// describe("content metrics", () => {
-//   beforeEach(async () => {
-//     await twitSnapRepository.deleteTwitsnaps();
-//     await twitSnapRepository.deleteAllHashTags()
-//   })
+describe("content metrics", () => {
+  beforeEach(async () => {
+    await twitSnapRepository.deleteTwitsnaps();
+    await twitSnapRepository.deleteAllHashTags()
+  })
 
-//   test("can be obtained with total and frequency", async () => {
-//     const monthAgoDate = new Date();
-//     monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
-//     const twit1 = await twitSnapRepository.addRawTwitSnapForTesting({
-//       message: "This is a #twitsnap",
-//       createdBy: "12345678-1234-1234-1234-123456789012",
-//       createdAt: monthAgoDate,
-//     });
+  test("can be obtained with total, frequency, average and top twits", async () => {
+    const monthAgoDate = new Date();
+    monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
+    const twit1 = await api.post("/api/twits").send({
+      message: "This is a #twitsnap1",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    }).expect(201);
 
-//     const twit2 = await twitSnapRepository.addRawTwitSnapForTesting({
-//       message: "This is a #twitsnap",
-//       createdBy: "12345678-1234-1234-1234-123456789012",
-//       createdAt: monthAgoDate,
-//     });
-//     const twoMonthsAgoDate = new Date();
-//     twoMonthsAgoDate.setMonth(twoMonthsAgoDate.getMonth() - 2);
-//     const twit3 = await twitSnapRepository.addRawTwitSnapForTesting({
-//       message: "This is a #twitsnap",
-//       createdBy: "12345678-1234-1234-1234-123456789012",
-//       createdAt: twoMonthsAgoDate,
-//     });
+    const twit2 =  await api.post("/api/twits").send({
+      message: "This is a #twitsnap2",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    }).expect(201);
+
+    const twit3 = await api.post("/api/twits").send({
+      message: "This is a #twitsnap3",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    }).expect(201);
+
+    const twit4 =  await api.post("/api/twits").send({
+      message: "This is a #twitsnap4",
+      createdBy: "12345678-1234-1234-1234-123456789012",
+    }).expect(201);
+
+    if(!twit1 || !twit2 || !twit3 || !twit4) {
+      throw new Error("Error creating twitsnaps");
+    }
+
+    const res = await api.get('/api/twits/metrics?range=day').expect(200);
+
+    const data = res.body;
+
+    expect(data.total).toBe(4);
+
+    expect(data.frequency).toHaveLength(1);
+
+    expect(data.averageTwitsPerUser).toBe(4);
     
-//     const twit4 = await twitSnapRepository.addRawTwitSnapForTesting({
-//       message: "This is a #twitsnap",
-//       createdBy: "12345678-1234-1234-1234-123456789012",
-//       createdAt: twoMonthsAgoDate,
-//     });
-
-//     if(!twit1 || !twit2 || !twit3 || !twit4) {
-//       throw new Error("Error creating twitsnaps");
-//     }
-
-//     const res = await api.get('/api/twits/metrics?range=day&limit=200').expect(200);
-
-//     const data = res.body;
-
-//     expect(data.total).toBe(4);
-
-//     expect(data.frequency).toHaveLength(2);
-//     })
+    })
 
 
-//     test("hashtag metrics can be obtained", async () => {
-//       const monthAgoDate = new Date();
-//       monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
-//       const twit1 = await api.post("/api/twits").send({
-//         message: "This is a #twitsnap",
-//         createdBy: "12345678-1234-1234-1234-123456789012",
-//       }).expect(201);
+    test("hashtag metrics can be obtained", async () => {
+      const monthAgoDate = new Date();
+      monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
+      const twit1 = await api.post("/api/twits").send({
+        message: "This is a #twitsnap",
+        createdBy: "12345678-1234-1234-1234-123456789012",
+      }).expect(201);
   
-//       const twit2 =  await api.post("/api/twits").send({
-//         message: "This is a #twitsnap",
-//         createdBy: "12345678-1234-1234-1234-123456789012",
-//       }).expect(201);
+      const twit2 =  await api.post("/api/twits").send({
+        message: "This is a #twitsnap",
+        createdBy: "12345678-1234-1234-1234-123456789012",
+      }).expect(201);
   
-//       const res = await api.get('/api/twits/metrics/hashtag?name=twitsnap&range=month&limit=200').expect(200);
+      const res = await api.get('/api/twits/metrics/hashtag?range=month').expect(200);
   
-//       const data = res.body;
+      const data = res.body;
   
-//       expect(data.total).toBe(2);
+      expect(data.total).toBe(2);
   
-//       expect(data.frequency).toHaveLength(1);
-//       }
-//     )
-// })
+      expect(data.frequency).toHaveLength(1);
+      }
+    )
+})
 
 
 describe("twitsnaps block", () => {
