@@ -17,15 +17,441 @@
         "description": "",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of twitsnaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "message",
+            "description": "Twitsnap message",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdBy",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isPrivate",
+            "description": "Twitsnap privacy",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Twitsnap created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -33,9 +459,219 @@
     "/api/twits/search": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "q",
+            "description": "Search query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of twitsnaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -43,9 +679,251 @@
     "/api/twits/hashtag": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Hashtag name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of twitsnaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    },
+                    "sharedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "likesCount": {
+                      "type": "string",
+                      "example": "number of likes"
+                    },
+                    "sharesCount": {
+                      "type": "string",
+                      "example": "number of shares"
+                    },
+                    "repliesCount": {
+                      "type": "string",
+                      "example": "number of replies"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    },
+                    "sharedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "likesCount": {
+                      "type": "string",
+                      "example": "number of likes"
+                    },
+                    "sharesCount": {
+                      "type": "string",
+                      "example": "number of shares"
+                    },
+                    "repliesCount": {
+                      "type": "string",
+                      "example": "number of replies"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -53,9 +931,615 @@
     "/api/twits/hashtag/search": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Hashtag name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of hashtags"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/metrics": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "range",
+            "description": "Range of metrics, can be day, week, month or year",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../utils/types/Metrics"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "../utils/types/Metrics"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/metrics/hashtag": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../utils/types/Metrics"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "../utils/types/Metrics"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/blockeds": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "List of blocked twitsnaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../db/schemas/twitsAndShares.ts"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "../db/schemas/twitsAndShares.ts"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -63,9 +1547,137 @@
     "/api/twits/feed": {
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "timestamp_start",
+            "description": "Start timestamp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "description": "Limit of twitsnaps",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "followeds",
+            "description": "List of followeds",
+            "in": "query",
+            "schema": {
+              "type": "array"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of twitsnaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    },
+                    "sharedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "likesCount": {
+                      "type": "string",
+                      "example": "number of likes"
+                    },
+                    "sharesCount": {
+                      "type": "string",
+                      "example": "number of shares"
+                    },
+                    "repliesCount": {
+                      "type": "string",
+                      "example": "number of replies"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    },
+                    "sharedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "likesCount": {
+                      "type": "string",
+                      "example": "number of likes"
+                    },
+                    "sharesCount": {
+                      "type": "string",
+                      "example": "number of shares"
+                    },
+                    "repliesCount": {
+                      "type": "string",
+                      "example": "number of replies"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -80,12 +1692,1756 @@
             "required": true,
             "schema": {
               "type": "string"
+            },
+            "description": "Twitsnap id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of twitsnaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    },
+                    "sharedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "likesCount": {
+                      "type": "string",
+                      "example": "number of likes"
+                    },
+                    "sharesCount": {
+                      "type": "string",
+                      "example": "number of shares"
+                    },
+                    "repliesCount": {
+                      "type": "string",
+                      "example": "number of replies"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    },
+                    "sharedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "likesCount": {
+                      "type": "string",
+                      "example": "number of likes"
+                    },
+                    "sharesCount": {
+                      "type": "string",
+                      "example": "number of shares"
+                    },
+                    "repliesCount": {
+                      "type": "string",
+                      "example": "number of replies"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Twitsnap id"
+          },
+          {
+            "name": "message",
+            "description": "Twitsnap message",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isPrivate",
+            "description": "Twitsnap privacy",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Twitsnap",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/twit/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Twit id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of twitsnaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/{id}/block": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Twitsnap id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Twitsnap",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/{id}/unblock": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Twitsnap id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Twitsnap",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/{id}/reply": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "message",
+            "description": "Twitsnap message",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdBy",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isPrivate",
+            "description": "Twitsnap privacy",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Twitsnap created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/{id}/replies": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Twitsnap id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of twitsnaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -101,11 +3457,195 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "likedBy",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Twitsnap liked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "likedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "likedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -118,12 +3658,189 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Twitsnap id"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of twitsnap likes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "likedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "likedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -137,11 +3854,149 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "likedBy",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "Twitsnap like deleted"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -157,11 +4012,195 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "sharedBy",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Twitsnap shared",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "sharedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "sharedBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -175,11 +4214,149 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "sharedBy",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "Twitsnap share deleted"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -195,11 +4372,195 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "mentionedUser",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Twitsnap mentioned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "mentionedUser": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "mentionedUser": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -212,12 +4573,189 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Twitsnap id"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of twitsnap mentions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "mentionedUser": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "mentionedUser": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -231,11 +4769,1092 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "mentionedUser",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "Twitsnap mention deleted"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/stats/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "description": "Limit of stats",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of twitsnap stats"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/{id}/favourite": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Twitsnap favourited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "twitsnapId": {
+                      "type": "string",
+                      "example": "twitsnap id"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "description": "User id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Twitsnap favourite deleted"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/favourites/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of twitsnap favourites",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    },
+                    "likesCount": {
+                      "type": "string",
+                      "example": "number of likes"
+                    },
+                    "sharesCount": {
+                      "type": "string",
+                      "example": "number of shares"
+                    },
+                    "repliesCount": {
+                      "type": "string",
+                      "example": "number of replies"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id of twit"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "message of twit"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "date of creation"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "user id"
+                    },
+                    "isPrivate": {
+                      "type": "string",
+                      "example": "is private"
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "parent id"
+                    },
+                    "likesCount": {
+                      "type": "string",
+                      "example": "number of likes"
+                    },
+                    "sharesCount": {
+                      "type": "string",
+                      "example": "number of shares"
+                    },
+                    "repliesCount": {
+                      "type": "string",
+                      "example": "number of replies"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/twits/apiKey": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "apiKey",
+            "description": "New API key",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "API key updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "apiKey": {
+                      "type": "string",
+                      "example": "new api key"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "apiKey": {
+                      "type": "string",
+                      "example": "new api key"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "error message"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "type of error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server Error"
+                    },
+                    "instance": {
+                      "type": "string",
+                      "example": "url"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "status"
+                    },
+                    "detail": {
+                      "type": "string",
+                      "example": "error detail"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
