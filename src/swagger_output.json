@@ -1093,19 +1093,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Metrics",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "../utils/types/Metrics"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "../utils/types/Metrics"
-                }
-              }
-            }
+            "description": "Metrics"
           },
           "400": {
             "description": "Bad Request",
@@ -1245,19 +1233,7 @@
         "description": "",
         "responses": {
           "200": {
-            "description": "Metrics",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "../utils/types/Metrics"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "../utils/types/Metrics"
-                }
-              }
-            }
+            "description": "Hashtag Metrics"
           },
           "400": {
             "description": "Bad Request",
@@ -1397,19 +1373,7 @@
         "description": "",
         "responses": {
           "200": {
-            "description": "List of blocked twitsnaps",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "../db/schemas/twitsAndShares.ts"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "../db/schemas/twitsAndShares.ts"
-                }
-              }
-            }
+            "description": "List of blocked twitsnaps"
           },
           "400": {
             "description": "Bad Request",
